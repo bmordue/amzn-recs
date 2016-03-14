@@ -1,0 +1,22 @@
+{
+  "name": "amzn-recs",
+  "version": "1.0.0",
+  "description": "Crawl recommendations",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bmordue/amzn-recs.git"
+  },
+  "author": "Ben M",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bmordue/amzn-recs/issues"
+  },
+  "homepage": "https://github.com/bmordue/amzn-recs",
+  "dependencies": {
+    "aws-lib": "^0.3.0"
+  }
+}
