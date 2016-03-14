@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/bmordue/amzn-recs",
   "dependencies": {
-    "aws-lib": "^0.3.0"
+    "aws-lib": "^0.3.0",
+    "dotenv": "^2.0.0"
   }
 }
