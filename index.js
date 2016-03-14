@@ -1,25 +1,15 @@
-require("dotenv").load( {silent: true});
-var aws = require("aws-lib");
-
-var fail = function() {
-	console.log("FATAL: Missing required env var");
-	process.exit(1);
-};
+var CrawlQueue = require("./crawl_queue");
 
 var main = function() {
-	var keyId = process.env.AMZN_ACCESS_KEY_ID || fail();
-	var keySecret = process.env.AMZN_ACCESS_KEY_SECRET || fail();
-	var associateTag = process.env.AMZN_ASSOCIATE_TAG || fail();
-
-	prodAdv = aws.createProdAdvClient(keyId, keySecret, associateTag);
-
-	prodAdv.call("ItemSearch", {SearchIndex: "Books", Keywords: "Javascript"}, function(err, result) {
+	var rootAsin = 'B014V4DXMW'; //starting ASIN
+	var crawler = new CrawlQueue({maxCrawlDepth: 1});
+	crawler.crawl(rootAsin, function(err) {
 		if (err) {
 			console.log(err);
+			process.exit(1);
 		}
-		console.log(JSON.stringify(result));
 		process.exit(0);
-	})	
+	});
 };
 
 main();
