@@ -1,6 +1,7 @@
 require("dotenv").load( {silent: true});
 var async = require("async");
 var aws = require("aws-lib");
+var RateLimiter = require("limiter").RateLimiter;
 var util = require("util");
 
 var fail = function() {
@@ -16,12 +17,20 @@ function CrawlQueue(options) {
 	var associateTag = process.env.AMZN_ASSOCIATE_TAG || fail();
 
 	this.prodAdv = aws.createProdAdvClient(keyId, keySecret, associateTag, { host: "webservices.amazon.co.uk"});
+	this.limiter = new RateLimiter(2000, "hour");
 }
+
+CrawlQueue.prototype.throttledSimilarityLookup = function(asin, callback) {
+	var self = this;
+	this.limiter.removeTokens(1, function(err, remaining) {
+		self.prodAdv.call("SimilarityLookup", { ItemId: asin }, callback);
+	});
+};
 
 CrawlQueue.prototype.crawl = function(rootAsin, depth, callback) {
 	console.log(util.format("Current crawl depth: %s, parent node ASIN ", this.currentDepth, rootAsin));
 	var self = this;
-	this.prodAdv.call("SimilarityLookup", { ItemId: rootAsin }, function(err, result) {
+	this.throttledSimilarityLookup(rootAsin, function(err, result) {
 		if (err) {
 			return callback(err);
 		}
