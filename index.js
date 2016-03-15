@@ -1,4 +1,4 @@
-var CrawlQueue = require("./crawl_queue");
+var CrawlQueue = require("./lib/crawl_queue");
 var util = require("util");
 
 var main = function() {

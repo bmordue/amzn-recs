@@ -1,5 +1,5 @@
 require("dotenv").load({silent: true});
-var DbConnector = require("../db_connector");
+var DbConnector = require("../lib/db_connector");
 var util = require("util");
 
 describe("DbConnector", function() {
@@ -9,7 +9,7 @@ describe("DbConnector", function() {
 	});
 	
 	it("should get DB service root", function(done) {
-		this.timeout(60000);
+		this.timeout(10000);
 		var dbConnector = new DbConnector();
 		dbConnector.db.http({ method: "GET", path: "/db/data/" }, function(err, body) {
 			if (err) {
