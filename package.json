@@ -4,7 +4,7 @@
   "description": "Crawl recommendations",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,10 @@
     "async": "^1.5.2",
     "aws-lib": "^0.3.0",
     "dotenv": "^2.0.0",
-    "limiter": "^1.1.0"
+    "limiter": "^1.1.0",
+    "neo4j": "^2.0.0-RC2"
+  },
+  "devDependencies": {
+    "mocha": "^2.4.5"
   }
 }
