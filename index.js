@@ -1,4 +1,5 @@
 var CrawlQueue = require("./lib/crawl_queue");
+var log = require("./lib/log")
 var util = require("util");
 
 var main = function() {
@@ -8,10 +9,10 @@ var main = function() {
 	var crawler = new CrawlQueue({maxCrawlDepth: maxDepth});
 	crawler.crawl(rootAsin, 0, function(err) {
 		if (err) {
-			console.log(err);
+			log.error(err);
 			process.exit(1);
 		}
-		console.log(util.format('Found %s nodes', crawler.nodeCount));
+		log.info(crawler.nodeCount, " nodes crawled");
 		process.exit(0);
 	});
 };
