@@ -17,7 +17,7 @@ function main() {
 	var dbConnector = new DbConnector();
 	
 	var prodAdv = aws.createProdAdvClient(keyId, keySecret, associateTag, { host: "webservices.amazon.co.uk"});
-	prodAdv.call("ItemLookup", { ItemId: rootAsin }, function(err, result) {
+	prodAdv.call("ItemLookup", { ItemId: rootAsin, ResponseGroup: "Offers" }, function(err, result) {
 		console.log(JSON.stringify(result));
 		dbConnector.createBookNode(result.Items.Item, function(err, result) {
 			if (err) {

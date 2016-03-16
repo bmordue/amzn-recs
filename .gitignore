@@ -32,5 +32,11 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
+# private config
 .env
+
+# temp
 output
+
+#OS specific
+.DS_Store

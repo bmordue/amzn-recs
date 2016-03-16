@@ -9,7 +9,8 @@ var main = function() {
 	var crawler = new CrawlQueue({maxCrawlDepth: maxDepth});
 	crawler.crawl(rootAsin, 0, function(err) {
 		if (err) {
-			log.error(err);
+			log.error(err, "Error");
+			log.error(err.stack, "stack");
 			process.exit(1);
 		}
 		log.info(crawler.nodeCount, " nodes crawled");
