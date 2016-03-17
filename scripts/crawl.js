@@ -1,3 +1,4 @@
+// crawl prod adv API and write results to JSON files
 var CrawlQueue = require("./lib/crawl_queue");
 var log = require("./lib/log")
 var util = require("util");
@@ -14,7 +15,6 @@ var main = function() {
 			process.exit(1);
 		}
 		log.info(crawler.nodeCount, " nodes crawled");
-		process.exit(0);
 	});
 };
 

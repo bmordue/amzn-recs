@@ -1,43 +1,69 @@
+// populate graph DB from JSON files
 require("dotenv").load({silent: true});
 var async = require("async");
-var DbConnector = require("./db_connector");
+var DbConnector = require("../lib/db_connector");
 var fs = require("fs");
-var log = require("./log");
+var log = require("../lib/log");
 var path = require("path");
 var util = require("util");
 
-var db = new DbConnector();
+var dbCon = new DbConnector();
 
-function populate(asin, callback) {
-	var filename = path.join("output", asin + ".json");
-	fs.readFile(filename, function(err, data) {
+var nodes_count = 0;
+
+function populate(callback) {
+	// expect dir output to be filled with files like "B00TOOSCC6.json"
+	fs.readdir("output", function(err, files) {
 		if (err) {
 			return callback(err);
 		}
-		var item;
-		try {
-			item = JSON.parse(data).Items.Item;
-			item 
-		} catch (e) {
-			return callback(e);
-		}
-		
+		log.debug(files.length, "files found: ");
+		async.each(files, function(filename, file_cb) {
+			if (filename.length != 15 || filename.slice(-5) != ".json") {
+				return file_cb(); // primitive filter for interesting files
+			}
+			var parentAsin = filename.slice(0,-5); // asin.JSON -> asin
+			fs.readFile(path.join("output", filename), function(err, data) {
+				if (err) {
+					return file_cb(err);
+				}
+				log.debug(filename, "read file ");
+				var item_list = [];
+				try {
+					item_list = JSON.parse(data).Items.Item;
+				} catch (e) {
+					return file_cb(e);
+				}
+				log.debug(item_list, "item_list: ")
+				log.debug(item_list.length, "items found: ");
+				async.each(item_list, function(item, item_cb) {
+					nodes_count++;
+					try {
+						dbCon.createChildBookNode(parentAsin, item, function(err, result) {
+							if (err) {
+								log.error(item, "error adding node: ");
+								return item_cb(err);
+							}
+							log.debug(result, "createChildBookNode result: ");
+							item_cb();
+						});
+					} catch (e) {
+						log.error(e, "caught exception ");
+						item_cb(e);
+					}
+				}, file_cb);
+			});
+		}, callback);
 	});
 }
 
 function main() {
-	var rootAsin = process.argv[2] || "B014V4DXMW"; //starting ASIN
-	db.init(function(err, result) {
+	populate(function(err) {
 		if (err) {
-			log.error(err, "Could not init db");
+			log.error(err, "Error");
 			process.exit(1);
-		}		
-		populate(rootAsin, function(err, result) {
-			if (err) {
-				log.error(err, "Error");
-			}
-			log.info(result, "Result");
-		});
+		}
+		log.info(nodes_count, "Node count: ");
 	});
 }
 

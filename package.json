@@ -2,7 +2,7 @@
   "name": "amzn-recs",
   "version": "1.0.0",
   "description": "Crawl recommendations",
-  "main": "index.js",
+  "main": "scripts/crawl.js",
   "scripts": {
     "test": "mocha"
   },
