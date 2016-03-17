@@ -1,0 +1,23 @@
+{
+    "ASIN": "B0196Q9XGA-testdata",
+    "DetailPageURL": "http://amzn.co/B0196Q9XGA",
+    "ItemAttributes": {
+        "Author": [
+            "Cory Doctorow",
+            "Ken Liu",
+            "John Murphy",
+            "Jay O'Connell",
+            "William Preston",
+            "Alastair Reynolds"
+        ],
+        "Creator": {
+            "#": "Allan Kaster",
+            "@": {
+                "Role": "Editor"
+            }
+        },
+        "Manufacturer": "Infinivox",
+        "ProductGroup": "eBooks",
+        "Title": "The Year's Top Short SF Novels 5"
+    }
+}

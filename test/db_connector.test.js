@@ -1,5 +1,7 @@
 require("dotenv").load({silent: true});
 var DbConnector = require("../lib/db_connector");
+var fs = require("fs");
+var path = require("path");
 var should = require("should");
 var util = require("util");
 
@@ -10,26 +12,9 @@ describe("DbConnector", function() {
 	
 	var dbConnector = new DbConnector();
 	
-	var bookData = {
-		"ASIN": "B014V4DXMW", 
-		"DetailPageURL": "http://amzn.co/B014V4DXMW", 
-		"ItemAttributes": {
-			"Author": "China Mi\u00e9ville", 
-			"Manufacturer": "Picador", 
-			"ProductGroup": "eBooks", 
-			"Title": "This Census-Taker"
-		}
-	};
+	var bookData = JSON.parse(fs.readFileSync(path.join("test", "fixtures", "simple_item_1.json")));
 	
-	var childBookData = {
-		"ASIN": "B01CDMP88Q",
-		"DetailPageURL": "http://amzn.co/B01CDMP88Q",
-		"ItemAttributes": {
-			"Author": "Zen Cho",
-			"ProductGroup": "eBooks",
-			"Title": "The Terracotta Bride"
-		}
-	};
+	var childBookData = JSON.parse(fs.readFileSync(path.join("test", "fixtures", "simple_item_2.json")));
 	
 	var logAllNodes = function(callback) {
 		if (!LOG_ALL) {

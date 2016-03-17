@@ -17,7 +17,7 @@ function populate(callback) {
 		if (err) {
 			return callback(err);
 		}
-		log.debug(files.length, "files found: ");
+		log.info(files.length, "files found: ");
 		async.each(files, function(filename, file_cb) {
 			if (filename.length != 15 || filename.slice(-5) != ".json") {
 				return file_cb(); // primitive filter for interesting files
@@ -27,30 +27,23 @@ function populate(callback) {
 				if (err) {
 					return file_cb(err);
 				}
-				log.debug(filename, "read file ");
+				log.info(filename, "read file ");
 				var item_list = [];
 				try {
 					item_list = JSON.parse(data).Items.Item;
 				} catch (e) {
 					return file_cb(e);
 				}
-				log.debug(item_list, "item_list: ")
-				log.debug(item_list.length, "items found: ");
+				//log.debug(item_list, "item_list: ")
 				async.each(item_list, function(item, item_cb) {
 					nodes_count++;
-					try {
-						dbCon.createChildBookNode(parentAsin, item, function(err, result) {
-							if (err) {
-								log.error(item, "error adding node: ");
-								return item_cb(err);
-							}
-							log.debug(result, "createChildBookNode result: ");
-							item_cb();
-						});
-					} catch (e) {
-						log.error(e, "caught exception ");
-						item_cb(e);
-					}
+					dbCon.createChildBookNode(parentAsin, item, function(err, result) {
+						if (err) {
+							log.error(item, "error adding node: ");
+							return item_cb(err);
+						}
+						item_cb();
+					});
 				}, file_cb);
 			});
 		}, callback);
