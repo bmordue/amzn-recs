@@ -3,10 +3,6 @@ require("dotenv").load({silent: true});
 var aws = require("aws-lib");
 var CrawlQueue = require("../lib/crawl_queue");
 
-var fail = function() {
-	throw new Error("Missing required env var");
-};
-
 function main() {
 	var nodeAsin = process.argv[2] || 'B014V4DXMW'; //starting ASIN
 	var crawler = new CrawlQueue();
