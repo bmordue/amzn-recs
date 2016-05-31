@@ -29,7 +29,7 @@ function processItem(parentAsin, item, callback) {
 			item.price = result.price;
 			item.currency = result.currency;
 		}
-		dbCon.createChildBookNode(parentAsin, item, function(err, result) {
+		dbCon.createChildBookNodeAndRelations(parentAsin, item, function(err, result) {
 			if (err) {
 				log.error(item, "error adding node: ");
 				return callback(err);

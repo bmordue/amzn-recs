@@ -3,6 +3,7 @@ var DbConnector = require("../lib/db_connector");
 var fs = require("fs");
 var path = require("path");
 var should = require("should");
+var test_utils = require("./test_utils");
 var util = require("util");
 
 var LOG_ALL = false;
@@ -45,6 +46,11 @@ describe("DbConnector", function() {
 			callback();
 		});
 	};
+	
+	before(function(done) {
+		console.log('Detach-delete all existing nodes');
+		dbConnector.db.cypher({query: 'MATCH (n) DETACH DELETE n'}, done);
+	}); 
 	
 		
 	it("get DB service root", function(done) {
@@ -112,7 +118,7 @@ describe("DbConnector", function() {
 			if (err) {
 				return done(err);
 			}
-			var key = "COUNT(n)"
+			var key = "COUNT(n)";
 			result[0][key].should.eql(1);
 			done();
 		});
@@ -130,35 +136,28 @@ describe("DbConnector", function() {
 	});
 	
 	it("inserting a Book node as a child of another Book node that does not exist creates the child with no relationship", function(done) {
-		dbConnector.createChildBookNode("rubbish_ASIN", childBookData, function(err, result) {
+		dbConnector.createChildBookNodeAndRelations("rubbish_ASIN", childBookData, function(err, result) {
 			if (err) {
 				return done(err);
 			}
-			result.should.eql([]);
-			dbConnector.getBookNode(bookData.ASIN, function(err, result) {
+			test_utils.checkOnlyOneNodeMatchesAsin(dbConnector, {asin: childBookData.ASIN}, function(err) { // new "child" node exists
 				if (err) {
 					return done(err);
 				}
 				dbConnector.db.cypher({
-					query: "MATCH (n {ASIN: {asin}}) RETURN n",
+					query: "MATCH (n {ASIN: {asin}})-[r:SIMILAR_TO]-() RETURN r",
 					params: { asin: childBookData.ASIN}
 				}, function(err, result) {
 					if (err) {
 						return done(err);
 					}
-					result.length.should.equal(1); // new "child" node exists
-					dbConnector.db.cypher({
-						query: "MATCH (n {ASIN: {asin}})-[r]-() RETURN r",
-						params: { asin: childBookData.ASIN}
-					}, function(err, result) {
-						if (err) {
-							return done(err);
-						}
-						result.should.eql([]); // but there is no relationship
-						done();
-					});
+					try {
+						result.should.eql([]); // but there is no SIMILAR_TO relationship
+					} catch (e) {
+						return done(e);
+					}
+					done();
 				});
-				
 			});
 		});
 	});	
@@ -168,12 +167,12 @@ describe("DbConnector", function() {
 			if (err) {
 				return done(err);
 			}
-			dbConnector.createChildBookNode(bookData.ASIN, childBookData, function(err, result) {
+			dbConnector.createChildBookNodeAndRelations(bookData.ASIN, childBookData, function(err, result) {
 				if (err) {
 					return done(err);
 				}
 				dbConnector.db.cypher({
-					query: "MATCH ({ ASIN: {parentAsin} })-[r]->({ ASIN: {childAsin} }) RETURN r",
+					query: "MATCH ({ ASIN: {parentAsin} })-[r:SIMILAR_TO]->({ ASIN: {childAsin} }) RETURN r",
 					params: {
 						parentAsin: bookData.ASIN,
 						childAsin: childBookData.ASIN
