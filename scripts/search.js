@@ -1,4 +1,4 @@
-// crawl prod adv API and write results to JSON files
+// try different search responseGroups to find the one with the info we want
 var CrawlQueue = require("../lib/crawl_queue");
 var log = require("../lib/log")
 var util = require("util");

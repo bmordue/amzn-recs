@@ -16,6 +16,9 @@ var nodes_count = 0;
 
 function throttledPriceLookup (asin, callback) {
 	limiter.removeTokens(1, function(err, remaining) {
+		if (err) {
+			return callback(err);
+		}
 		priceAsin.fetch(asin, callback);
 	});
 }
@@ -69,6 +72,8 @@ function populate(callback) {
 			return callback(err);
 		}
 		log.info(files.length, "files found: ");
+		// TODO: use async.queue instead of async.each -- with large number of files, all
+		// will be opened at the same time...
 		async.each(files, processFile, callback);
 	});
 }
