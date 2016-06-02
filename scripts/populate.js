@@ -28,7 +28,9 @@ function processItem(parentAsin, item, callback) {
 	throttledPriceLookup(item.ASIN, function(err, result) {
 		if (err) {
 			log.error(err, "error looking up price for ASIN " + item.ASIN);
-		} else {
+		}
+		if (result) {
+			log.debug(result, "Result for price lookup");
 			item.price = result.price;
 			item.currency = result.currency;
 		}
