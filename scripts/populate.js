@@ -36,7 +36,7 @@ function processItem(parentAsin, item, callback) {
 		}
 		dbCon.createChildBookNodeAndRelations(parentAsin, item, function(err, result) {
 			if (err) {
-				log.error(item, "error adding node: ");
+				log.error(item, "populate.processItem() - error adding node: ");
 				return callback(err);
 			}
 			callback();
