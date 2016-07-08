@@ -30,7 +30,6 @@ function processItem(parentAsin, item, callback) {
 			log.error(err, "error looking up price for ASIN " + item.ASIN);
 		}
 		if (result) {
-			log.debug(result, "Result for price lookup");
 			item.price = result.price;
 			item.currency = result.currency;
 		}
