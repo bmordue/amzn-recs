@@ -4,22 +4,12 @@ var fs = require("fs");
 var log = require("../lib/log")
 var util = require("util");
 
-var exit = function(err) {
-	if (err) {
-		log.error(err, "Error");
-		log.error(err.stack, "stack");
-		process.exit(1);
-	}
-	log.info("Crawl completed successfully.");
-	process.exit(0);
-}
-
 var main = function() {
 	var maxDepth = process.argv[2] || 2;
 	var existing_asins = fs.readdir("output", function(err, files) {
 		if (err) {
 			log.error("Could not read directory contents");
-			return exit(err);
+			process.exit(1);
 		}
 		var existing_asins = files.map(function(filename) {
 			return filename.slice(0, -5);
@@ -36,12 +26,8 @@ var main = function() {
 			});
 		});
 		if (crawl_errors.length) {
-			crawl_errors.forEach(function(error) {
-				log.error(error, "Crawl error");
-			});
-			return exit(new Error(util.format("%s errors while crawling", crawl_errors.length)));
+			log.error({errors: crawl_errors}, util.format("%s errors while crawling", crawl_errors.length));
 		}
-		exit();
 	});
 };
 
