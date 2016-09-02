@@ -10,7 +10,7 @@ describe("crawl API", function() {
 	var req_options = {
 		json: true,
 		headers: {
-			'X-Api-Token': 'xxxxxx'
+			'X-Api-Token': '111111'
 		}
 	};
 
@@ -21,7 +21,7 @@ describe("crawl API", function() {
 					return cb(err);
 				}
 				try {
-					assert.equal(result.statusCode, 202, util.format("Unexpected HTTP response code for GET %s", uri));
+					assert.equal(result.statusCode, 202, util.format("Unexpected HTTP response code for POST %s", uri));
 				} catch (e) {
 					console.log("Response status code: " + result.statusCode);
 					console.log(result.body);
@@ -74,13 +74,13 @@ describe("crawl API", function() {
 
 	describe("bad requests", function() {
 
-		it("should respond with 404 if method is GET", function(cb) {
+		it("should respond with 405 if method is GET", function(cb) {
 			needle.request("get", host + endpoint, req_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
 				try {
-					assert(result.statusCode == 404, util.format("Expected HTTP status 400 for GET %s; got %s", uri, result.statusCode));
+					assert.equal(result.statusCode, 405, util.format("Expected HTTP status 405 for GET %s", uri));
 				} catch (e) {
 					return cb(e);
 				}
@@ -88,13 +88,13 @@ describe("crawl API", function() {
 			});
 		});
 
-		it("should respond with 404 if method is PUT", function(cb) {
+		it("should respond with 405 if method is PUT", function(cb) {
 			needle.request("put", host + endpoint, req_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
 				try {
-					assert(result.statusCode == 404, util.format("Expected HTTP status 400 for GET %s; got %s", uri, result.statusCode));
+					assert(result.statusCode == 405, util.format("Expected HTTP status 400 for PUT %s; got %s", uri, result.statusCode));
 				} catch (e) {
 					return cb(e);
 				}
@@ -102,13 +102,13 @@ describe("crawl API", function() {
 			});
 		});
 
-		it("should respond with 404 if method is DELETE", function(cb) {
+		it("should respond with 405 if method is DELETE", function(cb) {
 			needle.request("delete", host + endpoint, req_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
 				try {
-					assert(result.statusCode == 404, util.format("Expected HTTP status 400 for GET %s; got %s", uri, result.statusCode));
+					assert(result.statusCode == 405, util.format("Expected HTTP status 405 for DELETE %s; got %s", uri, result.statusCode));
 				} catch (e) {
 					return cb(e);
 				}
@@ -145,15 +145,34 @@ describe("crawl API", function() {
 		});
 
 		it("should respond with 401 if token header is missing", function(cb) {
-			var bad_headers_options = req_options;
-			delete bad_headers_options.headers['X-Api-Token'];
-
-			needle.post(host + endpoint, {asin: "xxxxxx", depth: 2}, bad_headers_options, function(err, result) {
+			var bad_options = {
+				json: true
+			};
+			needle.post(host + endpoint, {asin: "xxxxxx", depth: 2}, bad_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
 				try {
 					assert(result.statusCode == 401, util.format("Expected HTTP status 401 for GET %s; got %s", uri, result.statusCode));
+				} catch (e) {
+					return cb(e);
+				}
+				cb();
+			});
+		});
+		it("should respond with 403 if token is not in whitelist", function(cb) {
+			var bad_options = {
+				json: true,
+				headers: {
+					'X-Api-Token': 'note-whitelisted'
+				}
+			};
+			needle.post(host + endpoint, {asin: "xxxxxx", depth: 2}, bad_options, function(err, result) {
+				if (err) {
+					return cb(err);
+				}
+				try {
+					assert.equal(result.statusCode, 403, util.format("Expected HTTP status 403 for GET %s", uri));
 				} catch (e) {
 					return cb(e);
 				}
@@ -161,14 +180,18 @@ describe("crawl API", function() {
 			});
 		});
 		it("should respond with 400 if content type header is missing", function(cb) {
-			var bad_headers_options = req_options;
-			delete bad_headers_options.headers['Content-Type'];
-			needle.post(host + endpoint, {asin: "xxxxxx", depth: 2}, bad_headers_options, function(err, result) {
+			var bad_options = {
+				json: false,
+				headers: {
+					'X-Api-Token': '111111'
+				}
+			};
+			needle.post(host + endpoint, JSON.stringify({asin: "xxxxxx", depth: 2}), bad_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
 				try {
-					assert(result.statusCode == 401, util.format("Expected HTTP status 401 for GET %s; got %s", uri, result.statusCode));
+					assert.equal(result.statusCode, 400, util.format("Expected HTTP status 400 for GET %s", uri));
 				} catch (e) {
 					return cb(e);
 				}
@@ -176,14 +199,19 @@ describe("crawl API", function() {
 			});
 		});
 		it("should respond with 400 if content type header is not application/json", function(cb) {
-			var bad_headers_options = req_options;
-			bad_headers_options.headers['Content-Type'] = "text/plain";
-			needle.post(host + endpoint, {asin: "xxxxxx", depth: 2}, bad_headers_options, function(err, result) {
+			var bad_options = {
+				json: false,
+				headers: {
+					'Content-Type': "text/plain",
+					'X-Api-Token': '111111'
+				}
+			};
+			needle.post(host + endpoint, JSON.stringify({asin: "xxxxxx", depth: 2}), bad_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
 				try {
-					assert(result.statusCode == 401, util.format("Expected HTTP status 401 for GET %s; got %s", uri, result.statusCode));
+					assert.equal(result.statusCode, 400, util.format("Expected HTTP status 400 for GET %s", uri));
 				} catch (e) {
 					return cb(e);
 				}

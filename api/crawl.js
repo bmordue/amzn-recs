@@ -5,10 +5,12 @@ var MessageQueue = require('../lib/message_queue');
 var Router       = require('router');
 var url          = require('url');
 var util         = require('util');
+var Whitelist    = require('../lib/whitelist');
 
 const PORT = 3000;
 
 var msg_queue = new MessageQueue();
+var whitelist = new Whitelist();
 msg_queue.init();
 
 function handleError(side, code, msg, req, res) {
@@ -28,11 +30,34 @@ function handleBadRequest(errorMsg, req, res) {
 var router = Router();
 router.use(bodyParser.json());
 
-router.post('/crawl', function (req, res) {
+router.use(function(req, res, next) {
+	if (req.method != "POST") {
+		return handleClientError(405, "Method not supported: " + req.method, req, res);
+	}
+	next();
+});
+
+// "auth middleware"
+router.use(function (req, res, next) {
 	var token = req.headers["x-api-token"];
 	if (!token) {
 		return handleClientError(401, "Missing X-Api-Token header", req, res);
 	}
+
+	whitelist.check(token, function(err, whitelisted) {
+		if (err) {
+			console.log(err);
+			return handleServerError(503, "Failed to check token whitelisting", req, res);
+		}
+		if (!whitelisted) {
+			return handleClientError(403, "Token has not been whitelisted: " + token, req, res);
+		}
+		req.token = token;
+		next();
+	});
+});
+
+router.post('/crawl', function (req, res) {
 	if (!req.headers["content-type"]) {
 		return handleBadRequest("Content type header is missing", req, res);
 	}
@@ -53,7 +78,7 @@ router.post('/crawl', function (req, res) {
 
 	var task = {
 		asin: asin,
-		token: token,
+		token: req.token,
 		depth: depth
 	};
 
