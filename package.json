@@ -4,7 +4,7 @@
   "description": "Crawl recommendations",
   "main": "scripts/crawl.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha; mocha test/lib_tests; mocha test/api_tests"
   },
   "repository": {
     "type": "git",
@@ -17,12 +17,16 @@
   },
   "homepage": "https://github.com/bmordue/amzn-recs",
   "dependencies": {
-    "async": "^1.5.2",
+    "async": "^2.0.1",
     "aws-lib": "^0.3.0",
+    "body-parser": "^1.15.2",
     "dotenv": "^2.0.0",
+    "finalhandler": "^0.5.0",
     "limiter": "^1.1.0",
     "needle": "^1.0.0",
     "neo4j": "^2.0.0-RC2",
+    "router": "^1.1.4",
+    "sqlite3": "^3.1.4",
     "verror": "^1.6.1"
   },
   "devDependencies": {
