@@ -31,8 +31,8 @@ describe("message queue", function() {
 		});
 	});
 
-	it("should pop from queue", function(done) {
-		queue.pop(function(err, result) {
+	it("should shift first item from queue", function(done) {
+		queue.shift(function(err, result) {
 			console.log(util.format("Result is %j", result));
 			done(err);
 		});
