@@ -17,7 +17,10 @@ describe("message queue", function() {
 	});
 	
 	it("should add to queue", function(done) {
-		var job = {};
+		var job = {
+			asin: 1,
+			token: 'test-test-test'
+		};
 		queue.add(job, function(err, job_id) {
 			if (err) {
 				return done(err);
