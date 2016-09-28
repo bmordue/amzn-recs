@@ -4,10 +4,16 @@ var log = require("../lib/log")
 var util = require("util");
 
 var main = function() {
-	var maxDepth = process.argv[2] || 2;
+	var rootAsin = process.argv[2]; //starting ASIN
+	if (!rootAsin) {
+		log.error({}, "Missing required argument: starting ASIN");
+		process.exit(1);
+	}
 	
-	var rootAsin = 'B014V4DXMW'; //starting ASIN
+	var maxDepth = process.argv[3] || 2;
+	
 	var crawler = new CrawlQueue({maxCrawlDepth: maxDepth});
+	log.info({root: rootAsin, depth: maxDepth}, "Start crawling...");
 	crawler.crawl(rootAsin, 0, function(err) {
 		if (err) {
 			log.error(err, "Error");

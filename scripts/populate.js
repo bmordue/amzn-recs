@@ -27,7 +27,7 @@ function processItem(parentAsin, item, callback) {
 	nodes_count++;
 	throttledPriceLookup(item.ASIN, function(err, result) {
 		if (err) {
-			log.error(err, "error looking up price for ASIN " + item.ASIN);
+			log.error({error: err.message}, "error looking up price for ASIN " + item.ASIN);
 		}
 		if (result) {
 			item.price = result.price;
@@ -35,7 +35,7 @@ function processItem(parentAsin, item, callback) {
 		}
 		dbCon.createChildBookNodeAndRelations(parentAsin, item, function(err, result) {
 			if (err) {
-				log.error(item, "populate.processItem() - error adding node: ");
+				log.error({error: err.message, item: item}, "populate.processItem() - error adding node: ");
 				return callback(err);
 			}
 			callback();
