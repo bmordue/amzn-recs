@@ -20,7 +20,7 @@ var main = function() {
 			log.error(err.stack, "stack");
 			process.exit(1);
 		}
-		log.info(crawler.nodeCount, " nodes crawled");
+		log.info({total: crawler.nodeCount}, "Crawled nodes");
 	});
 };
 
