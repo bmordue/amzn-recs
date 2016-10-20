@@ -1,6 +1,6 @@
-node ('linux'){
+node {
  stage 'Tests for amzn-recs/lib'
  checkout scm
  sh 'npm install'
- sh 'mocha test/lib_tests'
+ sh 'npm test'
 }
