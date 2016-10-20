@@ -1,4 +1,4 @@
-var log = require("../lib/log");
+var log = require("../../lib/log");
 
 describe("logger", function() {
 	var levels = ["error", "warn", "info", "debug"];
