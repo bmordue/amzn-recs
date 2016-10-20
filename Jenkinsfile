@@ -3,4 +3,7 @@ node {
  checkout scm
  sh 'npm install'
  sh 'npm test'
+ 
+ stage 'Coverage'
+ sh 'npm run-script coverage'
 }
