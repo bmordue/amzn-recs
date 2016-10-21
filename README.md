@@ -29,3 +29,13 @@
 - graph: series -- :IN_SERIES_WITH, properties sequence and series name
 
 - script: expand entire graph by crawling each leaf node to depth n
+
+## Docker
+
+Build a Docker image for this app:
+`docker build -t amzn-recs-app .`
+Run eg the `populate` script in a container using that image:
+`docker run -it --rm --name populate --net=host amzn-recs-app node scripts/populate.js`
+or tests:
+`docker run -it --rm --name populate --net=host amzn-recs-app npm test`
+
