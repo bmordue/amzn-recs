@@ -2,7 +2,7 @@ node {
  stage 'Tests for amzn-recs/lib'
  checkout scm
  sh 'npm install'
- sh 'mkdir temp'
+ sh 'mkdir -p temp'
  sh 'npm test'
  
  stage 'Coverage'
