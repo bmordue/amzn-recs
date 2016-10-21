@@ -1,10 +1,11 @@
 node {
- stage 'Tests for amzn-recs/lib'
+ stage 'Checkout'
+ deleteDir()
  checkout scm
- sh 'npm install'
- sh 'mkdir -p temp'
- sh 'npm test'
+
+ stage 'Run tests'
+ sh 'docker run -it --rm --net=host amzn-recs-app npm test'
  
  stage 'Coverage'
- sh 'npm run-script coverage'
+ sh 'docker run -it --rm --net=host amzn-recs-app npm run-script coverage
 }
