@@ -4,7 +4,7 @@
   "description": "Crawl recommendations",
   "main": "scripts/crawl.js",
   "scripts": {
-    "test": "mocha; mocha test/lib_tests; mocha test/api_tests",
+    "test": "mocha; mocha test/lib_tests",
     "coverage": "istanbul cover _mocha -- --recursive test/lib_tests"
   },
   "repository": {
