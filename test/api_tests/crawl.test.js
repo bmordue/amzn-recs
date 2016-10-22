@@ -4,7 +4,7 @@ var util = require("util");
 
 describe("crawl API", function() {
 	var host = process.env.CRAWL_API_HOST || "http://localhost:3000";
-	var endpoint = "/crawl";
+	var endpoint = "/tasks";
 	var uri = host + endpoint;
 
 	var req_options = {

@@ -1,6 +1,7 @@
 var bodyParser   = require('body-parser');
 var finalhandler = require('finalhandler');
 var http         = require('http');
+var log          = require('../lib/log');
 var MessageQueue = require('../lib/message_queue');
 var Router       = require('router');
 var url          = require('url');
@@ -12,6 +13,8 @@ const PORT = 3000;
 var msg_queue = new MessageQueue();
 var whitelist = new Whitelist();
 msg_queue.init();
+
+//TODO: request IDs
 
 function handleError(side, code, msg, req, res) {
 	console.log(util.format("%s %s %s - %s ERROR: %s", code, req.method, req.url, side, msg));
@@ -29,13 +32,6 @@ function handleBadRequest(errorMsg, req, res) {
 
 var router = Router();
 router.use(bodyParser.json());
-
-router.use(function(req, res, next) {
-	if (req.method != "POST") {
-		return handleClientError(405, "Method not supported: " + req.method, req, res);
-	}
-	next();
-});
 
 // "auth middleware"
 router.use(function (req, res, next) {
@@ -57,14 +53,15 @@ router.use(function (req, res, next) {
 	});
 });
 
-router.post('/crawl', function (req, res) {
+// POST /tasks
+// add a new crawl task to the queue
+router.post('/tasks', function (req, res) {
 	if (!req.headers["content-type"]) {
 		return handleBadRequest("Content type header is missing", req, res);
 	}
 	if (req.headers["content-type"].indexOf("application/json") == -1) {
 		return handleBadRequest("Request content type must be application/json", req, res);
 	}
-
 	if (!req.body) {
 		return handleBadRequest("Request body must not be empty", req, res);
 	}
@@ -79,13 +76,15 @@ router.post('/crawl', function (req, res) {
 	var task = {
 		asin: asin,
 		token: req.token,
-		depth: depth
+		depth: depth,
+		status: msg_queue.STATUS_WAITING
 	};
 
 	msg_queue.add(task, function(err, job_id) {
 		if (err) {
-			console.log(err);
-			return handleServerError(503, "Failed to add task to queue", req, res);
+			var errMsg = 'Failed to ask task to queue';
+			log.error(err, errMsg);
+			return handleServerError(503, errMsg, req, res);
 		}
 
 		res.statusCode = 202;
@@ -95,13 +94,79 @@ router.post('/crawl', function (req, res) {
 		};
 		var responseBody = JSON.stringify(responseJson, null, 4) + '\n';
 		res.end(responseBody);
-		console.log(util.format("%s %s %s", res.statusCode, req.method, req.url));
+		log.info({status: res.statusCode, method: req.method, url: req.url}, 'Finished processing request');
 	});
 });
+
+// POST tasks/take
+// request a task from the queue
+router.post('tasks/take', function(req,res) {
+	msg_queue.claim(function(err, task) {
+		if (err) {
+			var errMsg = 'Failed to get a task from the queue';
+			log.error(err, errMsg);
+			return handleServerError(503, errMsg, req, res);
+		}
+
+		res.statusCode = 200;
+		res.setHeader('Content-Type', 'application/json; charset=utf-8');
+		var responseJson = {
+			asin: task.asin,
+			depth: task.depth
+		}
+		var responseBody = JSON.stringify(responseJson, null, 4) + '\n';
+		res.end(responseBody);
+		log.info({status: res.statusCode, method: req.method, url: req.url}, 'Finished processing request');
+	});
+});
+
+// PUT tasks/{id}
+// update status of a task
+// TODO: refactor to reduce duplication
+router.put('tasks', function(req, res) {
+	if (!req.headers["content-type"]) {
+		return handleBadRequest("Content type header is missing", req, res);
+	}
+	if (req.headers["content-type"].indexOf("application/json") == -1) {
+		return handleBadRequest("Request content type must be application/json", req, res);
+	}
+	if (!req.body) {
+		return handleBadRequest("Request body must not be empty", req, res);
+	}
+
+	var taskId = req.body.id;
+	if (!taskId) {
+		return handleBadRequest("Request is missing task id", req, res);
+	}
+
+	var taskStatus = req.body.status;
+	if (!taskStatus) {
+		return handleBadRequest("Request is missing task status", req, res);
+	}
+
+	// switch (taskStatus) {
+	// 	case MessageQueue.STATUS_DONE:
+	// 		return msg_queue.complete(taskId, callback);
+	// 	case MessageQueue.STATUS_WAITING:
+	// 		log.warn(taskId, "Request to set task status back to WAITING");
+	// 		return msg_queue.unclaim(taskId, callback);
+	// }
+	throw new Error("Not finished this bit!");
+
+});
+
+// catch all, must be the last route
+router.use(function(req, res, next) {
+	if (req.method != "POST") {
+		return handleClientError(405, "Method not supported: " + req.method, req, res);
+	}
+	// next();
+});
+
 
 var server = http.createServer(function(req, res) {
 	router(req, res, finalhandler(req, res));
 });
 
 server.listen(PORT);
-console.log("Server crawl listening on port " + PORT);
+log.info({}, "Crawl API listening on port " + PORT);

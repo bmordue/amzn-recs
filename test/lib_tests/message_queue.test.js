@@ -40,6 +40,20 @@ describe("message queue", function() {
 		}
 	});
 
+	it("should return empty task object if shifting from empty queue", function(done) {
+		queue.shift(function(err, result) {
+			if (err) {
+				return done(err);
+			}
+			try {
+				assert(!Object.keys(result).length); // result is {}
+			} catch (e) {
+				return done(e);
+			}
+			done();
+		});
+	});
+
 	it("should add to queue", function(done) {
 		var job = {
 			asin: 1,

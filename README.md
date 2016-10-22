@@ -6,10 +6,11 @@
 ## Project layout
 - api: nodejs server to provide /crawl API
 - lib:
-- scripts: 
+- scripts:
 
 ## Tests for api/
 * make the API available on localhost: `node api/crawl.js`
+* whitelist the token used by the tests (eg `node scripts/add_to_api_whitelist 111111`)
 * run the tests: `mocha test/api_tests`
 
 ## Tests for lib/
