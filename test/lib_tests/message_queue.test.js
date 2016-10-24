@@ -151,16 +151,16 @@ describe("message queue", function() {
 			});
 			it("shift from an empty queue");
 
-			});
+		});
 
-		describe("#claim()");
-		describe("#complete()");
+		describe("#claim()", function() {});
+		describe("#complete()", function() {});
 	});
 
 	describe("error handling", function() {
-		describe("#add()");
-		describe("#claim()");
-		describe("#complete()");
+		describe("#add()", function() {});
+		describe("#claim()", function() {});
+		describe("#complete()", function() {});
 	});
 
 });
