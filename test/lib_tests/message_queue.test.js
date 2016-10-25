@@ -8,6 +8,7 @@ var util = require("util");
 
 // TODO: make test assertions beyond lack of error
 // TODO: waterfalls
+// TODO: put queue size verification in some kind of neat wrapper
 
 function dumpDb(db, callback) {
 	var queryStr = util.format("SELECT *, rowid from %s", CRAWL_TASKS_TABLE_NAME);
@@ -153,8 +154,35 @@ describe("message queue", function() {
 
 		});
 
-		describe("#claim()", function() {});
-		describe("#complete()", function() {});
+		describe("#claim()", function() {
+			it("claim a task", function(done) {
+				queue.claim(function(err, task) {
+					if (err) {
+						return done(err);
+					}
+					console.log("Claimed a task");
+					console.log(util.inspect(task));
+					done();
+			});
+		});
+		describe("#complete()", function() {
+			it("mark task complete", function(done) {
+				queue.claim(function(err, task) {
+					if (err) {
+						return done(err);
+					}
+					console.log("Claimed a task");
+					console.log(util.inspect(task));
+					queue.complete(task.id, function(err, res) {
+						if (err) {
+							return done(err);
+						}
+						console.log(util.format("Completed task %s; result is %j", task.id, res));
+						done();
+					});
+				});
+			});
+		});
 	});
 
 	describe("error handling", function() {

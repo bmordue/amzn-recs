@@ -30,6 +30,14 @@ function handleBadRequest(errorMsg, req, res) {
 	handleClientError(400, errorMsg, req, res);
 }
 
+function handleSuccess(responseJson, req, res) {
+	res.statusCode = 200;
+	res.setHeader('Content-Type', 'application/json; charset=utf-8');
+	var responseBody = JSON.stringify(responseJson, null, 4) + '\n';
+	res.end(responseBody);
+	log.info({status: res.statusCode, method: req.method, url: req.url}, 'Finished processing request');
+}
+
 var router = Router();
 router.use(bodyParser.json());
 
@@ -144,23 +152,34 @@ router.put('tasks', function(req, res) {
 		return handleBadRequest("Request is missing task status", req, res);
 	}
 
-	// switch (taskStatus) {
-	// 	case MessageQueue.STATUS_DONE:
-	// 		return msg_queue.complete(taskId, callback);
-	// 	case MessageQueue.STATUS_WAITING:
-	// 		log.warn(taskId, "Request to set task status back to WAITING");
-	// 		return msg_queue.unclaim(taskId, callback);
-	// }
-	throw new Error("Not finished this bit!");
-
+	var updateTaskFn;
+	switch (taskStatus) {
+		case MessageQueue.STATUS_DONE:
+			updateTaskFn = msg_queue.complete;
+			break;
+		case MessageQueue.STATUS_WAITING:
+			updateTaskFn = msg_queue.unclaim;
+			log.warn(taskId, "Request to set task status back to WAITING");
+			break;
+		default:
+			handleBadRequest(util.format("Unrecognised status: %s", taskStatus), req, res);
+	}
+	updateTaskFn(taskId, function(err) {
+		if (err) {
+			var errMsg = "Unable to update status in queue";
+			log.error(err, errMsg);
+			handleServerError(503, errMsg, req, res);
+		} else {
+			handleSuccess({}, req, res); // TODO: echo updated task in response body
+		}
+	});
 });
 
-// catch all, must be the last route
-router.use(function(req, res, next) {
+// catch all, must be the last layer
+router.use(function(req, res) {
 	if (req.method != "POST") {
 		return handleClientError(405, "Method not supported: " + req.method, req, res);
 	}
-	// next();
 });
 
 
