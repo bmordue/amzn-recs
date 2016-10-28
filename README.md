@@ -33,9 +33,12 @@
 ## Docker
 
 Build a Docker image for this app:
-`docker build -t amzn-recs-app .`
-Run eg the `populate` script in a container using that image:
-`docker run -it --rm --name populate --net=host amzn-recs-app node scripts/populate.js`
-or tests:
-`docker run -it --rm --name populate --net=host amzn-recs-app npm test`
+1. Build image (optional, if image already exists)
+Tag the image with the short commit hash of HEAD revision used to build it:
+`export COMMIT=$(git rev-parse --short HEAD)`
+`docker build -t amzn-recs-app:$COMMIT .`
+2. Run tests in a container using that image:
+`docker run --rm --name populate amzn-recs-app npm test`
+Or run eg the `populate` script in a container using that image:
+`docker run --rm --name populate --net=host amzn-recs-app node scripts/populate.js`
 
