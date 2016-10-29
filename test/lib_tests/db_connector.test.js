@@ -1,14 +1,18 @@
 require("dotenv").load({silent: true});
-var DbConnector = require("../lib/db_connector");
+var DbConnector = require("../../lib/db_connector");
 var fs = require("fs");
 var path = require("path");
 var should = require("should");
-var test_utils = require("./test_utils");
+var test_utils = require("../test_utils");
 var util = require("util");
 
 var LOG_ALL = false;
 
 describe("DbConnector", function() {
+	if (process.env.RUN_UNSAFE_TESTS !== "true") {
+		console.log("RUN_UNSAFE_TESTS is not set to true; exiting");
+		return;
+	}
 	this.timeout(10000);
 
 	var dbConnector = new DbConnector();

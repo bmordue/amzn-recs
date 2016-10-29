@@ -74,13 +74,13 @@ describe("crawl API", function() {
 
 	describe("bad requests", function() {
 
-		it("should respond with 405 if method is GET", function(cb) {
+		it("should respond with 401 if method is GET", function(cb) {
 			needle.request("get", host + endpoint, req_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
 				try {
-					assert.equal(result.statusCode, 405, util.format("Expected HTTP status 405 for GET %s", uri));
+					assert.equal(result.statusCode, 401, util.format("Expected HTTP status 401 for GET %s", uri));
 				} catch (e) {
 					return cb(e);
 				}
@@ -88,13 +88,13 @@ describe("crawl API", function() {
 			});
 		});
 
-		it("should respond with 405 if method is PUT", function(cb) {
+		it("should respond with 401 if method is PUT", function(cb) {
 			needle.request("put", host + endpoint, req_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
 				try {
-					assert(result.statusCode == 405, util.format("Expected HTTP status 400 for PUT %s; got %s", uri, result.statusCode));
+					assert(result.statusCode == 401, util.format("Expected HTTP status 401 for PUT %s; got %s", uri, result.statusCode));
 				} catch (e) {
 					return cb(e);
 				}
@@ -102,13 +102,13 @@ describe("crawl API", function() {
 			});
 		});
 
-		it("should respond with 405 if method is DELETE", function(cb) {
+		it("should respond with 401 if method is DELETE", function(cb) {
 			needle.request("delete", host + endpoint, req_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
 				try {
-					assert(result.statusCode == 405, util.format("Expected HTTP status 405 for DELETE %s; got %s", uri, result.statusCode));
+					assert(result.statusCode == 401, util.format("Expected HTTP status 401 for DELETE %s; got %s", uri, result.statusCode));
 				} catch (e) {
 					return cb(e);
 				}

@@ -1,4 +1,4 @@
-process.env.AMZN_RECS_LOG_LEVEL="WARN"
+//process.env.AMZN_RECS_LOG_LEVEL="WARN"
 
 var assert = require("assert");
 var async = require("async");
@@ -11,7 +11,8 @@ var util = require("util");
 // TODO: put queue size verification in some kind of neat wrapper
 
 function dumpDb(db, callback) {
-	var queryStr = util.format("SELECT *, rowid from %s", CRAWL_TASKS_TABLE_NAME);
+	// TODO: this is out of place; table name is hard-coded, cf CRAWL_TASKS_TABLE_NAME in MessageQueue.js
+	var queryStr = "SELECT *, rowid from crawl_tasks";
 	var stmt = db.prepare(queryStr);
 	stmt.all(function(err, rows) {
 		if (err) {
@@ -163,26 +164,41 @@ describe("message queue", function() {
 					console.log("Claimed a task");
 					console.log(util.inspect(task));
 					done();
+				});
 			});
 		});
 		describe("#complete()", function() {
 			it("mark task complete", function(done) {
-				queue.claim(function(err, task) {
-					if (err) {
-						return done(err);
-					}
-					console.log("Claimed a task");
-					console.log(util.inspect(task));
-					queue.complete(task.id, function(err, res) {
-						if (err) {
-							return done(err);
+				async.waterfall([
+					function(cb) {
+						queue.add({ token: 'rubbish_token', asin: 'rubbish_ASIN'}, cb);
+					},
+					function(new_task, cb) {
+						dumpDb(queue.db, cb);
+					},
+					function(all_db_rows, cb) {
+						console.log(util.format("DB dump: %j", all_db_rows));
+						cb();
+					},
+					function(cb) {
+						queue.claim(cb);
+					},
+					function(task, cb) {
+						console.log(util.format("Claimed a task: %j", task));
+						if (!task) {
+							return cb(new Error("Task is null or undefined"));
 						}
+						queue.complete(task.id, cb);
+					},
+					function(result, cb) {
 						console.log(util.format("Completed task %s; result is %j", task.id, res));
-						done();
-					});
-				});
-			});
+						cb();
+					}
+					,function(cb) { dumpDb(queue.db, cb); }
+				], done);
+			 });
 		});
+
 	});
 
 	describe("error handling", function() {
