@@ -10,7 +10,7 @@ node {
  sh 'docker build -t amzn-recs-apps:${tag} .'
 
  stage 'Run tests'
- sh 'docker run --rm amzn-recs-app:${tag} npm test'
+ sh 'docker run --rm -e RUN_UNSAFE_TESTS=true amzn-recs-app:${tag} npm test'
  
  stage 'Coverage'
  sh 'docker run --rm amzn-recs-app:${tag} npm run-script coverage'
