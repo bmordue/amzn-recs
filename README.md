@@ -6,11 +6,10 @@
 ## Project layout
 - api: nodejs server to provide /crawl API
 - lib:
-- scripts:
+- scripts: 
 
 ## Tests for api/
 * make the API available on localhost: `node api/crawl.js`
-* whitelist the token used by the tests (eg `node scripts/add_to_api_whitelist 111111`)
 * run the tests: `mocha test/api_tests`
 
 ## Tests for lib/
@@ -30,3 +29,16 @@
 - graph: series -- :IN_SERIES_WITH, properties sequence and series name
 
 - script: expand entire graph by crawling each leaf node to depth n
+
+## Docker
+
+Build a Docker image for this app:
+1. Build image (optional, if image already exists)
+Tag the image with the short commit hash of HEAD revision used to build it:
+`export COMMIT=$(git rev-parse --short HEAD)`
+`docker build -t amzn-recs-app:$COMMIT .`
+2. Run tests in a container using that image:
+`docker run --rm --name populate amzn-recs-app npm test`
+Or run eg the `populate` script in a container using that image:
+`docker run --rm --name populate --net=host amzn-recs-app node scripts/populate.js`
+
