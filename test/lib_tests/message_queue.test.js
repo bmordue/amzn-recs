@@ -1,5 +1,3 @@
-//process.env.AMZN_RECS_LOG_LEVEL="WARN"
-
 var assert = require("assert");
 var async = require("async");
 var fs = require("fs");
@@ -188,10 +186,10 @@ describe("message queue", function() {
 						if (!task) {
 							return cb(new Error("Task is null or undefined"));
 						}
-						queue.complete(task.id, cb);
+						queue.complete(task.rowid, cb);
 					},
 					function(result, cb) {
-						console.log(util.format("Completed task %s; result is %j", task.id, res));
+						console.log(util.format("Completed task; result is %j", result));
 						cb();
 					}
 					,function(cb) { dumpDb(queue.db, cb); }
