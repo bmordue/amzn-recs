@@ -1,4 +1,5 @@
 // crawl prod adv API and write results to JSON files
+// does not make any changes to graph DB
 var CrawlQueue = require("../lib/crawl_queue");
 var fs = require("fs");
 var log = require("../lib/log")
@@ -6,7 +7,7 @@ var util = require("util");
 
 var main = function() {
 	var maxDepth = process.argv[2] || 2;
-	var existing_asins = fs.readdir("output", function(err, files) {
+	var existing_asins = fs.readdir(CrawlQueue.inputDir, function(err, files) {
 		if (err) {
 			log.error("Could not read directory contents");
 			process.exit(1);
