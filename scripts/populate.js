@@ -45,13 +45,25 @@ function processItem(parentAsin, item, callback) {
 }
 
 // move files out of the input folder once they've been processed
-// move to DONE_DIR if successful, or ERROR_DIR if not
-function moveInputFile(cb, err) {
-	cb(err);
+// move to doneDir if successful, or errorDir if not
+function moveInputFile(cb, filename, err) {
+	var newPath;
+	if (err) {
+		newPath = path.join(CrawlQueue.errorDir, filename);
+	} else {
+		newPath = path.join(CrawlQueue.doneDir, filename);
+	}
+	fs.rename(path.join(CrawlQueue.inputDir, filename), newPath, function(renameErr) {
+		// if there's a problem moving the file, log it, but don't fail
+		if (renameErr) {
+			log.error({err: renameErr, file: filename}, "Error while moving input file");
+		}
+		cb(err);
+	});
 }
 
 function processFile(filename, cb) {
-	var callback = moveInputFile.bind(this, cb);
+	var callback = moveInputFile.bind(this, cb, filename);
 	if (filename.length != 15 || filename.slice(-5) != ".json") {
 		return callback(); // primitive filter for interesting files
 	}
@@ -88,12 +100,20 @@ function populate(callback) {
 }
 
 function main() {
-	populate(function(err) {
+	async.waterfall([
+		function(cb) { fs.mkdir(CrawlQueue.doneDir, cb); },
+		function(cb) { fs.mkdir(CrawlQueue.errorDir, cb); },
+	], function(err) {
 		if (err) {
-			log.error(err, "Error");
-			process.exit(1);
+			log.error(err, "Error creating doneDir or errorDir directory")// log but otherwise ignore
 		}
-		log.info(nodes_count, "Node count: ");
+		populate(function(err) {
+			if (err) {
+				log.error(err, "Error");
+				process.exit(1);
+			}
+			log.info(nodes_count, "Node count: ");
+		});
 	});
 }
 
