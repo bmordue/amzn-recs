@@ -6,10 +6,11 @@ node {
 
   stage 'Run tests'
     def image = "node:4-onbuild"
-    sh "docker run --rm -e RUN_UNSAFE_TESTS=true ${image} npm test"
+    def volumes = "-v .:/usr/src/app"
+    sh "docker run --rm ${volumes} -e RUN_UNSAFE_TESTS=true ${image} npm test"
  
   stage 'Coverage'
-    sh "docker run --rm ${image} npm run-script coverage"
+    sh "docker run --rm ${volumes} ${image} npm run-script coverage"
  }
  catch (err) {
   sh "git show -s --pretty=%ae > email.txt"
