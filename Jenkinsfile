@@ -9,7 +9,7 @@ node {
     def tag = readFile('commit_hash.txt').trim()
     def email = readFile('email.txt').trim()
     def image_name = "amzn-recs-app"
-    def env_vars = "-e RUN_UNSAFE_TESTS=true"
+    def env_vars = "-e RUN_UNSAFE_TESTS=true -e DB_URL=${DB_URL} -e DB_USERNAME=${DB_USERNAME} -e DB_PASSWORD=${DB_PASSWORD}"
 
   stage 'Build Docker image'
     sh "docker build -t ${image_name}:${tag} ."
