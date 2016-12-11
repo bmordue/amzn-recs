@@ -2,7 +2,7 @@ node {
  try {
   stage 'Checkout'
     checkout scm
-    sh "mkdir temp"
+    sh "mkdir -p temp"
 
     def tag = "4"
     def image_name = "node"
@@ -21,6 +21,7 @@ node {
     sh "docker stop ${pid}"
     sh "docker rm ${pid}"
     sh "docker run --rm ${volumes} ${image_name}:${tag} rm -rf *"
+    deleteDir()
  }
  catch (err) {
   sh "git show -s --pretty=%ae > email.txt"
