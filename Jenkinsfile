@@ -1,7 +1,6 @@
 node {
  try {
   stage 'Checkout'
-    deleteDir()
     checkout scm
     sh "mkdir temp"
 
