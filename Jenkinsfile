@@ -7,7 +7,7 @@ node {
 
     def tag = "4"
     def image_name = "node"
-    def volumes = "-v .:/opt/src"
+    def volumes = "-v ${env.WORKSPACE}:/opt/src"
 
   stage 'Run tests'
     sh "docker run -d -p 3000:3000 ${volumes} ${image_name}:${tag} node api/crawl.js > crawl_api.pid"
