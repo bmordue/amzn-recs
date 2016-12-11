@@ -21,6 +21,7 @@ node {
     def pid = readFile('crawl_api.pid').trim()
     sh "docker stop ${pid}"
     sh "docker rm ${pid}"
+    sh "docker run --rm ${volumes} ${image_name}:${tag} rm -rf *"
     deleteDir()
  }
  catch (err) {
