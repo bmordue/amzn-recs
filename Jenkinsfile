@@ -3,6 +3,7 @@ node {
   stage 'Checkout'
     deleteDir()
     checkout scm
+    mkdir temp
 
     sh "git rev-parse --short HEAD > commit_hash.txt"
     sh "git show -s --pretty=%ae > email.txt"
