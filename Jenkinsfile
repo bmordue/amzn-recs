@@ -22,14 +22,12 @@ node {
     sh "docker stop ${pid}"
     sh "docker rm ${pid}"
     sh "docker run --rm ${volumes} ${image_name}:${tag} rm -rf *"
-    deleteDir()
  }
  catch (err) {
   sh "git show -s --pretty=%ae > email.txt"
   def email = readFile('email.txt').trim()
 
   emailext body: "See ${env.BUILD_URL}", recipient: email, subject: "Build has finished with ${currentBuild.result}"
-  deleteDir()
   throw err
  }
 }
