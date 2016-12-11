@@ -21,12 +21,14 @@ node {
     def pid = readFile('crawl_api.pid').trim()
     sh "docker stop ${pid}"
     sh "docker rm ${pid}"
+    deleteDir()
  }
  catch (err) {
   sh "git show -s --pretty=%ae > email.txt"
   def email = readFile('email.txt').trim()
 
   emailext body: "See ${env.BUILD_URL}", recipient: email, subject: "Build has finished with ${currentBuild.result}"
+  deleteDir()
   throw err
  }
 }
