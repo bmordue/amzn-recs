@@ -39,6 +39,7 @@ node_modules
 .env
 
 # temp
+input
 output
 scratch.json
 temp/
