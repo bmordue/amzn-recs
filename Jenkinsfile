@@ -3,10 +3,8 @@ node {
   stage 'Checkout'
     deleteDir()
     checkout scm
-    mkdir temp
+    sh "mkdir temp"
 
-    sh "git rev-parse --short HEAD > commit_hash.txt"
-    sh "git show -s --pretty=%ae > email.txt"
     def tag = "4"
     def image_name = "node"
     def volumes = "-v .:/opt/src"
