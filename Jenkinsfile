@@ -8,7 +8,6 @@ node {
     sh "git rev-parse --short HEAD > commit_hash.txt"
     sh "git show -s --pretty=%ae > email.txt"
     def tag = "4"
-    def email = readFile('email.txt').trim()
     def image_name = "node"
     def volumes = "-v .:/opt/src"
 
@@ -20,8 +19,9 @@ node {
     sh "docker run --rm ${volumes} ${image_name}:${tag} npm run-script coverage"
 
   stage 'Clean up'
-    sh "docker stop $(cat crawl_api.pid)"
-    sh "docker rm $(crawl_api.pid)"
+    def pid = readFile('crawl_api.pid').trim()
+    sh "docker stop ${pid}"
+    sh "docker rm ${pid}"
  }
  catch (err) {
   sh "git show -s --pretty=%ae > email.txt"
