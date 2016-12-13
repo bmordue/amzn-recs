@@ -7,6 +7,7 @@ node {
     def tag = "4"
     def image_name = "node"
     def volumes = "-v ${env.WORKSPACE}:/opt/src -w /opt/src"
+    def env_vars = "-e DB_USERNAME=${DB_USERNAME} -e DB_PASSWORD=${DB_PASSWORD} -e DB_URL=${DB_URL}"
 
   stage 'Run tests'
     sh "docker run --rm ${volumes} ${image_name}:${tag} npm install > npm-install.log"
