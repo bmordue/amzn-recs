@@ -2,6 +2,7 @@ var assert = require("assert");
 var async = require("async");
 var fs = require("fs");
 var MessageQueue = require("../../lib/message_queue");
+var path = require('path');
 var util = require("util");
 
 // TODO: make test assertions beyond lack of error
@@ -20,15 +21,22 @@ function dumpDb(db, callback) {
 }
 
 describe("message queue", function() {
-	var testDbPath = "./temp/testDb.sqlite";
+	var testDbDir = path.join(".", "temp");
+	var testDbName = "testDb.sqlite";
+	var testDbPath = path.join(testDbDir, testDbName);
 	var queue;
 	before(function(done) {
 		fs.unlink(testDbPath, function(err) {
 			if (err && err.code != 'ENOENT') {
 				return done(err);
 			}
-			queue = new MessageQueue({dbPath: testDbPath});
-			queue.init(done);
+			fs.mkdir(testDbDir, function(err) {
+				if (err && err.code != 'EEXIST') {
+					return done(err);
+				}
+				queue = new MessageQueue({dbPath: testDbPath});
+				queue.init(done);
+			});
 		});
 	});
 
