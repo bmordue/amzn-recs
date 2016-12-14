@@ -4,8 +4,8 @@
   "description": "Crawl recommendations",
   "main": "scripts/crawl.js",
   "scripts": {
-    "test": "mocha; mocha test/lib_tests",
-    "coverage": "istanbul cover _mocha -- --recursive test/lib_tests"
+    "test": "mocha --recursive",
+    "coverage": "istanbul cover _mocha -- --recursive"
   },
   "repository": {
     "type": "git",
