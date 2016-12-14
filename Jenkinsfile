@@ -2,7 +2,6 @@ node {
  try {
   stage 'Checkout'
     checkout scm
-    sh "mkdir -p temp"
 
     def tag = "4"
     def image_name = "node"
