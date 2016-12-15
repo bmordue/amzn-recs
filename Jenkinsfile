@@ -16,7 +16,7 @@ node {
     sh "docker run --rm ${volumes} ${image_name}:${tag} npm install > npm-install.log"
     sh "docker run --rm ${volumes} ${image_name}:${tag} node scripts/add_to_api_whitelist.js ${test_token}"
     sh "docker run -d -p 3000:3000 --network=host ${volumes} ${api_env_vars} ${image_name}:${tag} node api/crawl.js > crawl_api.pid"
-    sh "docker run -d -p 7474:7474 -p 7687:7687 --network=host -v $HOME/neo4j/data:/data -e NEO4J_AUTH=none neo4j"
+    sh "docker run -d -p 7474:7474 -p 7687:7687 --network=host -v $HOME/neo4j/data:/data -e NEO4J_AUTH=none neo4j > neo4j.pid"
     sh "docker run --rm ${volumes} ${test_env_vars} --network=host ${image_name}:${tag} npm test"
 
   stage 'Coverage'
@@ -35,6 +35,8 @@ node {
  finally {
   stage 'Clean up'
     def pid = readFile('crawl_api.pid').trim()
+    sh "docker rm -f ${pid}"
+    def pid = readFile('neo4j.pid').trim()
     sh "docker rm -f ${pid}"
     deleteDir()
  }
