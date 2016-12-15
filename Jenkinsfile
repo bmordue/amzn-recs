@@ -15,8 +15,9 @@ node {
   stage 'Run tests'
     sh "docker run --rm ${volumes} ${image_name}:${tag} npm install > npm-install.log"
     sh "docker run --rm ${volumes} ${image_name}:${tag} node scripts/add_to_api_whitelist.js ${test_token}"
-    sh "docker run -d -p 3000:3000 ${volumes} ${api_env_vars} ${image_name}:${tag} node api/crawl.js > crawl_api.pid"
-    sh "docker run --rm ${volumes} ${test_env_vars} ${image_name}:${tag} npm test"
+    sh "docker run -d -p 3000:3000 --network=host ${volumes} ${api_env_vars} ${image_name}:${tag} node api/crawl.js > crawl_api.pid"
+    sh "docker run -d -p 7474:7474 -p 7687:7687 --network=host -v $HOME/neo4j/data:/data -e NEO4J_AUTH=none neo4j"
+    sh "docker run --rm ${volumes} ${test_env_vars} --network=host ${image_name}:${tag} npm test"
 
   stage 'Coverage'
     sh "docker run --rm ${volumes} ${image_name}:${tag} npm run-script coverage"
