@@ -55,10 +55,10 @@ node {
  finally {
   stage 'Clean up'
     milestone milestone_count++
-    def pid = readFile('crawl_api.pid').trim()
-    sh "docker rm -f ${pid}"
-    def pid = readFile('neo4j.pid').trim()
-    sh "docker rm -f ${pid}"
+    def crawl_api_pid = readFile('crawl_api.pid').trim()
+    sh "docker rm -f ${crawl_api_pid}"
+    def neo4j_pid = readFile('neo4j.pid').trim()
+    sh "docker rm -f ${neo4j_pid}"
     sh "docker network rm ${net_name}"
     deleteDir()
  }
