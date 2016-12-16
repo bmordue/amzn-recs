@@ -18,6 +18,7 @@ node {
   stage 'Checkout'
     milestone milestone_count++
     checkout scm
+    sh "mkdir temp"
 
   stage 'Install'
     milestone milestone_count++

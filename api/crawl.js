@@ -17,7 +17,7 @@ msg_queue.init();
 //TODO: request IDs
 
 function handleError(side, code, msg, req, res) {
-	console.log(util.format("%s %s %s - %s ERROR: %s", code, req.method, req.url, side, msg));
+	log.error( {code: code, method: req.method, url: req.url, side: side}, msg));
 	res.statusCode = code;
 	res.setHeader('Content-Type', 'application/json; charset=utf-8');
 	res.end(JSON.stringify({error: msg}));
@@ -50,7 +50,6 @@ router.use(function (req, res, next) {
 
 	whitelist.check(token, function(err, whitelisted) {
 		if (err) {
-			console.log(err);
 			return handleServerError(503, "Failed to check token whitelisting", req, res);
 		}
 		if (!whitelisted) {

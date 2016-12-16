@@ -41,23 +41,10 @@ function verifyQueueSize(queue, expected_size, callback) {
 describe("message queue", function() {
 	describe("success responses", function() {
 
-		var testDbDir = path.join(".", "temp");
-		var testDbName = "testDb.sqlite";
-		var testDbPath = path.join(testDbDir, testDbName);
 		var queue;
 		before(function(done) {
-			fs.unlink(testDbPath, function(err) {
-				if (err && err.code != 'ENOENT') {
-					return done(err);
-				}
-				fs.mkdir(testDbDir, function(err) {
-					if (err && err.code != 'EEXIST') {
-						return done(err);
-					}
-					queue = new MessageQueue({dbPath: testDbPath});
-					queue.init(done);
-				});
-			});
+			queue = new MessageQueue();
+			queue.init(done);
 		});
 
 		before(function() {
