@@ -133,7 +133,7 @@ describe("DbConnector", function() {
 			if (err) {
 				return done(err);
 			}
-			var key = "COUNT(n)"
+			var key = "COUNT(n)";
 			result[0][key].should.eql(0);
 			done();
 		});
