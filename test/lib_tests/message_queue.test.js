@@ -29,7 +29,7 @@ function verifyQueueSize(queue, expected_size, callback) {
 			return callback(err);
 		}
 		try {
-			assert(result.total == expected_size);
+			assert.equal(result.total, expected_size);
 		} catch (e) {
 			console.log(util.format("Expected %s items, found %s", expected_size, result.total));
 			return callback(e);
@@ -108,57 +108,18 @@ describe("message queue", function() {
 				});
 			});
 		});
-
-		describe("#shift()", function() {
-			it("shift first item from queue", function(done) {
-				queue.size(function(err, result) {
-					if (err) {
-						return done(err);
-					}
-					var initial_queue_size = result.total;
-					queue.shift(function(err) {
-						if (err) {
-							return done(err);
-						}
-						verifyQueueSize(queue, initial_queue_size - 1, done);
-					});
-				});
-			});
-
-			const num_items_to_shift = 3;
-			it("shift " + num_items_to_shift + " items from queue", function(done) {
-				queue.size(function(err, result) {
-					if (err) {
-						return done(err);
-					}
-					var initial_queue_size = result.total;
-					async.timesSeries(num_items_to_shift, function(n, cb) {
-						queue.shift(function(err, result) {
-							cb(err);
-						});
-					}, function(err) {
-						if (err) {
-							return done(err);
-						}
-						verifyQueueSize(queue, initial_queue_size - num_items_to_shift, done);
-					});
-				});
-			});
-			it("shift from an empty queue");
-
-		});
-
 		describe("#claim()", function() {
 			it("claim a task", function(done) {
 				queue.claim(function(err, task) {
 					if (err) {
 						return done(err);
 					}
-					console.log("Claimed a task");
-					console.log(util.inspect(task));
+					//console.log("Claimed a task");
+					//console.log(util.inspect(task));
 					done();
 				});
 			});
+			it("try to claim from an empty queue");
 		});
 		describe("#complete()", function() {
 			it("mark task complete", function(done) {
@@ -170,7 +131,7 @@ describe("message queue", function() {
 						dumpDb(queue.db, cb);
 					},
 					function(all_db_rows, cb) {
-						console.log(util.format("DB dump: %j", all_db_rows));
+						//console.log(util.format("DB dump: %j", all_db_rows));
 						cb();
 					},
 					function(cb) {
