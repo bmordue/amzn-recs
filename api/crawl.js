@@ -17,7 +17,7 @@ msg_queue.init();
 //TODO: request IDs
 
 function handleError(side, code, msg, req, res) {
-	log.error( {code: code, method: req.method, url: req.url, side: side}, msg));
+	log.error( {code: code, method: req.method, url: req.url, side: side}, msg);
 	res.statusCode = code;
 	res.setHeader('Content-Type', 'application/json; charset=utf-8');
 	res.end(JSON.stringify({error: msg}));
@@ -120,7 +120,7 @@ router.post('tasks/take', function(req,res) {
 		var responseJson = {
 			asin: task.asin,
 			depth: task.depth
-		}
+		};
 		var responseBody = JSON.stringify(responseJson, null, 4) + '\n';
 		res.end(responseBody);
 		log.info({status: res.statusCode, method: req.method, url: req.url}, 'Finished processing request');
