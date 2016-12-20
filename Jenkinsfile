@@ -4,8 +4,8 @@ def tag = "4"
 def image_name = "node"
 def volumes = "-v ${env.WORKSPACE}:/opt/src -w /opt/src"
 def net_name = "testnet"
-def api_env_vars = "-e DB_USERNAME=${DB_USERNAME}"
-            + " -e DB_PASSWORD=${DB_PASSWORD}"
+def api_env_vars = "-e DB_USERNAME=${env.DB_USERNAME}"
+            + " -e DB_PASSWORD=${env.DB_PASSWORD}"
             + " -e DB_URL=http://neo4j:7474"
 def test_env_vars = "-e RUN_UNSAFE_TESTS=true"
             + "-e CRAWL_API_HOST=http://crawl_api:3000"
@@ -47,7 +47,7 @@ node {
  catch (err) {
   stage 'Send error report'
     milestone milestone_count++
-    sh "git show -s --pretty=%ae > email.txt"
+    sh "git config --get user.email > email.txt"
     def email = readFile('email.txt').trim()
     emailext body: "See ${env.BUILD_URL}", recipient: email, subject: "Build has finished with ${currentBuild.result}"
     throw err
