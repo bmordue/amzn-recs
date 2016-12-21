@@ -4,11 +4,11 @@ def tag = "4"
 def image_name = "node"
 def volumes = "-v ${env.WORKSPACE}:/opt/src -w /opt/src"
 def net_name = "testnet"
-def api_env_vars = "-e DB_USERNAME=${env.DB_USERNAME}"
-            + " -e DB_PASSWORD=${env.DB_PASSWORD}"
-            + " -e DB_URL=http://neo4j:7474"
-def test_env_vars = "-e RUN_UNSAFE_TESTS=true"
-            + "-e CRAWL_API_HOST=http://crawl_api:3000"
+def api_env_vars = "-e DB_USERNAME=${env.DB_USERNAME}" +
+              " -e DB_PASSWORD=${env.DB_PASSWORD}" +
+              " -e DB_URL=http://neo4j:7474"
+def test_env_vars = "-e RUN_UNSAFE_TESTS=true" +
+              "-e CRAWL_API_HOST=http://crawl_api:3000"
 def test_token = "111111"
 
 milestone milestone_count++
@@ -18,7 +18,7 @@ node {
   stage 'Checkout'
     milestone milestone_count++
     checkout scm
-    sh "mkdir temp"
+    sh "mkdir -p temp"
 
   stage 'Install'
     milestone milestone_count++
