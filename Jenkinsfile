@@ -17,12 +17,13 @@ node {
  try {
   stage 'Checkout'
     milestone milestone_count++
+    deleteDir()
     checkout scm
     sh "mkdir -p temp"
 
   stage 'Install'
     milestone milestone_count++
-    sh "docker network rm ${net_name}"
+    # sh "docker network rm ${net_name}"
     sh "docker network create ${net_name}"
     sh "docker run --rm ${volumes} ${image_name}:${tag} npm install > npm-install.log"
     sh "docker run --rm ${volumes} ${image_name}:${tag} node scripts/add_to_api_whitelist.js ${test_token}"
@@ -56,10 +57,14 @@ node {
   stage 'Clean up'
     milestone milestone_count++
     def crawl_api_pid = readFile('crawl_api.pid').trim()
-    sh "docker rm -f ${crawl_api_pid}"
+    if (crawl_api_pid) {
+        sh "docker rm -f ${crawl_api_pid}"
+    }
     def neo4j_pid = readFile('neo4j.pid').trim()
-    sh "docker rm -f ${neo4j_pid}"
-    sh "docker network rm ${net_name}"
+    if (neo4j_pid) {
+        sh "docker rm -f ${neo4j_pid}"
+    }
     deleteDir()
+    sh "docker network rm ${net_name}"
  }
 }
