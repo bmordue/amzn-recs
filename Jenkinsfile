@@ -23,7 +23,6 @@ node {
 
   stage 'Install'
     milestone milestone_count++
-    # sh "docker network rm ${net_name}"
     sh "docker network create ${net_name}"
     sh "docker run --rm ${volumes} ${image_name}:${tag} npm install > npm-install.log"
     sh "docker run --rm ${volumes} ${image_name}:${tag} node scripts/add_to_api_whitelist.js ${test_token}"
