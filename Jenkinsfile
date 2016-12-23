@@ -1,11 +1,4 @@
 def milestone_count = 1
-
-def tag = "4"
-def image_name = "node"
-def volumes = "-v ${WORKSPACE}:/opt/src -w /opt/src"
-def test_env_vars = "-e CRAWL_API_HOST=http://localhost:3000"
-def test_token = "111111"
-
 milestone milestone_count++
 
 node {
@@ -17,6 +10,12 @@ node {
 
   stage 'Install'
     milestone milestone_count++
+    def volumes = "-v ${WORKSPACE}:/opt/src -w /opt/src"
+    def tag = "4"
+    def image_name = "node"
+    def test_env_vars = "-e CRAWL_API_HOST=http://localhost:3000"
+    def test_token = "111111"
+
     sh "docker run --rm ${volumes} ${image_name}:${tag} npm install > npm-install.log"
     sh "docker run --rm ${volumes} ${image_name}:${tag} node scripts/add_to_api_whitelist.js ${test_token}"
 
