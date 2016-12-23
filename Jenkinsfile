@@ -18,7 +18,6 @@ node {
 
   stage 'Install'
     milestone milestone_count++
-    sh "docker network create ${net_name}"
     sh "docker run --rm ${volumes} ${image_name}:${tag} npm install > npm-install.log"
     sh "docker run --rm ${volumes} ${image_name}:${tag} node scripts/add_to_api_whitelist.js ${test_token}"
 
@@ -38,10 +37,6 @@ node {
  }
  catch (err) {
   stage 'Send error report'
-    milestone milestone_count++
-    sh "git config --get user.email > email.txt"
-    def email = readFile('email.txt').trim()
-    emailext body: "See ${env.BUILD_URL}", recipient: email, subject: "Build has finished with ${currentBuild.result}"
     throw err
  }
 }
