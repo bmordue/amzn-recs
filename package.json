@@ -5,7 +5,7 @@
   "main": "scripts/crawl.js",
   "scripts": {
     "test": "mocha --recursive",
-    "coverage": "istanbul cover _mocha -- --recursive"
+    "coverage": "istanbul cover _mocha -- --recursive && istanbul report cobertura"
   },
   "repository": {
     "type": "git",
