@@ -12,7 +12,6 @@ node {
  try {
   stage 'Checkout'
     milestone milestone_count++
-    deleteDir()
     checkout scm
     sh "mkdir -p temp"
 
