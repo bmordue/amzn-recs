@@ -30,8 +30,6 @@ node {
   stage 'Archive artifacts'
     milestone milestone_count++
     archiveArtifacts artifacts: 'coverage/*', onlyIfSuccessful: true
-
-    deleteDir()
  }
  catch (err) {
   stage 'Send error report'
