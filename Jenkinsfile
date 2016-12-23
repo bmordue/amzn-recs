@@ -27,6 +27,8 @@ node {
   stage 'Coverage'
     milestone milestone_count++
     sh "docker run --rm ${volumes} --network=host ${image_name}:${tag} npm run-script coverage"
+    publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false,
+        reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Coverage Report'])
 
   stage 'Archive artifacts'
     milestone milestone_count++
