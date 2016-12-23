@@ -22,6 +22,7 @@ node {
   stage 'Run tests'
     milestone milestone_count++
     sh "docker run --rm ${volumes} ${test_env_vars} --network=host ${image_name}:${tag} npm test"
+    junit testResults: 'results_xunit.xml'
 
   stage 'Coverage'
     milestone milestone_count++
