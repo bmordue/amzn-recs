@@ -32,7 +32,7 @@ node {
 
   stage 'Archive artifacts'
     milestone milestone_count++
-    archiveArtifacts artifacts: 'coverage/*', onlyIfSuccessful: true
+    archiveArtifacts artifacts: 'coverage/**/*', onlyIfSuccessful: true
  }
  catch (err) {
   stage 'Send error report'
