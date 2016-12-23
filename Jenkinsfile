@@ -25,7 +25,7 @@ node {
 
   stage 'Coverage'
     milestone milestone_count++
-    sh "docker run --rm ${volumes} ${image_name}:${tag} npm run-script coverage"
+    sh "docker run --rm ${volumes} --network=host ${image_name}:${tag} npm run-script coverage"
 
   stage 'Archive artifacts'
     milestone milestone_count++
