@@ -2,7 +2,7 @@ def milestone_count = 1
 
 def tag = "4"
 def image_name = "node"
-def volumes = "-v ${env.WORKSPACE}:/opt/src -w /opt/src"
+def volumes = "-v ${WORKSPACE}:/opt/src -w /opt/src"
 def test_env_vars = "-e CRAWL_API_HOST=http://localhost:3000"
 def test_token = "111111"
 
