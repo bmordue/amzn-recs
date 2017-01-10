@@ -1,7 +1,7 @@
 // crawl prod adv API and write results to JSON files
 var async = require("async");
 var CrawlQueue = require("../lib/crawl_queue");
-var log = require("../lib/log")
+var log = require("../lib/log");
 var MessageQueue = require("../lib/message_queue");
 var util = require("util");
 
@@ -12,8 +12,12 @@ var work = function(callback) {
 	var task = {};
 	var crawler;
 	async.waterfall([
-			function(cb) { queue.init(cb); },
-			function(cb) { queue.claim(cb); },
+			function(cb) {
+				queue.init(cb);
+			},
+			function(cb) {
+				queue.claim(cb);
+			},
 		function(result, cb) {
 			if (!result) {
 				return cb(new Error("Failed to retrieve a task from queue"));

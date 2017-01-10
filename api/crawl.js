@@ -9,8 +9,9 @@ var util         = require('util');
 var Whitelist    = require('../lib/whitelist');
 
 const PORT = 3000;
+const TASKS_DB_PATH = './temp/db.sqlite'; // TODO: configure this in one place only
 
-var msg_queue = new MessageQueue();
+var msg_queue = new MessageQueue({dbPath: TASKS_DB_PATH});
 var whitelist = new Whitelist();
 msg_queue.init();
 
@@ -101,7 +102,8 @@ router.post('/tasks', function (req, res) {
 		};
 		var responseBody = JSON.stringify(responseJson, null, 4) + '\n';
 		res.end(responseBody);
-		log.info({status: res.statusCode, method: req.method, url: req.url}, 'Finished processing request');
+		log.debug({task: task}, 'Finished processing request');
+		log.info({status: res.statusCode, method: req.method, url: req.url}, 'Sent response');
 	});
 });
 

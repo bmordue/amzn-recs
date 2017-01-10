@@ -2,11 +2,11 @@
 require("dotenv").load({silent: true});
 var async = require("async");
 var CrawlQueue = require("../lib/crawl_queue");
-var DbConnector = require("../lib/db_connector");
+var DbConnector = require("../lib/graphdb_connector");
 var fs = require("fs");
 var log = require("../lib/log");
 var path = require("path");
-var priceAsin = require("../lib/price-for-asin");
+var priceAsin = require("../lib/price_connector");
 var RateLimiter = require("limiter").RateLimiter;
 var util = require("util");
 

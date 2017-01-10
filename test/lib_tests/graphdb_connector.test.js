@@ -1,5 +1,5 @@
 require("dotenv").load({silent: true});
-var DbConnector = require("../../lib/db_connector");
+var DbConnector = require("../../lib/graphdb_connector");
 var fs = require("fs");
 var path = require("path");
 var should = require("should");

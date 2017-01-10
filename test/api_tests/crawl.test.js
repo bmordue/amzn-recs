@@ -4,9 +4,7 @@ var needle = require("needle");
 var util = require("util");
 
 describe("crawl API", function() {
-	var host = process.env.CRAWL_API_HOST || "http://localhost:3000";
-	var endpoint = "/tasks";
-	var uri = host + endpoint;
+	var uri = process.env.CRAWL_API_ENDPOINT || "http://localhost:3000/tasks";
 
 	var req_options = {
 		json: true,
@@ -17,7 +15,7 @@ describe("crawl API", function() {
 
 	describe("valid requests", function() {
 		it("should respond with 202 for valid POST request with depth provided", function(cb) {
-			needle.post(host + endpoint, {asin: "xxxxxx", depth: 2}, req_options, function(err, result) {
+			needle.post(uri, {asin: "xxxxxx", depth: 2}, req_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
@@ -32,7 +30,7 @@ describe("crawl API", function() {
 			});
 		});
 		it("should respond with 202 for valid POST request if depth is not provided", function(cb) {
-			needle.post(host + endpoint, {asin: "xxxxxx"}, req_options, function(err, result) {
+			needle.post(uri, {asin: "xxxxxx"}, req_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
@@ -55,7 +53,7 @@ describe("crawl API", function() {
 					dummy2: 2
 				}
 			};
-			needle.post(host + endpoint, data, req_options, function(err, result) {
+			needle.post(uri, data, req_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
@@ -76,7 +74,7 @@ describe("crawl API", function() {
 	describe("bad requests", function() {
 
 		it("should respond with 401 if method is GET", function(cb) {
-			needle.request("get", host + endpoint, req_options, function(err, result) {
+			needle.request("get", uri, req_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
@@ -90,7 +88,7 @@ describe("crawl API", function() {
 		});
 
 		it("should respond with 401 if method is PUT", function(cb) {
-			needle.request("put", host + endpoint, req_options, function(err, result) {
+			needle.request("put", uri, req_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
@@ -104,7 +102,7 @@ describe("crawl API", function() {
 		});
 
 		it("should respond with 401 if method is DELETE", function(cb) {
-			needle.request("delete", host + endpoint, req_options, function(err, result) {
+			needle.request("delete", uri, req_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
@@ -118,7 +116,7 @@ describe("crawl API", function() {
 		});
 
 		it("should respond with 400 if ASIN is missing and request body is empty", function(cb) {
-			needle.post(host + endpoint, {}, req_options, function(err, result) {
+			needle.post(uri, {}, req_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
@@ -132,7 +130,7 @@ describe("crawl API", function() {
 		});
 
 		it("should respond with 400 if ASIN is missing and request body is not empty", function(cb) {
-			needle.post(host + endpoint, {depth:2}, req_options, function(err, result) {
+			needle.post(uri, {depth:2}, req_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
@@ -149,7 +147,7 @@ describe("crawl API", function() {
 			var bad_options = {
 				json: true
 			};
-			needle.post(host + endpoint, {asin: "xxxxxx", depth: 2}, bad_options, function(err, result) {
+			needle.post(uri, {asin: "xxxxxx", depth: 2}, bad_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
@@ -165,10 +163,10 @@ describe("crawl API", function() {
 			var bad_options = {
 				json: true,
 				headers: {
-					'X-Api-Token': 'note-whitelisted'
+					'X-Api-Token': 'not-whitelisted'
 				}
 			};
-			needle.post(host + endpoint, {asin: "xxxxxx", depth: 2}, bad_options, function(err, result) {
+			needle.post(uri, {asin: "xxxxxx", depth: 2}, bad_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
@@ -187,7 +185,7 @@ describe("crawl API", function() {
 					'X-Api-Token': '111111'
 				}
 			};
-			needle.post(host + endpoint, JSON.stringify({asin: "xxxxxx", depth: 2}), bad_options, function(err, result) {
+			needle.post(uri, JSON.stringify({asin: "xxxxxx", depth: 2}), bad_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
@@ -207,7 +205,7 @@ describe("crawl API", function() {
 					'X-Api-Token': '111111'
 				}
 			};
-			needle.post(host + endpoint, JSON.stringify({asin: "xxxxxx", depth: 2}), bad_options, function(err, result) {
+			needle.post(uri, JSON.stringify({asin: "xxxxxx", depth: 2}), bad_options, function(err, result) {
 				if (err) {
 					return cb(err);
 				}
