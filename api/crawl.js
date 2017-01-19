@@ -4,12 +4,15 @@ var http         = require('http');
 var log          = require('../lib/log');
 var MessageQueue = require('../lib/message_queue');
 var Router       = require('router');
+var StatsD = require('node-statsd');
 var url          = require('url');
 var util         = require('util');
 var Whitelist    = require('../lib/whitelist');
 
 const PORT = 3000;
 const TASKS_DB_PATH = './temp/db.sqlite'; // TODO: configure this in one place only
+
+var statsd = new StatsD({prefix: 'amzn-recs_api'});
 
 var msg_queue = new MessageQueue({dbPath: TASKS_DB_PATH});
 var whitelist = new Whitelist();
@@ -18,6 +21,7 @@ msg_queue.init();
 //TODO: request IDs
 
 function handleError(side, code, msg, req, res) {
+	statsd.increment('error_responses');
 	log.error( {code: code, method: req.method, url: req.url, side: side}, msg);
 	res.statusCode = code;
 	res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -28,10 +32,12 @@ var handleClientError = handleError.bind(this, "CLIENT");
 var handleServerError = handleError.bind(this, "SERVER");
 
 function handleBadRequest(errorMsg, req, res) {
+	statsd.increment('bad_requests');
 	handleClientError(400, errorMsg, req, res);
 }
 
 function handleSuccess(responseJson, req, res) {
+	statsd.increment('success_responses');
 	res.statusCode = 200;
 	res.setHeader('Content-Type', 'application/json; charset=utf-8');
 	var responseBody = JSON.stringify(responseJson, null, 4) + '\n';

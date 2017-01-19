@@ -1,6 +1,6 @@
 // crawl prod adv API and write results to JSON files
 var CrawlQueue = require("../lib/crawl_queue");
-var log = require("../lib/log")
+var log = require("../lib/log");
 var util = require("util");
 
 var main = function() {
