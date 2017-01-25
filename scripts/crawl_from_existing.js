@@ -1,53 +1,58 @@
-// crawl prod adv API and write results to JSON files
-// does not make any changes to graph DB
+// crawl prod adv API
 var async = require("async");
 var CrawlQueue = require("../lib/crawl_queue");
 var fs = require("fs");
 var log = require("../lib/log")
 var util = require("util");
 
-var main = function() {
-	async.waterfall([
-		function(cb) {
-			mkdir(CrawlQueue.inputDir, cb);
-		},
-		function(cb) {
-			var maxDepth = process.argv[2] || 2;
-			var existing_asins = fs.readdir(CrawlQueue.inputDir, function(err, files) {
+
+var checkAndCallback = function(errors, callback) {
+	if (errors.length) {
+		log.error({errors: crawl_errors}, util.format("%s errors while crawling", crawl_errors.length));
+		return callback(new Error("Errors while crawling"));
+	}
+	callback();
+}
+
+// cb(err)
+var crawl_from_existing = function(callback) {
+	var maxDepth = process.argv[2] || 2;
+	var maxNodes = process.argv[3] || 10; // how many existing nodes to crawl
+	var crawler = new CrawlQueue({maxCrawlDepth: maxDepth, doPriceLookup: false});
+	crawler.db.listLeafNodeAsins(function(err, leaf_nodes) {
+		if (err) {
+			return callback(err);
+		}
+		var crawl_errors = [];
+		var max = maxNodes > leaf_nodes.length ? leaf_nodes.length : maxNodes;
+		var done = 0;
+		log.debug({count: max}, "Start crawling nodes");
+		for (var i = 0; i < max; i++) {
+			var asin = leaf_nodes[i].asin;
+			log.debug({asin: asin}, "leaf node ASIN");
+			crawler.crawl(asin, 0, function(err) {
 				if (err) {
-					log.error("Could not read directory contents");
-					return cb(new Error("Could not read directory contents"));
+					crawl_errors.push(err);
 				}
-				var existing_asins = files.map(function(filename) {
-					return filename.slice(0, -5);
-				});
-				var crawler = new CrawlQueue({maxCrawlDepth: maxDepth});
-				var crawl_errors = [];
-				existing_asins.forEach(function(asin) {
-					log.debug({root: asin}, "Start crawling");
-					crawler.crawl(asin, 0, function(err) {
-						if (err) {
-							crawl_errors.push(err);
-						}
-						log.debug({root: asin, count: crawler.nodeCount}, "Finished crawling for one root node");
-					});
-				});
-				if (crawl_errors.length) {
-					log.error({errors: crawl_errors}, util.format("%s errors while crawling", crawl_errors.length));
-					return cb(new Error("Errors while crawling"));
+				done++;
+				if (done == max) {
+					checkAndCallback(crawl_errors, callback);
 				}
-				cb();
 			});
 		}
-	], function(err) {
+	});
+};
+
+var main = function() {
+	crawl_from_existing(function(err) {
 		if (err) {
 			log.error(err, "crawl_from_existing.js finished with error");
 			process.exit(1);
 		} else {
 			log.info({}, "crawl_from_existing.js finished successfully");
+			process.exit();
 		}
 	});
-	
 };
 
 main();
