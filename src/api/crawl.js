@@ -12,7 +12,7 @@ var Whitelist    = require('../lib/whitelist');
 const PORT = 3000;
 const TASKS_DB_PATH = './temp/db.sqlite'; // TODO: configure this in one place only
 
-var statsd = new StatsD({prefix: 'amzn-recs_api'});
+var statsd = new StatsD();
 
 var msg_queue = new MessageQueue({dbPath: TASKS_DB_PATH});
 var whitelist = new Whitelist();

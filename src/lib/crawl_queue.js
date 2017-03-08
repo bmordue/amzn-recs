@@ -9,7 +9,7 @@ var RateLimiter = require("limiter").RateLimiter;
 var StatsD = require("node-dogstatsd").StatsD;
 var util = require("util");
 
-var statsd = new StatsD({prefix: 'amzn-recs_crawl_queue'});
+var statsd = new StatsD();
 
 var fail = function() {
 	throw new Error("Missing required env var");

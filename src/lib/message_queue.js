@@ -7,7 +7,7 @@ var util = require("util");
 
 const CRAWL_TASKS_TABLE_NAME = "crawl_tasks";
 
-var statsd = new StatsD({prefix: 'amzn-recs_queue'});
+var statsd = new StatsD();
 
 MessageQueue.STATUS_WAITING			= 'waiting';
 MessageQueue.STATUS_PROCESSING	= 'processing';
