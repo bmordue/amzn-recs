@@ -5,7 +5,7 @@ const VERBOSITY_VALUES = {
 	"DEBUG": 40
 };
 
-var StatsD = require('node-statsd');
+var StatsD = require('node-dogstatsd').StatsD;
 var statsd = new StatsD({prefix: 'amzn-recs_logging'});
 
 var output_verbosity = process.env.AMZN_RECS_LOG_LEVEL ? VERBOSITY_VALUES[process.env.AMZN_RECS_LOG_LEVEL] : "DEBUG";

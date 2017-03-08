@@ -6,7 +6,7 @@ var log = require("./log");
 var path = require("path");
 var priceAsin = require("./price_connector");
 var RateLimiter = require("limiter").RateLimiter;
-var StatsD = require("node-statsd");
+var StatsD = require("node-dogstatsd").StatsD;
 var util = require("util");
 
 var statsd = new StatsD({prefix: 'amzn-recs_crawl_queue'});
