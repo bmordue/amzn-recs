@@ -30,18 +30,22 @@ var main = function() {
 		process.exit(1);
 	}
 	var depth = process.argv[3] || 1;
-	
+
 	var crawler = new CrawlQueue({maxCrawlDepth: depth});
-	
+
 	resultsForAuthor(crawler.prodAdv, author, function(err, items) {
 		log.info({author: author, titles: items.length}, "Number of titles found");
 		async.each(items, function(item, cb) {
 			console.log('----');
 			console.log(JSON.stringify(item.ItemAttributes, null, 4));
-			// cb();
-			// crawler.db.createBookNode(item, 0, cb);
-			crawler.crawl(item.ASIN, 0, cb);
-		}, 
+			crawler.db.createBookNode(item, function(err) {
+				if (err) {
+					console.log(err);
+					return cb();
+				}
+				crawler.crawl(item.ASIN, 0, cb);
+			});
+		},
 		function(err) {
 			if (err) {
 				log.error(err, "Error");
