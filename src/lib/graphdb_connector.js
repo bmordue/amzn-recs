@@ -128,10 +128,13 @@ DbConnector.prototype.createChildBookNodeAndRelations = function(parentAsin, dat
 
 // TODO: createBookNode and createChildBookNode seem too similar; remove one
 DbConnector.prototype.createBookNode = function(data, callback) {
+	console.log('aaaaaaaBBBccc');
 	if (data.ItemAttributes.ProductGroup != "eBooks") {
 		log.warn(data, "Expected ItemAttributes.ProductGroup to be eBooks");
 	}
 	var query = buildMergeWithPriceQuery(data);
+	console.log("*** QUERY: ");
+	console.log(JSON.stringify(query, null, 4));
 	this.db.cypher({ query: query.queryString, params: query.params }, callback);
 };
 

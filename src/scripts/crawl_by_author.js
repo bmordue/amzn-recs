@@ -37,17 +37,17 @@ var main = function() {
 	resultsForAuthor(crawler.prodAdv, author, function(err, items) {
 		log.info({author: author, titles: items.length}, "Number of titles found");
 		async.each(items, function(item, cb) {
-			console.log('----');
-			console.log(JSON.stringify(item.ItemAttributes, null, 4));
+			log.debug(item.ItemAttributes, "Title by author"));
 			crawler.db.createBookNode(item, function(err) {
+				log.debug('Called back from createChildBookNode');
 				if (err) {
-					console.log(err);
-					return cb();
+					log.warn({error: err, data: item}, "Could not create book node"); // log error, but continue anyway
 				}
 				crawler.crawl(item.ASIN, 0, cb);
 			});
 		},
 		function(err) {
+			console.log('Here we are');
 			if (err) {
 				log.error(err, "Error");
 				log.error(err.stack, "stack");
