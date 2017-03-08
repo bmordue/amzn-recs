@@ -37,9 +37,9 @@ var main = function() {
 	resultsForAuthor(crawler.prodAdv, author, function(err, items) {
 		log.info({author: author, titles: items.length}, "Number of titles found");
 		async.each(items, function(item, cb) {
-			log.debug(item.ItemAttributes, "Title by author"));
+			log.debug(item.ItemAttributes, "Title by author");
 			crawler.db.createBookNode(item, function(err) {
-				log.debug('Called back from createChildBookNode');
+				log.debug({}, 'Called back from createChildBookNode');
 				if (err) {
 					log.warn({error: err, data: item}, "Could not create book node"); // log error, but continue anyway
 				}
@@ -47,7 +47,6 @@ var main = function() {
 			});
 		},
 		function(err) {
-			console.log('Here we are');
 			if (err) {
 				log.error(err, "Error");
 				log.error(err.stack, "stack");
