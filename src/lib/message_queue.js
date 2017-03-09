@@ -1,7 +1,7 @@
 require("dotenv").load({silent: true});
 var async = require("async");
 var log = require("./log");
-var StatsD = require('node-dogstatsd').StatsD;
+var StatsD = require('node-statsd');
 var sqlite = require("sqlite3").verbose();
 var util = require("util");
 

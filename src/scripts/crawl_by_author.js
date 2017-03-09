@@ -13,7 +13,6 @@ var util = require("util");
 // TODO: this search result includes price; add it to DB
 function resultsForAuthor(client, author, callback) {
 	client.call("ItemSearch", { Author: author, SearchIndex: "KindleStore", ResponseGroup: "Medium"}, function(err, result) {
-
 		if (err) {
 			return callback(err, []);
 		}
