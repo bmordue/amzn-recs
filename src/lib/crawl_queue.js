@@ -11,6 +11,8 @@ var util = require("util");
 
 var statsd = new StatsD();
 
+const BACKOFF_SECONDS = 10;
+
 var fail = function() {
 	throw new Error("Missing required env var");
 };
@@ -39,7 +41,7 @@ function CrawlQueue(options) {
 	var amazonServiceHost = process.env.AMZN_SERVICE_HOST || "webservices.amazon.co.uk";
 
 	this.prodAdv = aws.createProdAdvClient(keyId, keySecret, associateTag, { host: amazonServiceHost});
-	this.limiter = new RateLimiter(1, "second");
+	this.limiter = new RateLimiter(50, "minute");
 	this.db = new DbConnector();
 }
 
@@ -49,7 +51,16 @@ CrawlQueue.prototype.throttledSimilarityLookup = function(asin, callback) {
 		if (err) {
 			return callback(err);
 		}
-		callProdAdv(self, "SimilarityLookup", { ItemId: asin }, callback);
+		callProdAdv(self, "SimilarityLookup", { ItemId: asin }, function(err, data) {
+			if (err && err.message.indexOf('submitting requests too quickly') != -1) {
+				log.warn({err: err}, "Submitting requests too quickly; back off and retry");
+				setTimeout(function() {
+					return self.throttledSimilarityLookup(asin, callback);
+				}, BACKOFF_SECONDS);
+			} else {
+				return callback(err, data);
+			}
+		});
 	});
 };
 

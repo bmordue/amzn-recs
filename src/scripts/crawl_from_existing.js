@@ -12,7 +12,7 @@ var checkAndCallback = function(errors, callback) {
 		return callback(new Error("Errors while crawling"));
 	}
 	callback();
-}
+};
 
 // cb(err)
 var crawl_from_existing = function(callback) {
