@@ -16,7 +16,7 @@ var main = function() {
 	log.info({root: rootAsin, depth: maxDepth}, "Start crawling...");
 	crawler.crawl(rootAsin, 0, function(err) {
 		if (err) {
-			log.error(err, "Error");
+			log.error(err, "Error in scripts/crawl.js");
 			log.error(err.stack, "stack");
 			process.exit(1);
 		}

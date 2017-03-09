@@ -25,7 +25,7 @@ var main = function() {
 		crawler.keywordSearch(searchTerm, responseGroup,function(err, result) {
 			log.info(responseGroup, "RESPONSE GROUP");
 			if (err) {
-				log.error(err, "Error");
+				log.error(err, "Error in scripts/search.js#main()");
 				log.error(err.stack, "stack");
 			}
 			try {

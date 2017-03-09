@@ -48,7 +48,7 @@ var main = function() {
 		},
 		function(err) {
 			if (err) {
-				log.error(err, "Error");
+				log.error(err, "Error in crawl_by_author.js#main()");
 				log.error(err.stack, "stack");
 				process.exit(1);
 			}
