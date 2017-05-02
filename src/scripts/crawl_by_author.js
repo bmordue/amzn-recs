@@ -13,7 +13,6 @@ var util = require("util");
 // TODO: this search result includes price; add it to DB
 function resultsForAuthor(client, author, callback) {
 	client.call("ItemSearch", { Author: author, SearchIndex: "KindleStore", ResponseGroup: "Medium"}, function(err, result) {
-
 		if (err) {
 			return callback(err, []);
 		}
@@ -32,7 +31,7 @@ var main = function() {
 	}
 	var depth = process.argv[3] || 1;
 
-	var crawler = new CrawlQueue({maxCrawlDepth: depth});
+	var crawler = new CrawlQueue({maxCrawlDepth: depth, doPriceLookup: true});
 
 	resultsForAuthor(crawler.prodAdv, author, function(err, items) {
 		log.info({author: author, titles: items.length}, "Number of titles found");
