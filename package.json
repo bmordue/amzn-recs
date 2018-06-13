@@ -24,7 +24,7 @@
     "dotenv": "^2.0.0",
     "finalhandler": "^0.5.0",
     "limiter": "^1.1.0",
-    "needle": "^1.0.0",
+    "needle": "^2.2.1",
     "neo4j": "^2.0.0-RC2",
     "node-statsd": "^0.1.1",
     "router": "^1.1.4",
