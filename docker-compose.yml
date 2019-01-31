@@ -7,11 +7,11 @@ services:
       - 3000:3000
     volumes:
       - ./amzn-recs:/temp
-#    secrets:
-#      - AMZN_SERVICE_HOST
-#      - AMZN_ACCESS_KEY_ID=
-#      - AMZN_ACCESS_KEY_SECRET=
-#      - AMZN_ASSOCIATE_TAG=
+    secrets:
+      - AMZN_SERVICE_HOST
+      - AMZN_ACCESS_KEY_ID
+      - AMZN_ACCESS_KEY_SECRET
+      - AMZN_ASSOCIATE_TAG
     environment:
       - DB_URL="db"
   db:
