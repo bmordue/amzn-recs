@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  app:
+    image: bmordue/amzn-recs:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - ./amzn-recs:/temp
+#    secrets:
+#      - AMZN_SERVICE_HOST
+#      - AMZN_ACCESS_KEY_ID=
+#      - AMZN_ACCESS_KEY_SECRET=
+#      - AMZN_ASSOCIATE_TAG=
+    environment:
+      - DB_URL="db"
+  db:
+    image: neo4j:3.4
+    ports:
+      - 7474:7474
+      - 7687:7687
+    volumes:
+      - ./neo4j/data:/data
+      - ./neo4j/logs:/logs
+    environment:
+      - NEO4J_AUTH="none"
+#  dd-agent:
