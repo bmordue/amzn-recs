@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   app:
-    image: bmordue/amzn-recs:42b1f10
+    image: bmordue/amzn-recs:90553be
     ports:
       - 3003:3000
     volumes:
@@ -15,10 +15,10 @@ services:
       - DB_PASSWORD
     environment:
       - AMZN_SERVICE_HOST
-      - DB_URL="graphdb"
+      - DB_URL="http://graphdb:7474"
       - PRICE_LOOKUP_ENDPOINT
       - AMZN_RECS_LOG_LEVEL
-      - CRAWL_API_ENDPOINT
+      - CRAWL_API_ENDPOINT="http://prices"
   graphdb:
     image: neo4j:3.4
     ports:
@@ -29,6 +29,10 @@ services:
       - ./neo4j/logs:/logs
     environment:
       - NEO4J_AUTH=none
+  prices:
+    image: bmordue/price-for-asin:latest
+    ports:
+      - 80:3000
 #  dd-agent:
 
 secrets:
