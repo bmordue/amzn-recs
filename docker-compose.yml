@@ -12,9 +12,15 @@ services:
       - AMZN_ACCESS_KEY_ID
       - AMZN_ACCESS_KEY_SECRET
       - AMZN_ASSOCIATE_TAG
+      - DB_URL
+      - DB_USERNAME
+      - DB_PASSWORD
     environment:
-      - DB_URL="db"
-  db:
+      - DB_URL="graphdb"
+      - PRICE_LOOKUP_ENDPOINT
+      - AMZN_RECS_LOG_LEVEL
+      - CRAWL_API_ENDPOINT
+  graphdb:
     image: neo4j:3.4
     ports:
       - 7474:7474
