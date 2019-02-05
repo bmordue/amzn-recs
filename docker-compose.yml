@@ -1,21 +1,20 @@
-version: '3'
+version: '3.1'
 
 services:
   app:
-    image: bmordue/amzn-recs:latest
+    image: bmordue/amzn-recs:f61e66c
     ports:
-      - 3000:3000
+      - 3003:3000
     volumes:
       - ./amzn-recs:/temp
     secrets:
-      - AMZN_SERVICE_HOST
       - AMZN_ACCESS_KEY_ID
       - AMZN_ACCESS_KEY_SECRET
       - AMZN_ASSOCIATE_TAG
-      - DB_URL
       - DB_USERNAME
       - DB_PASSWORD
     environment:
+      - AMZN_SERVICE_HOST
       - DB_URL="graphdb"
       - PRICE_LOOKUP_ENDPOINT
       - AMZN_RECS_LOG_LEVEL
@@ -29,5 +28,18 @@ services:
       - ./neo4j/data:/data
       - ./neo4j/logs:/logs
     environment:
-      - NEO4J_AUTH="none"
+      - NEO4J_AUTH=none
 #  dd-agent:
+
+secrets:
+  AMZN_ACCESS_KEY_ID:
+    external: true
+  AMZN_ACCESS_KEY_SECRET:
+    external: true
+  AMZN_ASSOCIATE_TAG:
+    external: true
+  DB_USERNAME:
+    external: true
+  DB_PASSWORD:
+    external: true
+

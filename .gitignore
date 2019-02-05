@@ -46,3 +46,6 @@ temp/
 
 #OS specific
 .DS_Store
+
+amzn-recs/
+neo4j/
