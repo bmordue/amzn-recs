@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   app:
-    image: bmordue/amzn-recs:29be47f
+    image: bmordue/amzn-recs:42b1f10
     ports:
       - 3003:3000
     volumes:
