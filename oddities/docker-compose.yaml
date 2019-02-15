@@ -1,0 +1,34 @@
+version: '2'
+services:
+  install:
+    image: node
+    volumes:
+      - .:/opt/src
+    command: npm install > npm_install.log
+  crawl_api:
+    image: node
+    expose:
+      - "3000"
+    volumes:
+      - .:/opt/src
+    depends_on:
+      - install
+    # links:
+    #   - test
+    environment:
+      - DB_USERNAME
+      - DB_PASSWORD
+      - DB_URL
+    command: node api/crawl.js
+  test:
+    image: node
+    volumes:
+      - .:/opt/src
+    links:
+      - crawl_api
+    # depends_on:
+    #   - install
+    #   - crawl_api
+    environment:
+      - RUN_UNSAFE_TESTS=true
+    command: npm test

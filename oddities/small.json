@@ -1,0 +1,399 @@
+{"timestamp":"Mon, 16 Jan 2017 15:38:25 GMT","level":"DEBUG","message":"maxCrawlDepth: 1","details":{}}
+{
+    "@": {
+        "xmlns": "http://webservices.amazon.com/AWSECommerceService/2011-08-01"
+    },
+    "OperationRequest": {
+        "RequestId": "cf69a7fe-5d6f-4d5a-9589-8a78011c35e3",
+        "Arguments": {
+            "Argument": [
+                {
+                    "@": {
+                        "Name": "Author",
+                        "Value": "Neal Stephenson"
+                    }
+                },
+                {
+                    "@": {
+                        "Name": "SearchIndex",
+                        "Value": "KindleStore"
+                    }
+                },
+                {
+                    "@": {
+                        "Name": "ResponseGroup",
+                        "Value": "Small"
+                    }
+                },
+                {
+                    "@": {
+                        "Name": "Operation",
+                        "Value": "ItemSearch"
+                    }
+                },
+                {
+                    "@": {
+                        "Name": "Service",
+                        "Value": "AWSECommerceService"
+                    }
+                },
+                {
+                    "@": {
+                        "Name": "Version",
+                        "Value": "2009-10-01"
+                    }
+                },
+                {
+                    "@": {
+                        "Name": "AssociateTag",
+                        "Value": "scotapcom-21"
+                    }
+                },
+                {
+                    "@": {
+                        "Name": "Region",
+                        "Value": "US"
+                    }
+                },
+                {
+                    "@": {
+                        "Name": "Timestamp",
+                        "Value": "2017-01-16T15:38:25.807Z"
+                    }
+                },
+                {
+                    "@": {
+                        "Name": "AWSAccessKeyId",
+                        "Value": "AKIAJ55ROCVVUZ4A6GGA"
+                    }
+                },
+                {
+                    "@": {
+                        "Name": "Signature",
+                        "Value": "Ns7EzWFdU0grtEPFyMWPA4OhX5PPvjgPgPIhFRuhThc="
+                    }
+                }
+            ]
+        },
+        "RequestProcessingTime": "0.0215631300000000"
+    },
+    "Items": {
+        "Request": {
+            "IsValid": "True",
+            "ItemSearchRequest": {
+                "Author": "Neal Stephenson",
+                "ResponseGroup": "Small",
+                "SearchIndex": "KindleStore"
+            }
+        },
+        "TotalResults": "71",
+        "TotalPages": "8",
+        "MoreSearchResultsUrl": "https://www.amazon.co.uk/gp/redirect.html?linkCode=xm2&SubscriptionId=AKIAJ55ROCVVUZ4A6GGA&location=https%3A%2F%2Fwww.amazon.co.uk%2Fgp%2Fsearch%3Fkeywords%3DNeal%2BStephenson%26url%3Dsearch-alias%253Ddigital-text&tag=scotapcom-21&creative=12734&camp=2025",
+        "Item": [
+            {
+                "ASIN": "B00R0RGSLG",
+                "DetailPageURL": "https://www.amazon.co.uk/Seveneves-Neal-Stephenson-ebook/dp/B00R0RGSLG%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00R0RGSLG",
+                "ItemLinks": {
+                    "ItemLink": [
+                        {
+                            "Description": "Add To Wishlist",
+                            "URL": "https://www.amazon.co.uk/gp/registry/wishlist/add-item.html%3Fasin.0%3DB00R0RGSLG%26SubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB00R0RGSLG"
+                        },
+                        {
+                            "Description": "Tell A Friend",
+                            "URL": "https://www.amazon.co.uk/gp/pdp/taf/B00R0RGSLG%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB00R0RGSLG"
+                        },
+                        {
+                            "Description": "All Customer Reviews",
+                            "URL": "https://www.amazon.co.uk/review/product/B00R0RGSLG%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB00R0RGSLG"
+                        },
+                        {
+                            "Description": "All Offers",
+                            "URL": "https://www.amazon.co.uk/gp/offer-listing/B00R0RGSLG%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB00R0RGSLG"
+                        }
+                    ]
+                },
+                "ItemAttributes": {
+                    "Author": "Neal Stephenson",
+                    "Manufacturer": "The Borough Press",
+                    "ProductGroup": "eBooks",
+                    "Title": "Seveneves"
+                }
+            },
+            {
+                "ASIN": "B002RI9KAE",
+                "DetailPageURL": "https://www.amazon.co.uk/Snow-Crash-Neal-Stephenson-ebook/dp/B002RI9KAE%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB002RI9KAE",
+                "ItemLinks": {
+                    "ItemLink": [
+                        {
+                            "Description": "Add To Wishlist",
+                            "URL": "https://www.amazon.co.uk/gp/registry/wishlist/add-item.html%3Fasin.0%3DB002RI9KAE%26SubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB002RI9KAE"
+                        },
+                        {
+                            "Description": "Tell A Friend",
+                            "URL": "https://www.amazon.co.uk/gp/pdp/taf/B002RI9KAE%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB002RI9KAE"
+                        },
+                        {
+                            "Description": "All Customer Reviews",
+                            "URL": "https://www.amazon.co.uk/review/product/B002RI9KAE%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB002RI9KAE"
+                        },
+                        {
+                            "Description": "All Offers",
+                            "URL": "https://www.amazon.co.uk/gp/offer-listing/B002RI9KAE%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB002RI9KAE"
+                        }
+                    ]
+                },
+                "ItemAttributes": {
+                    "Author": "Neal Stephenson",
+                    "Manufacturer": "Penguin",
+                    "ProductGroup": "eBooks",
+                    "Title": "Snow Crash"
+                }
+            },
+            {
+                "ASIN": "B0080K3J7S",
+                "DetailPageURL": "https://www.amazon.co.uk/Cryptonomicon-Neal-Stephenson-ebook/dp/B0080K3J7S%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB0080K3J7S",
+                "ItemLinks": {
+                    "ItemLink": [
+                        {
+                            "Description": "Add To Wishlist",
+                            "URL": "https://www.amazon.co.uk/gp/registry/wishlist/add-item.html%3Fasin.0%3DB0080K3J7S%26SubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0080K3J7S"
+                        },
+                        {
+                            "Description": "Tell A Friend",
+                            "URL": "https://www.amazon.co.uk/gp/pdp/taf/B0080K3J7S%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0080K3J7S"
+                        },
+                        {
+                            "Description": "All Customer Reviews",
+                            "URL": "https://www.amazon.co.uk/review/product/B0080K3J7S%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0080K3J7S"
+                        },
+                        {
+                            "Description": "All Offers",
+                            "URL": "https://www.amazon.co.uk/gp/offer-listing/B0080K3J7S%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0080K3J7S"
+                        }
+                    ]
+                },
+                "ItemAttributes": {
+                    "Author": "Neal Stephenson",
+                    "Manufacturer": "Cornerstone Digital",
+                    "ProductGroup": "eBooks",
+                    "Title": "Cryptonomicon"
+                }
+            },
+            {
+                "ASIN": "B0080K3J6E",
+                "DetailPageURL": "https://www.amazon.co.uk/Quicksilver-Baroque-Cycle-Book-1-ebook/dp/B0080K3J6E%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB0080K3J6E",
+                "ItemLinks": {
+                    "ItemLink": [
+                        {
+                            "Description": "Add To Wishlist",
+                            "URL": "https://www.amazon.co.uk/gp/registry/wishlist/add-item.html%3Fasin.0%3DB0080K3J6E%26SubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0080K3J6E"
+                        },
+                        {
+                            "Description": "Tell A Friend",
+                            "URL": "https://www.amazon.co.uk/gp/pdp/taf/B0080K3J6E%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0080K3J6E"
+                        },
+                        {
+                            "Description": "All Customer Reviews",
+                            "URL": "https://www.amazon.co.uk/review/product/B0080K3J6E%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0080K3J6E"
+                        },
+                        {
+                            "Description": "All Offers",
+                            "URL": "https://www.amazon.co.uk/gp/offer-listing/B0080K3J6E%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0080K3J6E"
+                        }
+                    ]
+                },
+                "ItemAttributes": {
+                    "Author": "Neal Stephenson",
+                    "Manufacturer": "Cornerstone Digital",
+                    "ProductGroup": "eBooks",
+                    "Title": "Quicksilver (The Baroque Cycle Book 1)"
+                }
+            },
+            {
+                "ASIN": "B002RI9DQ0",
+                "DetailPageURL": "https://www.amazon.co.uk/Diamond-Age-Young-Illustrated-Primer-ebook/dp/B002RI9DQ0%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB002RI9DQ0",
+                "ItemLinks": {
+                    "ItemLink": [
+                        {
+                            "Description": "Add To Wishlist",
+                            "URL": "https://www.amazon.co.uk/gp/registry/wishlist/add-item.html%3Fasin.0%3DB002RI9DQ0%26SubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB002RI9DQ0"
+                        },
+                        {
+                            "Description": "Tell A Friend",
+                            "URL": "https://www.amazon.co.uk/gp/pdp/taf/B002RI9DQ0%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB002RI9DQ0"
+                        },
+                        {
+                            "Description": "All Customer Reviews",
+                            "URL": "https://www.amazon.co.uk/review/product/B002RI9DQ0%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB002RI9DQ0"
+                        },
+                        {
+                            "Description": "All Offers",
+                            "URL": "https://www.amazon.co.uk/gp/offer-listing/B002RI9DQ0%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB002RI9DQ0"
+                        }
+                    ]
+                },
+                "ItemAttributes": {
+                    "Author": "Neal Stephenson",
+                    "Manufacturer": "Penguin",
+                    "ProductGroup": "eBooks",
+                    "Title": "The Diamond Age: Or, a Young Lady's Illustrated Primer"
+                }
+            },
+            {
+                "ASIN": "B0040QE3A8",
+                "DetailPageURL": "https://www.amazon.co.uk/Anathem-Neal-Stephenson-ebook/dp/B0040QE3A8%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB0040QE3A8",
+                "ItemLinks": {
+                    "ItemLink": [
+                        {
+                            "Description": "Add To Wishlist",
+                            "URL": "https://www.amazon.co.uk/gp/registry/wishlist/add-item.html%3Fasin.0%3DB0040QE3A8%26SubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0040QE3A8"
+                        },
+                        {
+                            "Description": "Tell A Friend",
+                            "URL": "https://www.amazon.co.uk/gp/pdp/taf/B0040QE3A8%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0040QE3A8"
+                        },
+                        {
+                            "Description": "All Customer Reviews",
+                            "URL": "https://www.amazon.co.uk/review/product/B0040QE3A8%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0040QE3A8"
+                        },
+                        {
+                            "Description": "All Offers",
+                            "URL": "https://www.amazon.co.uk/gp/offer-listing/B0040QE3A8%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0040QE3A8"
+                        }
+                    ]
+                },
+                "ItemAttributes": {
+                    "Author": "Neal Stephenson",
+                    "Manufacturer": "Atlantic Books",
+                    "ProductGroup": "eBooks",
+                    "Title": "Anathem"
+                }
+            },
+            {
+                "ASIN": "B005IPRQGS",
+                "DetailPageURL": "https://www.amazon.co.uk/Reamde-Neal-Stephenson-ebook/dp/B005IPRQGS%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB005IPRQGS",
+                "ItemLinks": {
+                    "ItemLink": [
+                        {
+                            "Description": "Add To Wishlist",
+                            "URL": "https://www.amazon.co.uk/gp/registry/wishlist/add-item.html%3Fasin.0%3DB005IPRQGS%26SubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB005IPRQGS"
+                        },
+                        {
+                            "Description": "Tell A Friend",
+                            "URL": "https://www.amazon.co.uk/gp/pdp/taf/B005IPRQGS%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB005IPRQGS"
+                        },
+                        {
+                            "Description": "All Customer Reviews",
+                            "URL": "https://www.amazon.co.uk/review/product/B005IPRQGS%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB005IPRQGS"
+                        },
+                        {
+                            "Description": "All Offers",
+                            "URL": "https://www.amazon.co.uk/gp/offer-listing/B005IPRQGS%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB005IPRQGS"
+                        }
+                    ]
+                },
+                "ItemAttributes": {
+                    "Author": "Neal Stephenson",
+                    "Manufacturer": "Atlantic Books",
+                    "ProductGroup": "eBooks",
+                    "Title": "Reamde"
+                }
+            },
+            {
+                "ASIN": "B007W1BO6O",
+                "DetailPageURL": "https://www.amazon.co.uk/Confusion-Baroque-Cycle-Book-ebook/dp/B007W1BO6O%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB007W1BO6O",
+                "ItemLinks": {
+                    "ItemLink": [
+                        {
+                            "Description": "Add To Wishlist",
+                            "URL": "https://www.amazon.co.uk/gp/registry/wishlist/add-item.html%3Fasin.0%3DB007W1BO6O%26SubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB007W1BO6O"
+                        },
+                        {
+                            "Description": "Tell A Friend",
+                            "URL": "https://www.amazon.co.uk/gp/pdp/taf/B007W1BO6O%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB007W1BO6O"
+                        },
+                        {
+                            "Description": "All Customer Reviews",
+                            "URL": "https://www.amazon.co.uk/review/product/B007W1BO6O%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB007W1BO6O"
+                        },
+                        {
+                            "Description": "All Offers",
+                            "URL": "https://www.amazon.co.uk/gp/offer-listing/B007W1BO6O%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB007W1BO6O"
+                        }
+                    ]
+                },
+                "ItemAttributes": {
+                    "Author": "Neal Stephenson",
+                    "Manufacturer": "Cornerstone Digital",
+                    "ProductGroup": "eBooks",
+                    "Title": "The Confusion (The Baroque Cycle Book 2)"
+                }
+            },
+            {
+                "ASIN": "B0089WCE46",
+                "DetailPageURL": "https://www.amazon.co.uk/System-World-Baroque-Cycle-Book-ebook/dp/B0089WCE46%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB0089WCE46",
+                "ItemLinks": {
+                    "ItemLink": [
+                        {
+                            "Description": "Add To Wishlist",
+                            "URL": "https://www.amazon.co.uk/gp/registry/wishlist/add-item.html%3Fasin.0%3DB0089WCE46%26SubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0089WCE46"
+                        },
+                        {
+                            "Description": "Tell A Friend",
+                            "URL": "https://www.amazon.co.uk/gp/pdp/taf/B0089WCE46%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0089WCE46"
+                        },
+                        {
+                            "Description": "All Customer Reviews",
+                            "URL": "https://www.amazon.co.uk/review/product/B0089WCE46%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0089WCE46"
+                        },
+                        {
+                            "Description": "All Offers",
+                            "URL": "https://www.amazon.co.uk/gp/offer-listing/B0089WCE46%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB0089WCE46"
+                        }
+                    ]
+                },
+                "ItemAttributes": {
+                    "Author": "Neal Stephenson",
+                    "Manufacturer": "Cornerstone Digital",
+                    "ProductGroup": "eBooks",
+                    "Title": "The System Of The World (The Baroque Cycle Book 3)"
+                }
+            },
+            {
+                "ASIN": "B01NAE8AW4",
+                "DetailPageURL": "https://www.amazon.co.uk/Rise-Fall-D-D-ebook/dp/B01NAE8AW4%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB01NAE8AW4",
+                "ItemLinks": {
+                    "ItemLink": [
+                        {
+                            "Description": "Add To Wishlist",
+                            "URL": "https://www.amazon.co.uk/gp/registry/wishlist/add-item.html%3Fasin.0%3DB01NAE8AW4%26SubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB01NAE8AW4"
+                        },
+                        {
+                            "Description": "Tell A Friend",
+                            "URL": "https://www.amazon.co.uk/gp/pdp/taf/B01NAE8AW4%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB01NAE8AW4"
+                        },
+                        {
+                            "Description": "All Customer Reviews",
+                            "URL": "https://www.amazon.co.uk/review/product/B01NAE8AW4%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB01NAE8AW4"
+                        },
+                        {
+                            "Description": "All Offers",
+                            "URL": "https://www.amazon.co.uk/gp/offer-listing/B01NAE8AW4%3FSubscriptionId%3DAKIAJ55ROCVVUZ4A6GGA%26tag%3Dscotapcom-21%26linkCode%3Dxm2%26camp%3D2025%26creative%3D12734%26creativeASIN%3DB01NAE8AW4"
+                        }
+                    ]
+                },
+                "ItemAttributes": {
+                    "Author": [
+                        "Neal Stephenson",
+                        "Nicole Galland"
+                    ],
+                    "Manufacturer": "The Borough Press",
+                    "ProductGroup": "eBooks",
+                    "Title": "The Rise and Fall of D.O.D.O."
+                }
+            }
+        ]
+    }
+}
+{"timestamp":"Mon, 16 Jan 2017 15:38:26 GMT","level":" INFO","message":"Number of titles found","details":{"author":"Neal Stephenson","titles":0}}
