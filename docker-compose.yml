@@ -2,28 +2,21 @@ version: '3.1'
 
 services:
   app:
-    image: bmordue/amzn-recs:90553be
-    ports:
-      - 3003:3000
+    image: bmordue/amzn-recs:latest
     volumes:
       - ./amzn-recs:/temp
     secrets:
       - AMZN_ACCESS_KEY_ID
       - AMZN_ACCESS_KEY_SECRET
       - AMZN_ASSOCIATE_TAG
-      - DB_USERNAME
-      - DB_PASSWORD
     environment:
       - AMZN_SERVICE_HOST
-      - DB_URL="http://graphdb:7474"
-      - PRICE_LOOKUP_ENDPOINT
-      - AMZN_RECS_LOG_LEVEL
-      - CRAWL_API_ENDPOINT="http://prices"
+      - DB_URL=http://graphdb:7474
+      - PRICE_LOOKUP_ENDPOINT=http://prices/price
+      - AMZN_RECS_LOG_LEVEL=DEBUG
+      - CRAWL_API_ENDPOINT=http://localhost:3000/crawl
   graphdb:
     image: neo4j:3.4
-    ports:
-      - 7474:7474
-      - 7687:7687
     volumes:
       - ./neo4j/data:/data
       - ./neo4j/logs:/logs
@@ -31,9 +24,17 @@ services:
       - NEO4J_AUTH=none
   prices:
     image: bmordue/price-for-asin:latest
-    ports:
-      - 80:3000
-#  dd-agent:
+  dd_agent:
+    image: datadog/agent
+    environment:
+      - DD_APM_ENABLED=true
+      - DD_APM_NON_LOCAL_TRAFFIC=true
+    secrets:
+      - DD_API_KEY
+    volumes:
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+
 
 secrets:
   AMZN_ACCESS_KEY_ID:
@@ -42,8 +43,5 @@ secrets:
     external: true
   AMZN_ASSOCIATE_TAG:
     external: true
-  DB_USERNAME:
+  DD_API_KEY:
     external: true
-  DB_PASSWORD:
-    external: true
-
