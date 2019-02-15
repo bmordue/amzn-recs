@@ -49,3 +49,5 @@ temp/
 
 amzn-recs/
 neo4j/
+
+results_xunit.xml
