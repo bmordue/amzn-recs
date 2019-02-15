@@ -47,4 +47,7 @@ temp/
 #OS specific
 .DS_Store
 
-.sonar/
+amzn-recs/
+neo4j/
+
+results_xunit.xml
