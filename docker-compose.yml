@@ -1,0 +1,45 @@
+version: '3.1'
+
+services:
+  app:
+    image: bmordue/amzn-recs:latest
+    volumes:
+      - ./amzn-recs:/temp
+    secrets:
+      - AMZN_ACCESS_KEY_ID
+      - AMZN_ACCESS_KEY_SECRET
+      - AMZN_ASSOCIATE_TAG
+    environment:
+      - AMZN_SERVICE_HOST
+      - DB_URL=http://graphdb:7474
+      - PRICE_LOOKUP_ENDPOINT=http://prices/price
+      - AMZN_RECS_LOG_LEVEL=DEBUG
+      - CRAWL_API_ENDPOINT=http://localhost:3000/crawl
+    networks:
+      - monitoring
+  graphdb:
+    image: neo4j:3.4
+    ports:
+      - 7474:7474
+      - 7687:7687
+    volumes:
+      - ./neo4j/data:/data
+      - ./neo4j/logs:/logs
+    environment:
+      - NEO4J_AUTH=none
+  prices:
+    image: bmordue/price-for-asin:latest
+    networks:
+      - monitoring
+
+secrets:
+  AMZN_ACCESS_KEY_ID:
+    external: true
+  AMZN_ACCESS_KEY_SECRET:
+    external: true
+  AMZN_ASSOCIATE_TAG:
+    external: true
+
+networks:
+  monitoring:
+    external: true

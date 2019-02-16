@@ -1,6 +1,7 @@
 require("dotenv").load({silent: true});
 var async = require("async");
 var aws = require("aws-lib");
+var config = require("./config");
 var DbConnector = require("./graphdb_connector");
 var log = require("./log");
 var path = require("path");
@@ -35,10 +36,10 @@ function CrawlQueue(options) {
 		log.info({}, "Price lookup is not enabled");
 	}
 
-	var keyId = process.env.AMZN_ACCESS_KEY_ID || fail();
-	var keySecret = process.env.AMZN_ACCESS_KEY_SECRET || fail();
-	var associateTag = process.env.AMZN_ASSOCIATE_TAG || fail();
-	var amazonServiceHost = process.env.AMZN_SERVICE_HOST || "webservices.amazon.co.uk";
+	var keyId = config.get("AMZN_ACCESS_KEY_ID", true);
+	var keySecret = config.get("AMZN_ACCESS_KEY_SECRET", true);
+	var associateTag = config.get("AMZN_ASSOCIATE_TAG", true);
+	var amazonServiceHost = config.get("AMZN_SERVICE_HOST") || "webservices.amazon.co.uk";
 
 	this.prodAdv = aws.createProdAdvClient(keyId, keySecret, associateTag, { host: amazonServiceHost});
 	this.limiter = new RateLimiter(50, "minute");
@@ -133,6 +134,7 @@ CrawlQueue.prototype.crawl = function(rootAsin, depth, callback) {
 								item.currency = result.currency;
 							}
 							self.db.createChildBookNodeAndRelations(rootAsin, item, function(err, result) {
+							    log.debug({result: result}, "Finished creating node and relations");
 								// drop result to not cause problems at next step
 								cb(err);
 							});
@@ -171,5 +173,10 @@ CrawlQueue.prototype.createNodeWithAsin = function(asin, callback) {
 CrawlQueue.prototype.keywordSearch = function(keyword, responseGroup, callback) {
 	callProdAdv(this, "ItemSearch", { Keywords: keyword, ResponseGroup: responseGroup }, callback);
 };
+
+CrawlQueue.inputDir = '/temp/output';
+CrawlQueue.doneDir = '/temp/done';
+CrawlQueue.errorDir = '/temp/errors';
+
 
 module.exports = CrawlQueue;

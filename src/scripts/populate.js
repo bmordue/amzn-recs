@@ -16,7 +16,7 @@ var limiter = new RateLimiter(1, "second");
 var nodes_count = 0;
 
 function throttledPriceLookup (asin, callback) {
-	limiter.removeTokens(1, function(err, remaining) {
+	limiter.removeTokens(1, function(err) {
 		if (err) {
 			return callback(err);
 		}
@@ -34,7 +34,7 @@ function processItem(parentAsin, item, callback) {
 			item.price = result.price;
 			item.currency = result.currency;
 		}
-		dbCon.createChildBookNodeAndRelations(parentAsin, item, function(err, result) {
+		dbCon.createChildBookNodeAndRelations(parentAsin, item, function(err) {
 			if (err) {
 				log.error({error: err.message, item: item}, "populate.processItem() - error adding node: ");
 				return callback(err);

@@ -7,7 +7,7 @@ module.exports = {
 		var api_endpoint = process.env.PRICE_LOOKUP_ENDPOINT;
 		var reqUrl = api_endpoint + "?asin=" + asin;
 		var options = {};
-		// options.proxy = 'http://localhost:8888';
+		options.proxy = null; // Or eg 'http://localhost:8888'
 
 		needle.get(reqUrl, options, function(err, result) {
 			if (err) {

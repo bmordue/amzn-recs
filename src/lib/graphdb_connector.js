@@ -1,20 +1,17 @@
 require("dotenv").load({silent: true});
 var async = require("async");
+var config = require("./config");
 var log = require("./log");
 var neo4j = require("neo4j");
-
-var fail = function() {
-	throw new Error("Missing required env var");
-};
 
 //TODO: review result passed to callback for each function
 // if they're always [], is there any point...?
 
 function DbConnector(options) {
 	this.options = options;
-	var dbUrl = process.env.DB_URL || fail();
-	var dbUsername = process.env.DB_USERNAME || fail();
-	var dbPassword = process.env.DB_PASSWORD || fail();
+	var dbUrl = config.get("DB_URL") || "graphdb";
+	var dbUsername = config.get("DB_USERNAME");
+	var dbPassword = config.get("DB_PASSWORD");
 
 	this.db = new neo4j.GraphDatabase({
 		url: dbUrl,
@@ -24,7 +21,7 @@ function DbConnector(options) {
 
 DbConnector.prototype.init = function(callback) {
 	var self = this;
-	this.db.cypher({query:"CREATE CONSTRAINT ON (book:Book) ASSERT book.ASIN IS UNIQUE"}, function(err, result) {
+	this.db.cypher({query:"CREATE CONSTRAINT ON (book:Book) ASSERT book.ASIN IS UNIQUE"}, function(err) {
 		if (err) {
 			return callback(err);
 		}

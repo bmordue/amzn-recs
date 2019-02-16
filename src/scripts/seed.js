@@ -7,7 +7,7 @@ function OLD_main() {
 	var nodeAsin = process.argv[2] || 'B014V4DXMW'; //starting ASIN
 	var crawler = new CrawlQueue();
 	//set up DB constraints
-	crawler.db.init(function(err, result) {
+	crawler.db.init(function(err) {
 		if (err) {
 			console.log(err);
 			process.exit(1);
@@ -32,6 +32,10 @@ function main() {
 
 	var queue = new MessageQueue({dbPath: './temp/db.sqlite'});
 	queue.init(function(err) {
+        if (err) {
+            console.log(err);
+            process.exit(1);
+        }
 		queue.add(job, function(err) {
 			if (err) {
 				console.log(err);

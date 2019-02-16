@@ -3,7 +3,6 @@ var async = require("async");
 var CrawlQueue = require("../lib/crawl_queue");
 var log = require("../lib/log");
 var MessageQueue = require("../lib/message_queue");
-var util = require("util");
 
 const DEFAULT_CRAWL_DEPTH = 2;
 
