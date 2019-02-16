@@ -5,14 +5,13 @@ var log          = require('../lib/log');
 var MessageQueue = require('../lib/message_queue');
 var Router       = require('router');
 var StatsD = require('node-statsd');
-var url          = require('url');
 var util         = require('util');
 var Whitelist    = require('../lib/whitelist');
 
 const PORT = 3000;
 const TASKS_DB_PATH = './temp/db.sqlite'; // TODO: configure this in one place only
 
-var statsd = new StatsD({prefix: 'amzn-recs_api'});
+var statsd = new StatsD();
 
 var msg_queue = new MessageQueue({dbPath: TASKS_DB_PATH});
 var whitelist = new Whitelist();

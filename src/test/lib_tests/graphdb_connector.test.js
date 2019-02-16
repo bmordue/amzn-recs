@@ -36,20 +36,6 @@ describe("DbConnector", function() {
 		});
 	};
 
-	var logAllRelationships = function(callback) {
-		// if (!LOG_ALL) {
-		// 	return callback();
-		// }
-		console.log("++++++ log all relationships for info");
-		dbConnector.db.cypher({query: "MATCH ()-[r]->() RETURN r"}, function(err, result) {
-			console.log(util.inspect(result, {depth: null, colors: true}));
-			console.log("~~~~~~~");
-			if (err) {
-				console.log(err);
-			}
-			callback();
-		});
-	};
 
 	before(function(done) {
 		console.log('Detach-delete all existing nodes');
@@ -140,7 +126,7 @@ describe("DbConnector", function() {
 	});
 
 	it("inserting a Book node as a child of another Book node that does not exist creates the child with no relationship", function(done) {
-		dbConnector.createChildBookNodeAndRelations("rubbish_ASIN", childBookData, function(err, result) {
+		dbConnector.createChildBookNodeAndRelations("rubbish_ASIN", childBookData, function(err) {
 			if (err) {
 				return done(err);
 			}
@@ -167,11 +153,11 @@ describe("DbConnector", function() {
 	});
 
 	it("insert a Book node as a child of another Book node", function(done) {
-		dbConnector.createBookNode(bookData, function(err, result) {
+		dbConnector.createBookNode(bookData, function(err) {
 			if (err) {
 				return done(err);
 			}
-			dbConnector.createChildBookNodeAndRelations(bookData.ASIN, childBookData, function(err, result) {
+			dbConnector.createChildBookNodeAndRelations(bookData.ASIN, childBookData, function(err) {
 				if (err) {
 					return done(err);
 				}

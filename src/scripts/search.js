@@ -1,7 +1,6 @@
 // try different search responseGroups to find the one with the info we want
 var CrawlQueue = require("../lib/crawl_queue");
 var log = require("../lib/log")
-var util = require("util");
 
 var responseGroups = [
 	"Small",
@@ -25,7 +24,7 @@ var main = function() {
 		crawler.keywordSearch(searchTerm, responseGroup,function(err, result) {
 			log.info(responseGroup, "RESPONSE GROUP");
 			if (err) {
-				log.error(err, "Error");
+				log.error(err, "Error in scripts/search.js#main()");
 				log.error(err.stack, "stack");
 			}
 			try {

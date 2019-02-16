@@ -4,10 +4,19 @@ var aws = require("aws-lib");
 var config = require("./config");
 var DbConnector = require("./graphdb_connector");
 var log = require("./log");
-var path = require("path");
 var priceAsin = require("./price_connector");
 var RateLimiter = require("limiter").RateLimiter;
+var StatsD = require("node-statsd");
 var util = require("util");
+
+var statsd = new StatsD();
+
+const BACKOFF_SECONDS = 10;
+
+function callProdAdv(crawlQueue, query, params, callback) {
+	statsd.increment("call_product_advertising_api");
+	crawlQueue.prodAdv.call(query, params, callback);
+}
 
 function CrawlQueue(options) {
 	if (!options) {
@@ -17,13 +26,18 @@ function CrawlQueue(options) {
 	this.nodeCount = 0;
 	log.debug({}, "maxCrawlDepth: " + this.maxCrawlDepth);
 
+	this.doPriceLookup = options.doPriceLookup;
+	if (!this.doPriceLookup) {
+		log.info({}, "Price lookup is not enabled");
+	}
+
 	var keyId = config.get("AMZN_ACCESS_KEY_ID", true);
 	var keySecret = config.get("AMZN_ACCESS_KEY_SECRET", true);
 	var associateTag = config.get("AMZN_ASSOCIATE_TAG", true);
 	var amazonServiceHost = config.get("AMZN_SERVICE_HOST") || "webservices.amazon.co.uk";
 
 	this.prodAdv = aws.createProdAdvClient(keyId, keySecret, associateTag, { host: amazonServiceHost});
-	this.limiter = new RateLimiter(1, "second");
+	this.limiter = new RateLimiter(50, "minute");
 	this.db = new DbConnector();
 }
 
@@ -33,11 +47,23 @@ CrawlQueue.prototype.throttledSimilarityLookup = function(asin, callback) {
 		if (err) {
 			return callback(err);
 		}
-		self.prodAdv.call("SimilarityLookup", { ItemId: asin }, callback);
+		callProdAdv(self, "SimilarityLookup", { ItemId: asin }, function(err, data) {
+			if (err && err.message.indexOf('submitting requests too quickly') != -1) {
+				log.warn({err: err}, "Submitting requests too quickly; back off and retry");
+				setTimeout(function() {
+					return self.throttledSimilarityLookup(asin, callback);
+				}, BACKOFF_SECONDS);
+			} else {
+				return callback(err, data);
+			}
+		});
 	});
 };
 
 CrawlQueue.prototype.throttledPriceLookup = function(asin, callback) {
+	if (!this.doPriceLookup) {
+		return callback(null, {});
+	}
 	this.limiter.removeTokens(1, function(err) {
 		if (err) {
 			return callback(err);
@@ -130,14 +156,17 @@ CrawlQueue.prototype.createNodeWithAsin = function(asin, callback) {
 		if (err) {
 			return callback(err);
 		}
-		self.prodAdv.call("ItemLookup", { ItemId: asin }, function(err, result) {
+		callProdAdv(self, "ItemLookup", { ItemId: asin }, function(err, result) {
+			if (err) {
+				return callback(err);
+			}
 			self.db.createBookNode(result.Items.Item, callback);
 		});
 	});
 };
 
 CrawlQueue.prototype.keywordSearch = function(keyword, responseGroup, callback) {
-	this.prodAdv.call("ItemSearch", { Keywords: keyword, ResponseGroup: responseGroup }, callback);
+	callProdAdv(this, "ItemSearch", { Keywords: keyword, ResponseGroup: responseGroup }, callback);
 };
 
 CrawlQueue.inputDir = '/temp/output';

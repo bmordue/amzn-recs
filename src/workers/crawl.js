@@ -46,7 +46,7 @@ var work = function(callback) {
 var main = function() {
 	work(function(err) {
 		if (err) {
-			log.error(err, "Error");
+			log.error(err, "Error in workers/crawl.js#work()");
 			log.error(err.stack, "stack");
 			process.exit(1);
 		} else {

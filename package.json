@@ -2,9 +2,9 @@
   "name": "amzn-recs",
   "version": "1.0.0",
   "description": "Crawl recommendations",
-  "main": "scripts/crawl.js",
+  "main": "src/scripts/crawl.js",
   "scripts": {
-    "test": "mocha --recursive --reporter xunit --reporter-options output=results_xunit.xml --exit test/lib_tests",
+    "test": "mocha --recursive --reporter xunit --reporter-options output=results_xunit.xml --exit src/test/lib_tests",
     "coverage": "istanbul cover _mocha -- --recursive"
   },
   "repository": {

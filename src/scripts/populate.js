@@ -8,7 +8,6 @@ var log = require("../lib/log");
 var path = require("path");
 var priceAsin = require("../lib/price_connector");
 var RateLimiter = require("limiter").RateLimiter;
-var util = require("util");
 
 var dbCon = new DbConnector();
 var limiter = new RateLimiter(1, "second");

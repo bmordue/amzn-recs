@@ -1,7 +1,6 @@
 // crawl prod adv API and write results to JSON files
 var CrawlQueue = require("../lib/crawl_queue");
 var log = require("../lib/log");
-var util = require("util");
 
 var main = function() {
 	var rootAsin = process.argv[2]; //starting ASIN
@@ -16,7 +15,7 @@ var main = function() {
 	log.info({root: rootAsin, depth: maxDepth}, "Start crawling...");
 	crawler.crawl(rootAsin, 0, function(err) {
 		if (err) {
-			log.error(err, "Error");
+			log.error(err, "Error in scripts/crawl.js");
 			log.error(err.stack, "stack");
 			process.exit(1);
 		}

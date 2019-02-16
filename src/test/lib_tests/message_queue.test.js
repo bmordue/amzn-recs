@@ -1,8 +1,6 @@
 var assert = require("assert");
 var async = require("async");
-var fs = require("fs");
 var MessageQueue = require("../../lib/message_queue");
-var path = require('path');
 var util = require("util");
 
 // TODO: make test assertions beyond lack of error
@@ -110,7 +108,7 @@ describe("message queue", function() {
 		});
 		describe("#claim()", function() {
 			it("claim a task", function(done) {
-				queue.claim(function(err, task) {
+				queue.claim(function(err) {
 					if (err) {
 						return done(err);
 					}

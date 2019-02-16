@@ -17,7 +17,7 @@ node {
     def test_token = "111111"
 
     sh "docker run --rm ${volumes} ${image_name}:${tag} npm install > npm-install.log"
-    sh "docker run --rm ${volumes} ${image_name}:${tag} node scripts/add_to_api_whitelist.js ${test_token}"
+    sh "docker run --rm ${volumes} ${image_name}:${tag} node src/scripts/add_to_api_whitelist.js ${test_token}"
 
   stage 'Run tests'
     milestone milestone_count++

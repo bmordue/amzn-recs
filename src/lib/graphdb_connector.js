@@ -129,6 +129,7 @@ DbConnector.prototype.createBookNode = function(data, callback) {
 		log.warn(data, "Expected ItemAttributes.ProductGroup to be eBooks");
 	}
 	var query = buildMergeWithPriceQuery(data);
+	log.debug({query: query}, "Query graph DB");
 	this.db.cypher({ query: query.queryString, params: query.params }, callback);
 };
 
@@ -164,5 +165,31 @@ DbConnector.prototype.countOutgoingRecommendations = function(asin, callback) {
 		return callback(null, result[0]);
 	});
 };
+
+DbConnector.prototype.listAllAsins = function(callback) {
+	this.db.cypher({
+		query: "MATCH (n:Book) RETURN n.ASIN AS asin",
+		params: {}
+	}, function(err, result) {
+		if (err) {
+			return callback(err);
+		}
+		log.debug({count: result.length}, "listed all ASINs");
+		return callback(null, result);
+	});
+}
+
+DbConnector.prototype.listLeafNodeAsins = function(callback) {
+	this.db.cypher({
+		query: "MATCH (n) WHERE NOT (n)-->() RETURN n.ASIN as asin;",
+		params: {}
+	}, function(err, result) {
+		if (err) {
+			return callback(err);
+		}
+		log.debug({count: result.length}, "listed all leaf node ASINs");
+		return callback(null, result);
+	});
+}
 
 module.exports = DbConnector;
