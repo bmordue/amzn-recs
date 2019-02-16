@@ -1,7 +1,4 @@
-// crawl prod adv API
-var async = require("async");
 var CrawlQueue = require("../lib/crawl_queue");
-var fs = require("fs");
 var log = require("../lib/log")
 var util = require("util");
 

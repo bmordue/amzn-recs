@@ -3,7 +3,6 @@
 var async = require("async");
 var CrawlQueue = require("../lib/crawl_queue");
 var log = require("../lib/log");
-var util = require("util");
 
 // client is a Product Advertising API client -- see lib/crawl_queue.js
 // author is an author's full name

@@ -13,20 +13,6 @@ MessageQueue.STATUS_WAITING			= 'waiting';
 MessageQueue.STATUS_PROCESSING	= 'processing';
 MessageQueue.STATUS_DONE				= 'done';
 
-// TODO: make sure no DB context is leaking through callback results!
-
-function dumpDb(db, callback) {
-	var queryStr = util.format("SELECT *, rowid from %s", CRAWL_TASKS_TABLE_NAME);
-	var stmt = db.prepare(queryStr);
-	stmt.all(function(err, rows) {
-		if (err) {
-			return callback(err);
-		}
-		stmt.finalize(function(err) {
-			callback(err, rows);
-		});
-	});
-}
 
 function MessageQueue(options) {
 	this.options = options || {};

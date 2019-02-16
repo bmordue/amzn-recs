@@ -4,7 +4,6 @@ var aws = require("aws-lib");
 var config = require("./config");
 var DbConnector = require("./graphdb_connector");
 var log = require("./log");
-var path = require("path");
 var priceAsin = require("./price_connector");
 var RateLimiter = require("limiter").RateLimiter;
 var StatsD = require("node-statsd");
@@ -13,10 +12,6 @@ var util = require("util");
 var statsd = new StatsD();
 
 const BACKOFF_SECONDS = 10;
-
-var fail = function() {
-	throw new Error("Missing required env var");
-};
 
 function callProdAdv(crawlQueue, query, params, callback) {
 	statsd.increment("call_product_advertising_api");

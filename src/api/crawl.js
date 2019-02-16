@@ -5,7 +5,6 @@ var log          = require('../lib/log');
 var MessageQueue = require('../lib/message_queue');
 var Router       = require('router');
 var StatsD = require('node-statsd');
-var url          = require('url');
 var util         = require('util');
 var Whitelist    = require('../lib/whitelist');
 
