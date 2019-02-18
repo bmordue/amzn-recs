@@ -8,4 +8,4 @@ RUN npm install
 
 COPY . .
 
-CMD ["node", "api/crawl.js"]
+CMD ["node", "src/api/crawl.js"]
