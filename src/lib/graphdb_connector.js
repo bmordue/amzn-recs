@@ -18,7 +18,7 @@ function DbConnector(options) {
 		url: dbUrl,
 		auth: {username: dbUsername, password: dbPassword}
 	});
-	
+
 	var auth = dbUsername && dbPassword ? neo4j.auth.basic(dbUsername, dbPassword) : null;
 	this.driver = neo4j3.driver(uri, auth);
 }
@@ -83,7 +83,7 @@ function createChildBookNode(driver, data, callback) {
 			callback(err, result);
 		});
 	};
-	
+
 	session.run(query.queryString, query.params)
 		.subscribe({
 			onNext: 
@@ -101,7 +101,7 @@ function addParentChildRelation(driver, parentAsin, childAsin, callback) {
 		parentAsin: parentAsin,
 		childAsin: childAsin
 	};
-	
+
 	const session = driver.session();
 
 	function closeAndCallback(err, result) = {
@@ -109,7 +109,7 @@ function addParentChildRelation(driver, parentAsin, childAsin, callback) {
 			callback(err, result);
 		});
 	};
-	
+
 	session.run(queryStr, params)
 		.subscribe({
 			onCompleted: function(summary) { closeAndCallback(null, summary); },
@@ -196,7 +196,7 @@ DbConnector.prototype.createBookNode = function(data, callback) {
 
 function simpleQuery(connector, query, callback) {
 	const session = connector.driver.session();
-	
+
 	function closeAndCallback(err, result) = {
 		session.close(function() {
 			callback(err, result);
@@ -212,68 +212,69 @@ function simpleQuery(connector, query, callback) {
 		});
 }
 
-function simpleQueryForAsin(connector, text, asin, callbacl) {
-	
+function simpleQueryForAsin(connector, text, asin, callback) {
+	var query = {
+		text: text,
+		ASIN: asin
+	};
+	simpleQuery(connector, query, callback);
 }
 
 DbConnector.prototype.getBookNode = function(asin, callback) {
-	var query = {
-		text: "MATCH (n { ASIN: {ASIN} }) RETURN n",
-		params: {
-			ASIN: asin
-		}
-	};
-	simpleQuery(this, query, callback);
+	var text = "MATCH (n { ASIN: {ASIN} }) RETURN n";
+	simpleQuery(this, text, asin, callback);
 };
 
 DbConnector.prototype.deleteBookNode = function(asin, callback) {
-	var query = {
-		text: "MATCH (n { ASIN: {ASIN} }) DETACH DELETE n RETURN COUNT(n)",
-		params: {
-			ASIN: asin
-		}
-	};
-	simpleQuery(this, query, callback);
+	var text = "MATCH (n { ASIN: {ASIN} }) DETACH DELETE n RETURN COUNT(n)";
+	simpleQuery(this, text, asin, callback);
 };
 
 DbConnector.prototype.countOutgoingRecommendations = function(asin, callback) {
-	this.db.cypher({
-		query: "MATCH (n { ASIN: {ASIN} })-[r]->() RETURN COUNT(DISTINCT r) AS outgoing",
-		params: {
-			ASIN: asin
-		}
-	}, function(err, result) {
-		if (err) {
-			return callback(err);
-		}
-		log.debug(result[0], "outgoing relationships");
-		return callback(null, result[0]);
-	});
+	var query = {
+		text: "MATCH (n { ASIN: {ASIN} })-[r]->() RETURN COUNT(DISTINCT r) AS outgoing",
+		params: { ASIN: asin }
+	};
+
+	var session = this.driver.session();
+
+	function closeAndCallback(err, result) = {
+		session.close(function() {
+			callback(err, result);
+		};
+	};
+
+	session.run(query)
+		.subscribe({
+			onNext: function(result) {
+				log.debug({result: result}, 'outgoing relationships');
+			},
+			onCompleted: function(summary) {
+				closeAndCallback(null, summary);
+			},
+			onError: closeAndCallback
+		});
 };
 
 DbConnector.prototype.listAllAsins = function(callback) {
-	this.db.cypher({
-		query: "MATCH (n:Book) RETURN n.ASIN AS asin",
+	var query = {
+		text: "MATCH (n:Book) RETURN n.ASIN AS asin",
 		params: {}
-	}, function(err, result) {
-		if (err) {
-			return callback(err);
-		}
-		log.debug({count: result.length}, "listed all ASINs");
-		return callback(null, result);
+	};
+	simpleQuery(this, query, function(err, summary) {
+		log.debug({summary: summary}, 'listed all ASINs');
+		callback(err, summary);
 	});
 }
 
 DbConnector.prototype.listLeafNodeAsins = function(callback) {
-	this.db.cypher({
-		query: "MATCH (n) WHERE NOT (n)-->() RETURN n.ASIN as asin;",
+	var query = {
+		text: "MATCH (n) WHERE NOT (n)-->() RETURN n.ASIN as asin;",
 		params: {}
-	}, function(err, result) {
-		if (err) {
-			return callback(err);
-		}
-		log.debug({count: result.length}, "listed all leaf node ASINs");
-		return callback(null, result);
+	};
+	simpleQuery(this, query, function(err, summary) {
+		log.debug({summary: summary}, 'listed all leaf node ASINs');
+		callback(err, summary);
 	});
 }
 
