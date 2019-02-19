@@ -2,7 +2,6 @@ require("dotenv").load({silent: true});
 var async = require("async");
 var config = require("./config");
 var log = require("./log");
-var neo4j = require("neo4j");
 var neo4j3 = require("neo4j-driver").v1;
 
 //TODO: review result passed to callback for each function
@@ -10,23 +9,18 @@ var neo4j3 = require("neo4j-driver").v1;
 
 function DbConnector(options) {
 	this.options = options;
-	var dbUrl = config.get("DB_URL") || "graphdb";
+	var dbUrl = config.get("DB_URL") || "bolt://graphdb";
 	var dbUsername = config.get("DB_USERNAME");
 	var dbPassword = config.get("DB_PASSWORD");
 
-	this.db = new neo4j.GraphDatabase({
-		url: dbUrl,
-		auth: {username: dbUsername, password: dbPassword}
-	});
-
-	var auth = dbUsername && dbPassword ? neo4j.auth.basic(dbUsername, dbPassword) : null;
-	this.driver = neo4j3.driver(uri, auth);
+	var auth = dbUsername && dbPassword ? neo4j3.auth.basic(dbUsername, dbPassword) : null;
+	this.driver = neo4j3.driver(dbUrl, auth);
 }
 
 DbConnector.prototype.init = function(callback) {
 	const session = this.driver.session();
 
-	function closeAndCallback(err, result) = {
+	var closeAndCallback = function(err, result) {
 		session.close(function() {
 			callback(err, result);
 		});
@@ -78,7 +72,7 @@ function createChildBookNode(driver, data, callback) {
 
 	const session = driver.session();
 
-	function closeAndCallback(err, result) = {
+	var closeAndCallback = function(err, result) {
 		session.close(function() {
 			callback(err, result);
 		});
@@ -86,7 +80,6 @@ function createChildBookNode(driver, data, callback) {
 
 	session.run(query.queryString, query.params)
 		.subscribe({
-			onNext: 
 			onCompleted: function(summary) {
 				log.debug({result: summary}, 'initial merge query complete');
 				closeAndCallback();
@@ -104,7 +97,7 @@ function addParentChildRelation(driver, parentAsin, childAsin, callback) {
 
 	const session = driver.session();
 
-	function closeAndCallback(err, result) = {
+	var closeAndCallback = function(err, result) {
 		session.close(function() {
 			callback(err, result);
 		});
@@ -181,10 +174,10 @@ DbConnector.prototype.createBookNode = function(data, callback) {
 
 	const session = this.driver.session();
 
-	function closeAndCallback(err, result) = {
+	var closeAndCallback = function(err, result) {
 		session.close(function() {
 			callback(err, result);
-		};
+		});
 	};
 
 	session.run(query.queryString, query.params)
@@ -197,10 +190,10 @@ DbConnector.prototype.createBookNode = function(data, callback) {
 function simpleQuery(connector, query, callback) {
 	const session = connector.driver.session();
 
-	function closeAndCallback(err, result) = {
+	var closeAndCallback = function(err, result) {
 		session.close(function() {
 			callback(err, result);
-		};
+		});
 	};
 
 	var singleResult = null;
@@ -238,10 +231,10 @@ DbConnector.prototype.countOutgoingRecommendations = function(asin, callback) {
 
 	var session = this.driver.session();
 
-	function closeAndCallback(err, result) = {
+	var closeAndCallback = function(err, result) {
 		session.close(function() {
 			callback(err, result);
-		};
+		});
 	};
 
 	session.run(query)
