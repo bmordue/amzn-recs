@@ -3,6 +3,7 @@ var async = require("async");
 var config = require("./config");
 var log = require("./log");
 var neo4j = require("neo4j");
+var neo4j3 = require("neo4j-driver").v1;
 
 //TODO: review result passed to callback for each function
 // if they're always [], is there any point...?
@@ -17,17 +18,32 @@ function DbConnector(options) {
 		url: dbUrl,
 		auth: {username: dbUsername, password: dbPassword}
 	});
+	
+	var auth = dbUsername && dbPassword ? neo4j.auth.basic(dbUsername, dbPassword) : null;
+	this.driver = neo4j3.driver(uri, auth);
 }
 
 DbConnector.prototype.init = function(callback) {
-	var self = this;
-	this.db.cypher({query:"CREATE CONSTRAINT ON (book:Book) ASSERT book.ASIN IS UNIQUE"}, function(err) {
-		if (err) {
-			return callback(err);
-		}
-		self.db.cypher({query:"CREATE CONSTRAINT ON (author:Author) ASSERT author.name IS UNIQUE"}, callback);
-	});
-};
+	const session = this.driver.session();
+
+	function closeAndCallback(err, result) = {
+		session.close(function() {
+			callback(err, result);
+		});
+	};
+
+	session.run('CREATE CONSTRAINT ON (book:Book) ASSERT book.ASIN IS UNIQUE')
+		.subscribe({
+			onCompleted: function() {
+				session.run('CREATE CONSTRAINT ON (author:Author) ASSERT author.name IS UNIQUE')
+					.subscribe({
+						onCompleted: function(summary) { closeAndCallback(null, summary); },
+						onError: closeAndCallback
+					});
+			},
+			onError: closeAndCallback
+		});
+}
 
 function buildMergeWithPriceQuery(data) {
 	var mergeQueryStr;
@@ -57,32 +73,56 @@ function buildMergeWithPriceQuery(data) {
 	return { queryString: mergeQueryStr, params: mergeParams};
 }
 
-function createChildBookNode(db, data, callback) {
+function createChildBookNode(driver, data, callback) {
 	var query = buildMergeWithPriceQuery(data);
-	db.cypher({
-		query: query.queryString,
-		params: query.params
-	}, function(err, result) {
-		log.debug({result: result}, 'initial merge query complete');
-		callback(err);
-	});
+
+	const session = driver.session();
+
+	function closeAndCallback(err, result) = {
+		session.close(function() {
+			callback(err, result);
+		});
+	};
+	
+	session.run(query.queryString, query.params)
+		.subscribe({
+			onNext: 
+			onCompleted: function(summary) {
+				log.debug({result: summary}, 'initial merge query complete');
+				closeAndCallback();
+			},
+			onError: closeAndCallback
+		});
 }
 
-function addParentChildRelation(db, parentAsin, childAsin, callback) {
-	db.cypher({
-		query: "MATCH (parent:Book {ASIN: {parentAsin}}),(child:Book {ASIN: {childAsin}}) MERGE (parent)-[r:SIMILAR_TO]->(child) RETURN r",
-		params: {
-			parentAsin: parentAsin,
-			childAsin: childAsin
-		}
-	}, callback);
+function addParentChildRelation(driver, parentAsin, childAsin, callback) {
+	const queryStr = "MATCH (parent:Book {ASIN: {parentAsin}}),(child:Book {ASIN: {childAsin}}) MERGE (parent)-[r:SIMILAR_TO]->(child) RETURN r";
+	const params = {
+		parentAsin: parentAsin,
+		childAsin: childAsin
+	};
+	
+	const session = driver.session();
+
+	function closeAndCallback(err, result) = {
+		session.close(function() {
+			callback(err, result);
+		});
+	};
+	
+	session.run(queryStr, params)
+		.subscribe({
+			onCompleted: function(summary) { closeAndCallback(null, summary); },
+			onError: closeAndCallback
+		});
 }
 
-function addAuthorRelations(db, data, callback) {
+function addAuthorRelations(driver, data, callback) {
 	var authorList = data.ItemAttributes.Author;
 	if (authorList.constructor !== Array ) {
 		authorList = [authorList];
 	}
+	const session = driver.session();
 	async.each(authorList, function(author, each_cb) {
 		var queryStr =
 			"MATCH (b:Book {ASIN: {childAsin}})" +
@@ -92,8 +132,16 @@ function addAuthorRelations(db, data, callback) {
 			childAsin: data.ASIN,
 			author: author
 		};
-		db.cypher({query: queryStr, params: params}, each_cb);
-	}, callback);
+		session.run(queryStr, params)
+			.subscribe({
+				onCompleted: function() { each_cb(); }, 
+				onError: each_cb}
+			);
+	}, function(err, result) {
+		session.close(function() {
+			callback(err, result);
+		});
+	});
 }
 
 DbConnector.prototype.createChildBookNodeAndRelations = function(parentAsin, data, callback) {
@@ -109,13 +157,13 @@ DbConnector.prototype.createChildBookNodeAndRelations = function(parentAsin, dat
 	var newNodeResult = [];
 	async.waterfall([
 		function(cb) {
-			createChildBookNode(self.db, data, cb);
+			createChildBookNode(self.driver, data, cb);
 		},
 		function(cb) {
-			addParentChildRelation(self.db, parentAsin, data.ASIN, cb);
+			addParentChildRelation(self.driver, parentAsin, data.ASIN, cb);
 		},
 		function(result, cb) {
-			addAuthorRelations(self.db, data, cb);
+			addAuthorRelations(self.driver, data, cb);
 		}
 		],
 	function(err) {
@@ -130,25 +178,62 @@ DbConnector.prototype.createBookNode = function(data, callback) {
 	}
 	var query = buildMergeWithPriceQuery(data);
 	log.debug({query: query}, "Query graph DB");
-	this.db.cypher({ query: query.queryString, params: query.params }, callback);
+
+	const session = this.driver.session();
+
+	function closeAndCallback(err, result) = {
+		session.close(function() {
+			callback(err, result);
+		};
+	};
+
+	session.run(query.queryString, query.params)
+		.subscribe({
+			onCompleted: function() { closeAndCallback(); },
+			onError: closeAndCallback
+		});
 };
 
+function simpleQuery(connector, query, callback) {
+	const session = connector.driver.session();
+	
+	function closeAndCallback(err, result) = {
+		session.close(function() {
+			callback(err, result);
+		};
+	};
+
+	var singleResult = null;
+	session.run(query)
+		.subscribe({
+			onNext: function(result) { singleResult = result; },
+			onCompleted: function(summary) { closeAndCallback(null, singleResult); },
+			onError: closeAndCallback
+		});
+}
+
+function simpleQueryForAsin(connector, text, asin, callbacl) {
+	
+}
+
 DbConnector.prototype.getBookNode = function(asin, callback) {
-	this.db.cypher({
-		query: "MATCH (n { ASIN: {ASIN} }) RETURN n",
+	var query = {
+		text: "MATCH (n { ASIN: {ASIN} }) RETURN n",
 		params: {
 			ASIN: asin
 		}
-	}, callback);
+	};
+	simpleQuery(this, query, callback);
 };
 
 DbConnector.prototype.deleteBookNode = function(asin, callback) {
-	this.db.cypher({
-		query: "MATCH (n { ASIN: {ASIN} }) DETACH DELETE n RETURN COUNT(n)",
+	var query = {
+		text: "MATCH (n { ASIN: {ASIN} }) DETACH DELETE n RETURN COUNT(n)",
 		params: {
 			ASIN: asin
 		}
-	}, callback);
+	};
+	simpleQuery(this, query, callback);
 };
 
 DbConnector.prototype.countOutgoingRecommendations = function(asin, callback) {
@@ -191,5 +276,10 @@ DbConnector.prototype.listLeafNodeAsins = function(callback) {
 		return callback(null, result);
 	});
 }
+
+DbConnector.prototype.close = function(callback) {
+	this.driver.close();
+}
+
 
 module.exports = DbConnector;
