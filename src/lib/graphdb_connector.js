@@ -2,7 +2,6 @@ require("dotenv").load({silent: true});
 var async = require("async");
 var config = require("./config");
 var log = require("./log");
-var neo4j = require("neo4j");
 var neo4j3 = require("neo4j-driver").v1;
 
 //TODO: review result passed to callback for each function
