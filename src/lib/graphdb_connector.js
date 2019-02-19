@@ -26,7 +26,7 @@ function DbConnector(options) {
 DbConnector.prototype.init = function(callback) {
 	const session = this.driver.session();
 
-	function closeAndCallback(err, result) = {
+	var closeAndCallback = function(err, result) {
 		session.close(function() {
 			callback(err, result);
 		});
@@ -78,7 +78,7 @@ function createChildBookNode(driver, data, callback) {
 
 	const session = driver.session();
 
-	function closeAndCallback(err, result) = {
+	var closeAndCallback = function(err, result) {
 		session.close(function() {
 			callback(err, result);
 		});
@@ -86,7 +86,6 @@ function createChildBookNode(driver, data, callback) {
 
 	session.run(query.queryString, query.params)
 		.subscribe({
-			onNext: 
 			onCompleted: function(summary) {
 				log.debug({result: summary}, 'initial merge query complete');
 				closeAndCallback();
@@ -104,7 +103,7 @@ function addParentChildRelation(driver, parentAsin, childAsin, callback) {
 
 	const session = driver.session();
 
-	function closeAndCallback(err, result) = {
+	var closeAndCallback = function(err, result) {
 		session.close(function() {
 			callback(err, result);
 		});
@@ -181,10 +180,10 @@ DbConnector.prototype.createBookNode = function(data, callback) {
 
 	const session = this.driver.session();
 
-	function closeAndCallback(err, result) = {
+	var closeAndCallback = function(err, result) {
 		session.close(function() {
 			callback(err, result);
-		};
+		});
 	};
 
 	session.run(query.queryString, query.params)
@@ -197,10 +196,10 @@ DbConnector.prototype.createBookNode = function(data, callback) {
 function simpleQuery(connector, query, callback) {
 	const session = connector.driver.session();
 
-	function closeAndCallback(err, result) = {
+	var closeAndCallback = function(err, result) {
 		session.close(function() {
 			callback(err, result);
-		};
+		});
 	};
 
 	var singleResult = null;
@@ -238,10 +237,10 @@ DbConnector.prototype.countOutgoingRecommendations = function(asin, callback) {
 
 	var session = this.driver.session();
 
-	function closeAndCallback(err, result) = {
+	var closeAndCallback = function(err, result) {
 		session.close(function() {
 			callback(err, result);
-		};
+		});
 	};
 
 	session.run(query)
