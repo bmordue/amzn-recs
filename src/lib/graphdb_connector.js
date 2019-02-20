@@ -14,13 +14,16 @@ function DbConnector(options) {
 	var dbPassword = config.get("DB_PASSWORD");
 
 	var auth = dbUsername && dbPassword ? neo4j3.auth.basic(dbUsername, dbPassword) : null;
+	log.debug({}, 'open driver');
 	this.driver = neo4j3.driver(dbUrl, auth);
 }
 
 DbConnector.prototype.init = function(callback) {
+	log.info({pos: 1}, 'open session')
 	const session = this.driver.session();
 
 	var closeAndCallback = function(err, result) {
+		log.info({pos: 1}, 'close session');
 		session.close(function() {
 			callback(err, result);
 		});
@@ -28,6 +31,7 @@ DbConnector.prototype.init = function(callback) {
 
 	session.run('CREATE CONSTRAINT ON (book:Book) ASSERT book.ASIN IS UNIQUE')
 		.subscribe({
+			onNext: ()=>{},
 			onCompleted: function() {
 				session.run('CREATE CONSTRAINT ON (author:Author) ASSERT author.name IS UNIQUE')
 					.subscribe({
@@ -69,17 +73,21 @@ function buildMergeWithPriceQuery(data) {
 
 function createChildBookNode(driver, data, callback) {
 	var query = buildMergeWithPriceQuery(data);
-
+	log.debug({pos: 2}, 'open session');
 	const session = driver.session();
 
 	var closeAndCallback = function(err, result) {
+		log.debug({pos: 2}, 'close session');
+		log.warn({err: err, result: result}, 'dropping err and result on the floor');
 		session.close(function() {
-			callback(err, result);
+			log.debug({}, 'closed session at pos 2');
+			callback();
 		});
 	};
 
 	session.run(query.queryString, query.params)
 		.subscribe({
+			onNext: ()=>{},
 			onCompleted: function(summary) {
 				log.debug({result: summary}, 'initial merge query complete');
 				closeAndCallback();
@@ -95,16 +103,21 @@ function addParentChildRelation(driver, parentAsin, childAsin, callback) {
 		childAsin: childAsin
 	};
 
+	log.debug({pos:3}, 'open session');
 	const session = driver.session();
+	log.debug({callback: typeof callback}, 'what is callback 1');
 
 	var closeAndCallback = function(err, result) {
+		log.debug({pos: 3}, 'close session');
 		session.close(function() {
+			log.debug({callback: typeof callback}, 'what is callback 2');
 			callback(err, result);
 		});
 	};
 
 	session.run(queryStr, params)
 		.subscribe({
+			onNext: ()=>{},
 			onCompleted: function(summary) { closeAndCallback(null, summary); },
 			onError: closeAndCallback
 		});
@@ -115,6 +128,7 @@ function addAuthorRelations(driver, data, callback) {
 	if (authorList.constructor !== Array ) {
 		authorList = [authorList];
 	}
+	log.debug({pos: 4}, 'create session');
 	const session = driver.session();
 	async.each(authorList, function(author, each_cb) {
 		var queryStr =
@@ -127,10 +141,12 @@ function addAuthorRelations(driver, data, callback) {
 		};
 		session.run(queryStr, params)
 			.subscribe({
+				onNext: ()=>{},
 				onCompleted: function() { each_cb(); }, 
 				onError: each_cb}
 			);
 	}, function(err, result) {
+		log.debug({pos: 4}, 'close session')
 		session.close(function() {
 			callback(err, result);
 		});
@@ -153,6 +169,7 @@ DbConnector.prototype.createChildBookNodeAndRelations = function(parentAsin, dat
 			createChildBookNode(self.driver, data, cb);
 		},
 		function(cb) {
+			log.debug({args: arguments}, 'what are arguments');
 			addParentChildRelation(self.driver, parentAsin, data.ASIN, cb);
 		},
 		function(result, cb) {
@@ -171,10 +188,11 @@ DbConnector.prototype.createBookNode = function(data, callback) {
 	}
 	var query = buildMergeWithPriceQuery(data);
 	log.debug({query: query}, "Query graph DB");
-
+	log.debug({pos: 5}, 'open session');
 	const session = this.driver.session();
 
 	var closeAndCallback = function(err, result) {
+		log.debug({pos: 5}, 'close session');
 		session.close(function() {
 			callback(err, result);
 		});
@@ -182,15 +200,18 @@ DbConnector.prototype.createBookNode = function(data, callback) {
 
 	session.run(query.queryString, query.params)
 		.subscribe({
+			onNext: ()=>{},
 			onCompleted: function() { closeAndCallback(); },
 			onError: closeAndCallback
 		});
 };
 
 function simpleQuery(connector, query, callback) {
+	log.debug({pos: 6}, 'open session');
 	const session = connector.driver.session();
 
 	var closeAndCallback = function(err, result) {
+		log.debug({pos: 6}, 'close session')
 		session.close(function() {
 			callback(err, result);
 		});
@@ -228,10 +249,11 @@ DbConnector.prototype.countOutgoingRecommendations = function(asin, callback) {
 		text: "MATCH (n { ASIN: {ASIN} })-[r]->() RETURN COUNT(DISTINCT r) AS outgoing",
 		params: { ASIN: asin }
 	};
-
+	log.debug({pos: 7}, 'open session');
 	var session = this.driver.session();
 
 	var closeAndCallback = function(err, result) {
+		log.debug({pos: 7}, 'close session');
 		session.close(function() {
 			callback(err, result);
 		});
@@ -272,6 +294,7 @@ DbConnector.prototype.listLeafNodeAsins = function(callback) {
 }
 
 DbConnector.prototype.close = function(callback) {
+	log.debug({}, 'close driver');
 	this.driver.close();
 }
 
