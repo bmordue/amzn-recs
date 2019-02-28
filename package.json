@@ -4,8 +4,7 @@
   "description": "Crawl recommendations",
   "main": "src/scripts/crawl.js",
   "scripts": {
-    "test": "mocha --recursive --reporter xunit --reporter-options output=results_xunit.xml --exit src/test/lib_tests",
-    "coverage": "istanbul cover _mocha -- --recursive"
+    "test": "mocha --recursive --reporter xunit --reporter-options output=results_xunit.xml --exit src/test/lib_tests"
   },
   "repository": {
     "type": "git",
@@ -32,8 +31,8 @@
     "verror": "^1.10.0"
   },
   "devDependencies": {
-    "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
+    "nyc": "^13.3.0",
     "should": "^13.2.3"
   }
 }
