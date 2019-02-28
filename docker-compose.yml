@@ -2,8 +2,12 @@ version: '3.1'
 
 services:
   app:
-    image: bmordue/amzn-recs:60bf980
+    image: bmordue/amzn-recs:latest
+#    image: node:8.10
+#    command: node src/api/crawl.js
+#    working_dir: /proj
     volumes:
+#      - .:/proj
       - ./amzn-recs:/temp
     secrets:
       - AMZN_ACCESS_KEY_ID
@@ -11,14 +15,15 @@ services:
       - AMZN_ASSOCIATE_TAG
     environment:
       - AMZN_SERVICE_HOST
-      - DB_URL=http://graphdb:7474
+      - DB_URL=bolt://graphdb
       - PRICE_LOOKUP_ENDPOINT=http://prices:3000/price
       - AMZN_RECS_LOG_LEVEL=DEBUG
       - CRAWL_API_ENDPOINT=http://localhost:3000/crawl
     networks:
+      - default
       - monitoring
   graphdb:
-    image: neo4j:3.4
+    image: neo4j:3.5.3
     ports:
       - 7474:7474
       - 7687:7687
@@ -27,9 +32,13 @@ services:
       - ./neo4j/logs:/logs
     environment:
       - NEO4J_AUTH=none
+    networks:
+      - default
+      - monitoring
   prices:
     image: bmordue/price-for-asin:latest
     networks:
+      - default
       - monitoring
 
 secrets:
