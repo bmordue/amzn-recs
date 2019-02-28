@@ -51,3 +51,6 @@ amzn-recs/
 neo4j/
 
 results_xunit.xml
+
+# sonarqube stuff
+.scannerwork/
