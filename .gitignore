@@ -54,3 +54,6 @@ results_xunit.xml
 
 # sonarqube stuff
 .scannerwork/
+
+# coverage
+.nyc_output/
