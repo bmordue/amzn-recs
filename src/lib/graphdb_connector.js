@@ -68,31 +68,38 @@ function buildMergeWithPriceQuery(data) {
 	mergeQueryChunks.push("RETURN b");
 	mergeQueryStr = mergeQueryChunks.join(" ");
 
-	return { queryString: mergeQueryStr, params: mergeParams};
+	return { text: mergeQueryStr, params: mergeParams };
 }
 
 function createChildBookNode(driver, data, callback) {
 	var query = buildMergeWithPriceQuery(data);
-	log.debug({pos: 2}, 'open session');
 	const session = driver.session();
 
 	var closeAndCallback = function(err, result) {
-		log.debug({pos: 2}, 'close session');
-		log.warn({err: err, result: result}, 'dropping err and result on the floor');
+		if (result) {log.warn({err: err, result: result}, 'dropping result on the floor'); }
 		session.close(function() {
-			log.debug({}, 'closed session at pos 2');
-			callback();
+			callback(err);
 		});
 	};
 
-	session.run(query.queryString, query.params)
+	log.debug(query.text, 'Query string for createChildBookNode');
+	log.debug(query.params, 'Query params for createChildBookNode')
+
+	if (!query.params) {
+		log.warn(query, 'Empty params object');
+	}
+
+	var text = query.text;
+	session.run(text, query.params)
 		.subscribe({
 			onNext: ()=>{},
 			onCompleted: function(summary) {
 				log.debug({result: summary}, 'initial merge query complete');
 				closeAndCallback();
 			},
-			onError: closeAndCallback
+			onError: (err) => {
+				closeAndCallback(err);
+			}
 		});
 }
 
