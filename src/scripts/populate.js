@@ -104,7 +104,7 @@ function main() {
 		function(cb) { fs.mkdir(CrawlQueue.errorDir, cb); },
 	], function(err) {
 		if (err) {
-			log.error(err, "Error creating doneDir or errorDir directory")// log but otherwise ignore
+			log.warn(err, "Error creating doneDir or errorDir directory")// log but otherwise ignore
 		}
 		populate(function(err) {
 			if (err) {
@@ -112,6 +112,7 @@ function main() {
 				process.exit(1);
 			}
 			log.info(nodes_count, "Node count: ");
+			process.exit(0);
 		});
 	});
 }
