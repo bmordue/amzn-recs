@@ -11,12 +11,14 @@ services:
       - AMZN_ASSOCIATE_TAG
     environment:
       - AMZN_SERVICE_HOST
-      - DB_URL=http://graphdb:7474
-      - PRICE_LOOKUP_ENDPOINT=http://prices/price
+      - DB_URL=bolt://graphdb
+      - PRICE_LOOKUP_ENDPOINT=http://prices:3000/price
       - AMZN_RECS_LOG_LEVEL=DEBUG
       - CRAWL_API_ENDPOINT=http://localhost:3000/crawl
+      - STATSD_HOST=datadog_agent
     networks:
       - monitoring
+      - default
   graphdb:
     image: neo4j:3.4
     ports:
@@ -27,10 +29,16 @@ services:
       - ./neo4j/logs:/logs
     environment:
       - NEO4J_AUTH=none
+    networks:
+      - monitoring
+      - default
   prices:
     image: bmordue/price-for-asin:latest
     networks:
       - monitoring
+      - default
+    environment:
+      - STATSD_HOST: datadog_agent
 
 secrets:
   AMZN_ACCESS_KEY_ID:
