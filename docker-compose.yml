@@ -37,8 +37,8 @@ services:
     networks:
       - monitoring
       - default
-  environment:
-    - STATSD_HOST: datadog_agent
+    environment:
+      - STATSD_HOST: datadog_agent
 
 secrets:
   AMZN_ACCESS_KEY_ID:
