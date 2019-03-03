@@ -1,3 +1,4 @@
+//TODO remove dotenv? or move to config.js
 require("dotenv").load({silent: true});
 var async = require("async");
 var config = require("./config");
@@ -9,13 +10,15 @@ var neo4j3 = require("neo4j-driver").v1;
 
 function DbConnector(options) {
 	this.options = options;
-	var dbUrl = config.get("DB_URL") || "bolt://graphdb";
+	var dbUrl = config.get("DB_URL") || "bolt://graphdb:7687";
 	var dbUsername = config.get("DB_USERNAME");
 	var dbPassword = config.get("DB_PASSWORD");
 
-	var auth = dbUsername && dbPassword ? neo4j3.auth.basic(dbUsername, dbPassword) : null;
+	var auth = dbUsername && dbPassword ? neo4j3.auth.basic(dbUsername, dbPassword) : {};
 	log.debug({}, 'open driver');
 	this.driver = neo4j3.driver(dbUrl, auth);
+	log.debug(auth, 'neo4j auth object');
+	log.debug({driver: this.driver}, 'driver state immediately after opening');
 }
 
 DbConnector.prototype.init = function(callback) {
@@ -82,6 +85,7 @@ function createChildBookNode(driver, data, callback) {
 		});
 	};
 
+//<<<<<<< Updated upstream
 	log.debug(query.text, 'Query string for createChildBookNode');
 	log.debug(query.params, 'Query params for createChildBookNode')
 
@@ -91,8 +95,12 @@ function createChildBookNode(driver, data, callback) {
 
 	var text = query.text;
 	session.run(text, query.params)
+//=======
+//	log.debug({pos: 2}, 'about to run sesion query');
+//	session.run(query.queryString, query.params)
+//>>>>>>> Stashed changes
 		.subscribe({
-			onNext: ()=>{},
+			onNext: (record)=>{log.debug({record: record}, 'received record');},
 			onCompleted: function(summary) {
 				log.debug({result: summary}, 'initial merge query complete');
 				closeAndCallback();
@@ -205,7 +213,7 @@ DbConnector.prototype.createBookNode = function(data, callback) {
 		});
 	};
 
-	session.run(query.queryString, query.params)
+	session.run(query.text, query.params)
 		.subscribe({
 			onNext: ()=>{},
 			onCompleted: function() { closeAndCallback(); },
@@ -228,7 +236,10 @@ function simpleQuery(connector, query, callback) {
 	session.run(query)
 		.subscribe({
 			onNext: function(result) { singleResult = result; },
-			onCompleted: function(summary) { closeAndCallback(null, singleResult); },
+			onCompleted: function(summary) {
+				log.debug(summary, 'Query result summary');
+				closeAndCallback(null, singleResult);
+			},
 			onError: closeAndCallback
 		});
 }
@@ -236,19 +247,19 @@ function simpleQuery(connector, query, callback) {
 function simpleQueryForAsin(connector, text, asin, callback) {
 	var query = {
 		text: text,
-		ASIN: asin
+		parameters: { ASIN: asin }
 	};
 	simpleQuery(connector, query, callback);
 }
 
 DbConnector.prototype.getBookNode = function(asin, callback) {
 	var text = "MATCH (n { ASIN: {ASIN} }) RETURN n";
-	simpleQuery(this, text, asin, callback);
+	simpleQueryForAsin(this, text, asin, callback);
 };
 
 DbConnector.prototype.deleteBookNode = function(asin, callback) {
 	var text = "MATCH (n { ASIN: {ASIN} }) DETACH DELETE n RETURN COUNT(n)";
-	simpleQuery(this, text, asin, callback);
+	simpleQueryForAsin(this, text, asin, callback);
 };
 
 DbConnector.prototype.countOutgoingRecommendations = function(asin, callback) {
@@ -300,7 +311,7 @@ DbConnector.prototype.listLeafNodeAsins = function(callback) {
 	});
 }
 
-DbConnector.prototype.close = function(callback) {
+DbConnector.prototype.close = function() {
 	log.debug({}, 'close driver');
 	this.driver.close();
 }
