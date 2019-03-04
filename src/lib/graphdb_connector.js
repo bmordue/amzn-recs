@@ -197,7 +197,7 @@ function simpleQuery(connector, query, callback) {
 	session.run(query)
 		.subscribe({
 			onNext: function(result) { singleResult = result; },
-			onCompleted: function(summary) {
+			onCompleted: function() {
 				closeAndCallback(callback, null, singleResult);
 			},
 			onError: function(err) { closeAndCallback(callback, err); }
