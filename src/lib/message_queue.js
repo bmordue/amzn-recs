@@ -7,7 +7,10 @@ var util = require("util");
 
 const CRAWL_TASKS_TABLE_NAME = "crawl_tasks";
 
-var statsd = new StatsD();
+var statsd = new StatsD({
+                        prefix: 'amzn-recs.message_queue.',
+                        host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'
+                });
 
 MessageQueue.STATUS_WAITING			= 'waiting';
 MessageQueue.STATUS_PROCESSING	= 'processing';

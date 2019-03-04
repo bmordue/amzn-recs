@@ -15,7 +15,7 @@ var checkAndCallback = function(errors, callback) {
 var crawl_from_existing = function(callback) {
 	var maxDepth = process.argv[2] || 2;
 	var maxNodes = process.argv[3] || 10; // how many existing nodes to crawl
-	var crawler = new CrawlQueue({maxCrawlDepth: maxDepth, doPriceLookup: false});
+	var crawler = new CrawlQueue({maxCrawlDepth: maxDepth, doPriceLookup: true});
 	crawler.db.listLeafNodeAsins(function(err, leaf_nodes) {
 		if (err) {
 			return callback(err);
@@ -23,8 +23,11 @@ var crawl_from_existing = function(callback) {
 		var crawl_errors = [];
 		var max = maxNodes > leaf_nodes.length ? leaf_nodes.length : maxNodes;
 		var done = 0;
+		log.debug(leaf_nodes, 'Found leaf nodes');
 		log.debug({count: max}, "Start crawling nodes");
 		for (var i = 0; i < max; i++) {
+			if (!leaf_nodes[i] || !leaf_nodes[i].asin) { continue; }
+
 			var asin = leaf_nodes[i].asin;
 			log.debug({asin: asin}, "leaf node ASIN");
 			crawler.crawl(asin, 0, function(err) {
@@ -33,10 +36,11 @@ var crawl_from_existing = function(callback) {
 				}
 				done++;
 				if (done == max) {
-					checkAndCallback(crawl_errors, callback);
+					return checkAndCallback(crawl_errors, callback);
 				}
 			});
 		}
+		checkAndCallback(crawl_errors, callback);
 	});
 };
 

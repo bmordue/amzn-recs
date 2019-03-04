@@ -23,7 +23,6 @@ services:
     networks:
       - default
       - monitoring
-      - default
   graphdb:
     image: neo4j:3.5.3
     ports:
@@ -42,9 +41,8 @@ services:
     networks:
       - default
       - monitoring
-      - default
     environment:
-      - STATSD_HOST: datadog_agent
+      - STATSD_HOST=datadog_agent
 
 secrets:
   AMZN_ACCESS_KEY_ID:
