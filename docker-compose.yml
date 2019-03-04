@@ -19,9 +19,11 @@ services:
       - PRICE_LOOKUP_ENDPOINT=http://prices:3000/price
       - AMZN_RECS_LOG_LEVEL=DEBUG
       - CRAWL_API_ENDPOINT=http://localhost:3000/crawl
+      - STATSD_HOST=datadog_agent
     networks:
       - default
       - monitoring
+      - default
   graphdb:
     image: neo4j:3.5.3
     ports:
@@ -33,13 +35,16 @@ services:
     environment:
       - NEO4J_AUTH=none
     networks:
-      - default
       - monitoring
+      - default
   prices:
     image: bmordue/price-for-asin:latest
     networks:
       - default
       - monitoring
+      - default
+    environment:
+      - STATSD_HOST: datadog_agent
 
 secrets:
   AMZN_ACCESS_KEY_ID:
