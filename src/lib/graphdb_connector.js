@@ -35,7 +35,7 @@ function closeAndCallback(callback, err, result) {
 	session.close(function() {
 		callback(err, result);
 	});
-};
+}
 
 DbConnector.prototype.init = function(callback) {
 	const session = this.driver.session();
