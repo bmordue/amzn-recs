@@ -1,0 +1,59 @@
+version: '3.1'
+
+services:
+  app:
+    image: node:8.10
+    volumes:
+      - .:/proj
+      - ./temp:/temp
+    working_dir: /proj
+    command: node src/api/crawl.js
+    secrets:
+      - AMZN_ACCESS_KEY_ID
+      - AMZN_ACCESS_KEY_SECRET
+      - AMZN_ASSOCIATE_TAG
+    environment:
+      - AMZN_SERVICE_HOST
+      - DB_URL=bolt://graphdb
+      - PRICE_LOOKUP_ENDPOINT=http://prices:3000/price
+      - AMZN_RECS_LOG_LEVEL=DEBUG
+      - CRAWL_API_ENDPOINT=http://localhost:3000/crawl
+      - STATSD_HOST=datadog_agent
+    networks:
+      - monitoring
+      - default
+  graphdb:
+    image: neo4j:3.4
+    ports:
+      - 80:7474
+      - 7687:7687
+    volumes:
+      - ./neo4j/data:/data
+      - ./neo4j/logs:/logs
+    environment:
+      - NEO4J_AUTH=none
+    networks:
+      - monitoring
+      - default
+  prices:
+    image: bmordue/price-for-asin:latest
+    environment:
+      - STATSD_HOST=datadog_agent
+    networks:
+      - monitoring
+      - default
+
+secrets:
+  AMZN_ACCESS_KEY_ID:
+    external: true
+  AMZN_ACCESS_KEY_SECRET:
+    external: true
+  AMZN_ASSOCIATE_TAG:
+    external: true
+
+volumes:
+  data-volume:
+
+networks:
+  monitoring:
+    external: true
