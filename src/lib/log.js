@@ -6,7 +6,10 @@ const VERBOSITY_VALUES = {
 };
 
 var StatsD = require('node-statsd');
-var statsd = new StatsD({prefix: 'amzn-recs_logging'});
+var statsd = new StatsD({
+			prefix: 'amzn-recs.logging.',
+			host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'
+		});
 
 var output_verbosity = process.env.AMZN_RECS_LOG_LEVEL ? VERBOSITY_VALUES[process.env.AMZN_RECS_LOG_LEVEL] : "DEBUG";
 

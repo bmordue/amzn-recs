@@ -2,13 +2,12 @@ version: '3.1'
 
 services:
   app:
-    image: bmordue/amzn-recs:latest
-#    image: node:8.10
-#    command: node src/api/crawl.js
-#    working_dir: /proj
+    image: node:8.10
     volumes:
-#      - .:/proj
-      - ./amzn-recs:/temp
+      - .:/proj
+      - ./temp:/temp
+    working_dir: /proj
+    command: node src/api/crawl.js
     secrets:
       - AMZN_ACCESS_KEY_ID
       - AMZN_ACCESS_KEY_SECRET
@@ -21,12 +20,12 @@ services:
       - CRAWL_API_ENDPOINT=http://localhost:3000/crawl
       - STATSD_HOST=datadog_agent
     networks:
-      - default
       - monitoring
+      - default
   graphdb:
-    image: neo4j:3.5.3
+    image: neo4j:3.4
     ports:
-      - 7474:7474
+      - 80:7474
       - 7687:7687
     volumes:
       - ./neo4j/data:/data
@@ -38,11 +37,11 @@ services:
       - default
   prices:
     image: bmordue/price-for-asin:latest
-    networks:
-      - default
-      - monitoring
     environment:
       - STATSD_HOST=datadog_agent
+    networks:
+      - monitoring
+      - default
 
 secrets:
   AMZN_ACCESS_KEY_ID:
@@ -51,6 +50,9 @@ secrets:
     external: true
   AMZN_ASSOCIATE_TAG:
     external: true
+
+volumes:
+  data-volume:
 
 networks:
   monitoring:

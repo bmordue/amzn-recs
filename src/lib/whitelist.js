@@ -5,7 +5,7 @@ const WHITELIST_TABLE_NAME = "api_whitelist";
 
 function Whitelist(options) {
     this.options = options || {};
-    var dbPath = this.options.dbPath || "./temp/db.sqlite";
+    var dbPath = this.options.dbPath || ":memory:";
     try {
         this.db = new sqlite.Database(dbPath);
     } catch (e) {

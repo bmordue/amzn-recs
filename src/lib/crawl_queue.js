@@ -9,7 +9,11 @@ var RateLimiter = require("limiter").RateLimiter;
 var StatsD = require("node-statsd");
 var util = require("util");
 
-var statsd = new StatsD();
+var statsd = new StatsD({
+                        prefix: 'amzn-recs.crawl_queue.',
+                        host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'
+                });
+
 
 const BACKOFF_SECONDS = 10;
 
@@ -31,8 +35,8 @@ function CrawlQueue(options) {
 		log.info({}, "Price lookup is not enabled");
 	}
 
-	var keyId = config.get("AMZN_ACCESS_KEY_ID", true);
-	var keySecret = config.get("AMZN_ACCESS_KEY_SECRET", true);
+	var keyId = config.get("AMZN_ACCESS_KEY_ID");
+	var keySecret = config.get("AMZN_ACCESS_KEY_SECRET");
 	var associateTag = config.get("AMZN_ASSOCIATE_TAG", true);
 	var amazonServiceHost = config.get("AMZN_SERVICE_HOST") || "webservices.amazon.co.uk";
 

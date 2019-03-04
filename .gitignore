@@ -51,3 +51,9 @@ amzn-recs/
 neo4j/
 
 results_xunit.xml
+
+# sonarqube stuff
+.scannerwork/
+
+# coverage
+.nyc_output/
