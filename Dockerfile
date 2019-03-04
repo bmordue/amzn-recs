@@ -1,6 +1,4 @@
-FROM node:8
-
-#WORKDIR /src
+FROM node:8.10-alpine
 
 COPY ./package.json .
 
