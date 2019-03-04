@@ -16,10 +16,11 @@ var responseGroups = [
 
 var main = function() {
 	var maxDepth = process.argv[2] || 2;
-	
+
 	var rootAsin = 'B014V4DXMW'; //starting ASIN
 	var crawler = new CrawlQueue({maxCrawlDepth: maxDepth});
 	var searchTerm = rootAsin;
+	var searched = 0;
 	responseGroups.forEach(function(responseGroup) {
 		crawler.keywordSearch(searchTerm, responseGroup,function(err, result) {
 			log.info(responseGroup, "RESPONSE GROUP");
@@ -33,6 +34,10 @@ var main = function() {
 				log.warn({}, "result.OperationRequest does not exist");
 			}
 			log.info(result, "search result: ");
+			searched++;
+			if (searched == responseGroups.length) {
+				process.exit();
+			}
 		});
 	});
 };

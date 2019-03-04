@@ -7,7 +7,7 @@ const VERBOSITY_VALUES = {
 
 var StatsD = require('node-statsd');
 var statsd = new StatsD({
-			prefix: 'amzn-recs_logging',
+			prefix: 'amzn-recs.logging.',
 			host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'
 		});
 

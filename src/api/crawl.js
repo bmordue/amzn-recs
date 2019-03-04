@@ -13,7 +13,7 @@ const TASKS_DB_PATH = './temp/db.sqlite'; // TODO: configure this in one place o
 
 var statsd = new StatsD();
 
-var msg_queue = new MessageQueue({dbPath: TASKS_DB_PATH});
+var msg_queue = new MessageQueue();
 var whitelist = new Whitelist();
 msg_queue.init();
 
