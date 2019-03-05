@@ -26,7 +26,7 @@ function DbConnector(options) {
 }
 
 
-function closeAndCallback(callback, err, result) {
+function closeAndCallback(callback, session, err, result) {
 	if (err) {
 		statsd.increment('query_error');
 	} else {
@@ -46,11 +46,11 @@ DbConnector.prototype.init = function(callback) {
 			onCompleted: function() {
 				session.run('CREATE CONSTRAINT ON (author:Author) ASSERT author.name IS UNIQUE')
 					.subscribe({
-						onCompleted: function(summary) { closeAndCallback(callback, null, summary); },
-						onError: function(err) { closeAndCallback(callback, err); }
+						onCompleted: function(summary) { closeAndCallback(callback, session, null, summary); },
+						onError: function(err) { closeAndCallback(callback, session, err); }
 					});
 			},
-			onError: function(err) { closeAndCallback(callback, err); }
+			onError: function(err) { closeAndCallback(callback, session, err); }
 		});
 }
 
@@ -96,10 +96,10 @@ function createChildBookNode(driver, data, callback) {
 			onNext: ()=>{},
 			onCompleted: function(summary) {
 				log.debug({result: summary}, 'initial merge query complete');
-				closeAndCallback(callback);
+				closeAndCallback(callback, session);
 			},
 			onError: (err) => {
-				closeAndCallback(callback, err);
+				closeAndCallback(callback, session, err);
 			}
 		});
 }
@@ -116,8 +116,8 @@ function addParentChildRelation(driver, parentAsin, childAsin, callback) {
 	session.run(queryStr, params)
 		.subscribe({
 			onNext: ()=>{},
-			onCompleted: function(summary) { closeAndCallback(callback, null, summary); },
-			onError: function(err) { closeAndCallback(callback, err); }
+			onCompleted: function(summary) { closeAndCallback(callback, session, null, summary); },
+			onError: function(err) { closeAndCallback(callback, session, err); }
 		});
 }
 
@@ -143,7 +143,7 @@ function addAuthorRelations(driver, data, callback) {
 				onError: each_cb}
 			);
 	}, function(err, result) {
-		closeAndCallback(callback, err, result);
+		closeAndCallback(callback, session, err, result);
 	});
 }
 
@@ -185,8 +185,8 @@ DbConnector.prototype.createBookNode = function(data, callback) {
 	session.run(query.text, query.params)
 		.subscribe({
 			onNext: ()=>{},
-			onCompleted: function() { closeAndCallback(callback); },
-			onError: function(err) { closeAndCallback(callback, err); }
+			onCompleted: function() { closeAndCallback(callback, session); },
+			onError: function(err) { closeAndCallback(callback, session, err); }
 		});
 };
 
@@ -198,9 +198,9 @@ function simpleQuery(connector, query, callback) {
 		.subscribe({
 			onNext: function(result) { singleResult = result; },
 			onCompleted: function() {
-				closeAndCallback(callback, null, singleResult);
+				closeAndCallback(callback, session, null, singleResult);
 			},
-			onError: function(err) { closeAndCallback(callback, err); }
+			onError: function(err) { closeAndCallback(callback, session, err); }
 		});
 }
 
@@ -235,9 +235,9 @@ DbConnector.prototype.countOutgoingRecommendations = function(asin, callback) {
 				log.debug({result: result}, 'outgoing relationships');
 			},
 			onCompleted: function(summary) {
-				closeAndCallback(callback, null, summary);
+				closeAndCallback(callback, session, null, summary);
 			},
-			onError: function(err) { closeAndCallback(callback, err); }
+			onError: function(err) { closeAndCallback(callback, session, err); }
 		});
 };
 
