@@ -14,11 +14,16 @@ var statsd = new StatsD({
                         host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'
                 });
 
+var fakeProdAdv = require("./fake_prodadv");
+
+var statsd = new StatsD();
 
 const BACKOFF_SECONDS = 10;
 
 function callProdAdv(crawlQueue, query, params, callback) {
 	statsd.increment("call_product_advertising_api");
+
+	log.debug(callback, "callback in crawl_queue.callProdAdv");
 	crawlQueue.prodAdv.call(query, params, callback);
 }
 
@@ -37,10 +42,14 @@ function CrawlQueue(options) {
 
 	var keyId = config.get("AMZN_ACCESS_KEY_ID");
 	var keySecret = config.get("AMZN_ACCESS_KEY_SECRET");
-	var associateTag = config.get("AMZN_ASSOCIATE_TAG", true);
+	var associateTag = config.get("AMZN_ASSOCIATE_TAG");
 	var amazonServiceHost = config.get("AMZN_SERVICE_HOST") || "webservices.amazon.co.uk";
 
-	this.prodAdv = aws.createProdAdvClient(keyId, keySecret, associateTag, { host: amazonServiceHost});
+	if (keyId && keySecret && associateTag) {
+		this.prodAdv = aws.createProdAdvClient(keyId, keySecret, associateTag, { host: amazonServiceHost});
+	} else {
+		this.prodAdv = fakeProdAdv;
+	}
 	this.limiter = new RateLimiter(50, "minute");
 	this.db = new DbConnector();
 }
