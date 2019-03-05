@@ -23,8 +23,7 @@ const BACKOFF_SECONDS = 10;
 function callProdAdv(crawlQueue, query, params, callback) {
 	statsd.increment("call_product_advertising_api");
 
-	log.debug(callback, "callback in crawl_queue.callProdAdv");
-	crawlQueue.prodAdv.call(query, params, callback);
+	crawlQueue.prodAdv.call(this, query, params, callback);
 }
 
 function CrawlQueue(options) {
@@ -50,13 +49,16 @@ function CrawlQueue(options) {
 	} else {
 		this.prodAdv = fakeProdAdv;
 	}
-	this.limiter = new RateLimiter(50, "minute");
+//	this.limiter = new RateLimiter(50, "minute");
+	this.limiter = new RateLimiter(1, 3000); // 1 every N ms
 	this.db = new DbConnector();
 }
 
 CrawlQueue.prototype.throttledSimilarityLookup = function(asin, callback) {
 	var self = this;
+	log.debug({}, 'throttledSimilarityLookup');
 	this.limiter.removeTokens(1, function(err) {
+		log.debug({}, 'called back from limited');
 		if (err) {
 			return callback(err);
 		}
@@ -123,7 +125,7 @@ CrawlQueue.prototype.crawl = function(rootAsin, depth, callback) {
 			self.throttledSimilarityLookup(rootAsin, cb);
 		},
 		function(similar, cb) {
-			if (!similar.Items.Item) {
+			if (!similar.Items || !similar.Items.Item) {
 				log.warn({asin: rootAsin}, "Similar items list is empty");
 				return cb();
 			}

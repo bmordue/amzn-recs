@@ -8,7 +8,7 @@ var StatsD = require("node-statsd");
 
 var statsd = new StatsD({
                         prefix: 'amzn-recs.graphdb_connector.',
-                        host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'
+                        host: process.env.STATSD_HOST || 'localhost'
                 });
 
 
@@ -58,10 +58,12 @@ function buildMergeWithPriceQuery(data) {
 	var mergeQueryStr;
 	var mergeParams = {
 		ASIN: data.ASIN,
-		DetailPageURL: data.DetailPageURL,
-		Title: data.ItemAttributes.Title,
-		Author: data.ItemAttributes.Author
+		DetailPageURL: data.DetailPageURL
 	};
+	if (data.ItemAttributes) {
+		mergeParams.Title = data.ItemAttributes.Title;
+		mergeParams.Author = data.ItemAttributes.Author;
+	}
 	var mergeQueryChunks = [];
 	mergeQueryChunks.push("MERGE (b:Book { ASIN: {ASIN} })");
 	mergeQueryChunks.push("SET b.DetailPageURL = {DetailPageURL}, b.Title = {Title}, b.Author = {Author}");
@@ -70,7 +72,7 @@ function buildMergeWithPriceQuery(data) {
 		mergeParams.Price = data.price;
 		mergeParams.Currency = data.currency;
 	}
-	if (data.ItemAttributes.ListPrice) {
+	if (data.ItemAttributes && data.ItemAttributes.ListPrice) {
 		mergeQueryChunks.push("SET b.Price = {Price}, b.Currency = {Currency}");
 		mergeParams.Price = data.ItemAttributes.ListPrice.Amount / 100;
 		mergeParams.Currency = data.ItemAttributes.ListPrice.CurrencyCode;
@@ -122,6 +124,9 @@ function addParentChildRelation(driver, parentAsin, childAsin, callback) {
 }
 
 function addAuthorRelations(driver, data, callback) {
+	if (!data.ItemAttributes || !data.ItemAttributes.Author) {
+		return callback(null, {});
+	}
 	var authorList = data.ItemAttributes.Author;
 	if (authorList.constructor !== Array ) {
 		authorList = [authorList];
@@ -150,12 +155,10 @@ function addAuthorRelations(driver, data, callback) {
 DbConnector.prototype.createChildBookNodeAndRelations = function(parentAsin, data, callback) {
 	var self = this;
 	if (!data.ItemAttributes) {
-		log.warn(data, "Missing ItemAttributes!");
-		return callback(null, []);
+		log.debug(data, "Missing ItemAttributes!");
 	}
-	if (!data.ItemAttributes.Author) {
-		log.warn(data, "Missing Author field!");
-		return callback(null, []);
+	if (data.ItemAttributes && !data.ItemAttributes.Author) {
+		log.debug(data, "Missing Author field!");
 	}
 	var newNodeResult = [];
 	async.waterfall([
@@ -193,12 +196,15 @@ DbConnector.prototype.createBookNode = function(data, callback) {
 function simpleQuery(connector, query, callback) {
 	const session = connector.driver.session();
 
-	var singleResult = null;
+	var records = [];
 	session.run(query)
 		.subscribe({
-			onNext: function(result) { singleResult = result; },
+			onNext: function(record) {
+//				log.debug(record, 'onNext record');
+				records.push(record);
+			},
 			onCompleted: function() {
-				closeAndCallback(callback, session, null, singleResult);
+				closeAndCallback(callback, session, null, records);
 			},
 			onError: function(err) { closeAndCallback(callback, session, err); }
 		});
