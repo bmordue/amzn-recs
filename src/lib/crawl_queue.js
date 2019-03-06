@@ -133,22 +133,7 @@ CrawlQueue.prototype.crawl = function(rootAsin, depth, callback) {
 			async.each(similar.Items.Item, function(item, each_cb) {
 				async.waterfall([
 					function(cb) {
-						//write into graph db
-						self.throttledPriceLookup(item.ASIN, function(err, result) {
-							if (err) {
-								log.error({error: err.message}, "error looking up price for ASIN " + item.ASIN);
-								// add to graph without price, so drop this error
-							}
-							if (result) {
-								item.price = result.price;
-								item.currency = result.currency;
-							}
-							self.db.createChildBookNodeAndRelations(rootAsin, item, function(err, result) {
-							    log.debug({result: result}, "Finished creating node and relations");
-								// drop result to not cause problems at next step
-								cb(err);
-							});
-						});
+						self.addToGraph(rootAsin, item, cb);
 					},
 					function(cb) {
 						self.crawl(item.ASIN, depth, cb);
@@ -163,6 +148,52 @@ CrawlQueue.prototype.crawl = function(rootAsin, depth, callback) {
 		log.debug({asin: rootAsin}, "Finished crawling");
 		callback(err);
 	});
+};
+
+CrawlQueue.prototype.addToGraph() = function(parent, item, callback) {
+	var self = this;
+	self.ensureRequiredFields(parent, item, function(err, result) {
+		if (err) {
+			log.error(item, 'Could not add required fields for graph node');
+			return callback(err);
+		}
+		
+		self.throttledPriceLookup(item.ASIN, function(err, result) {
+			if (err) {
+				log.error({error: err.message}, "error looking up price for ASIN " + item.ASIN);
+				// add to graph without price, so drop this error
+			}
+			if (result) {
+				item.price = result.price;
+				item.currency = result.currency;
+			}
+			self.db.createChildBookNodeAndRelations(parent, item, function(err, result) {
+				log.debug({result: result}, "Finished creating node and relations");
+				// drop result to not cause problems at next step
+				callback(err);
+			});
+		});
+	});
+};
+
+CrawlQueue.prototype.ensureRequiredFields = function(parent, item, callback) {
+	var self = this;
+	if (!item.Title || !item.Author || !item.DetailPageUrl) {
+		log.debug(item, 'Missing required field; attempt to add it');
+		this.limiter.removeTokens(1, function(err) {
+			if (err) {
+				return callback(err);
+			}
+			callProdAdv(self, "ItemLookup", { ItemId: item.ASIN }, function(err, result) {
+				if (err) {
+					return callback(err);
+				}
+				return callback(null, result.Items.Item);
+			});
+		});
+	} else {
+		callback(null, item);
+	}
 };
 
 CrawlQueue.prototype.createNodeWithAsin = function(asin, callback) {
