@@ -20,4 +20,14 @@ describe("fake_prodadv", function() {
 			done();
 		});
 	});
+
+	it("load similar items list", function(done) {
+		var query = "SimilarityLookup";
+		var params = { ItemId: "B00EEIGHDI" };
+		fake_prodadv(query, params, function(err, result) {
+			if (err) { return done(err); }
+			result.Items.Item.length.should.equal(93);
+			done();
+		});
+	});
 });

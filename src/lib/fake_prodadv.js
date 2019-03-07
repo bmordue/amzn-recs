@@ -58,7 +58,12 @@ function processDataForSimilarityLookup(data, callback) {
 			log.warn({}, 'did not manage to find expected attribute on similar items carousel');
 			return callback(null, {});
 		}
-		var carousel = JSON.parse(carouselOptions.replace('\\"', '"'));
+		try {
+			var carousel = JSON.parse(carouselOptions.replace('\"', '"'));
+		} catch (e) {
+			log.debug(carouselOptions, 'carouselOptions');
+			return callback(null, {'Items': {'Item': items}});
+		}
 		var almostAsins = carousel.ajax.id_list;
 		if (!almostAsins) {
 			log.warn(carousel, 'did not manage to extract ASINs from carousel data');
@@ -148,6 +153,10 @@ function amznRequest(asin, callback) {
 		if (result.statusCode != 200) {
 			log.error({}, 'Response code is ' + result.statusCode);
 			return callback({code: result.statusCode, message: 'amzn request failed'});
+		}
+		if (result.statusCode == 503) {
+			log.warn({}, 'fake_prodadv will stop making requests to amzn');
+			process.env.OFFLINE = 'true';
 		}
 		if (!result.body) {
 			return callback(new Error('No response body'));
