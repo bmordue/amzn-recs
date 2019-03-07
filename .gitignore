@@ -43,6 +43,9 @@ input
 output
 scratch.json
 temp/
+*_dump.html
+*.save
+*~
 
 #OS specific
 .DS_Store
