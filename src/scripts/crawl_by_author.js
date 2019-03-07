@@ -11,7 +11,7 @@ var log = require("../lib/log");
 // TODO: move this into lib/crawl_queue.js
 // TODO: this search result includes price; add it to DB
 function resultsForAuthor(client, author, callback) {
-	client.call("ItemSearch", { Author: author, SearchIndex: "KindleStore", ResponseGroup: "Medium"}, function(err, result) {
+	client.call(this, "ItemSearch", { Author: author, SearchIndex: "KindleStore", ResponseGroup: "Medium"}, function(err, result) {
 		if (err) {
 			return callback(err, []);
 		}

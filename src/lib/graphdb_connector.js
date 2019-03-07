@@ -8,7 +8,7 @@ var StatsD = require("node-statsd");
 
 var statsd = new StatsD({
                         prefix: 'amzn-recs.graphdb_connector.',
-                        host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'
+                        host: process.env.STATSD_HOST || 'localhost'
                 });
 
 
@@ -26,11 +26,14 @@ function DbConnector(options) {
 }
 
 
-function closeAndCallback(callback, err, result) {
+function closeAndCallback(callback, session, err, result) {
 	if (err) {
 		statsd.increment('query_error');
 	} else {
 		statsd.increment('query_complete');
+	}
+	if (typeof callback != 'function') {
+		log.error(new Error().stack, 'closeAndCallback: callback is not a function');
 	}
 	session.close(function() {
 		callback(err, result);
@@ -46,31 +49,34 @@ DbConnector.prototype.init = function(callback) {
 			onCompleted: function() {
 				session.run('CREATE CONSTRAINT ON (author:Author) ASSERT author.name IS UNIQUE')
 					.subscribe({
-						onCompleted: function(summary) { closeAndCallback(callback, null, summary); },
-						onError: function(err) { closeAndCallback(callback, err); }
+						onCompleted: function(summary) { closeAndCallback(callback, session, null, summary); },
+						onError: function(err) { closeAndCallback(callback, session, err); }
 					});
 			},
-			onError: function(err) { closeAndCallback(callback, err); }
+			onError: function(err) { closeAndCallback(callback, session, err); }
 		});
 }
 
 function buildMergeWithPriceQuery(data) {
 	var mergeQueryStr;
-	var mergeParams = {
-		ASIN: data.ASIN,
-		DetailPageURL: data.DetailPageURL,
-		Title: data.ItemAttributes.Title,
-		Author: data.ItemAttributes.Author
-	};
+
 	var mergeQueryChunks = [];
 	mergeQueryChunks.push("MERGE (b:Book { ASIN: {ASIN} })");
-	mergeQueryChunks.push("SET b.DetailPageURL = {DetailPageURL}, b.Title = {Title}, b.Author = {Author}");
+
+	var mergeParams = {
+		ASIN: data.ASIN,
+	};
+	if (data.ItemAttributes && data.ItemAttributes.Title && data.ItemAttributes.Author) {
+		mergeParams.Title = data.ItemAttributes.Title;
+		mergeParams.Author = data.ItemAttributes.Author;
+		mergeQueryChunks.push("SET b.Title = {Title}, b.Author = {Author}");
+	}
 	if (data.price && data.currency) {
 		mergeQueryChunks.push("SET b.Price = {Price}, b.Currency = {Currency}");
 		mergeParams.Price = data.price;
 		mergeParams.Currency = data.currency;
 	}
-	if (data.ItemAttributes.ListPrice) {
+	if (data.ItemAttributes && data.ItemAttributes.ListPrice) {
 		mergeQueryChunks.push("SET b.Price = {Price}, b.Currency = {Currency}");
 		mergeParams.Price = data.ItemAttributes.ListPrice.Amount / 100;
 		mergeParams.Currency = data.ItemAttributes.ListPrice.CurrencyCode;
@@ -94,12 +100,12 @@ function createChildBookNode(driver, data, callback) {
 	session.run(text, query.params)
 		.subscribe({
 			onNext: ()=>{},
-			onCompleted: function(summary) {
-				log.debug({result: summary}, 'initial merge query complete');
-				closeAndCallback(callback);
+			onCompleted: function() {
+				return closeAndCallback(callback, session);
 			},
 			onError: (err) => {
-				closeAndCallback(callback, err);
+				log.debug(query, 'failed query');
+				return closeAndCallback(callback, session, err);
 			}
 		});
 }
@@ -116,12 +122,18 @@ function addParentChildRelation(driver, parentAsin, childAsin, callback) {
 	session.run(queryStr, params)
 		.subscribe({
 			onNext: ()=>{},
-			onCompleted: function(summary) { closeAndCallback(callback, null, summary); },
-			onError: function(err) { closeAndCallback(callback, err); }
+			onCompleted: function(summary) {
+				log.debug(callback, 'typeof callback: ' + typeof callback);
+				closeAndCallback(callback, session, null, summary);
+			},
+			onError: function(err) { closeAndCallback(callback, session, err); }
 		});
 }
 
 function addAuthorRelations(driver, data, callback) {
+	if (!data.ItemAttributes || !data.ItemAttributes.Author) {
+		return callback(null, {});
+	}
 	var authorList = data.ItemAttributes.Author;
 	if (authorList.constructor !== Array ) {
 		authorList = [authorList];
@@ -143,26 +155,19 @@ function addAuthorRelations(driver, data, callback) {
 				onError: each_cb}
 			);
 	}, function(err, result) {
-		closeAndCallback(callback, err, result);
+		closeAndCallback(callback, session, err, result);
 	});
 }
 
+// TODO: what is the purpose of newNodeResult?
 DbConnector.prototype.createChildBookNodeAndRelations = function(parentAsin, data, callback) {
 	var self = this;
-	if (!data.ItemAttributes) {
-		log.warn(data, "Missing ItemAttributes!");
-		return callback(null, []);
-	}
-	if (!data.ItemAttributes.Author) {
-		log.warn(data, "Missing Author field!");
-		return callback(null, []);
-	}
 	var newNodeResult = [];
 	async.waterfall([
 		function(cb) {
 			createChildBookNode(self.driver, data, cb);
 		},
-		function(cb) {
+		function(result, cb) {
 			addParentChildRelation(self.driver, parentAsin, data.ASIN, cb);
 		},
 		function(result, cb) {
@@ -185,22 +190,24 @@ DbConnector.prototype.createBookNode = function(data, callback) {
 	session.run(query.text, query.params)
 		.subscribe({
 			onNext: ()=>{},
-			onCompleted: function() { closeAndCallback(callback); },
-			onError: function(err) { closeAndCallback(callback, err); }
+			onCompleted: function() { closeAndCallback(callback, session); },
+			onError: function(err) { closeAndCallback(callback, session, err); }
 		});
 };
 
 function simpleQuery(connector, query, callback) {
 	const session = connector.driver.session();
 
-	var singleResult = null;
+	var records = [];
 	session.run(query)
 		.subscribe({
-			onNext: function(result) { singleResult = result; },
-			onCompleted: function() {
-				closeAndCallback(callback, null, singleResult);
+			onNext: function(record) {
+				records.push(record);
 			},
-			onError: function(err) { closeAndCallback(callback, err); }
+			onCompleted: function() {
+				closeAndCallback(callback, session, null, records);
+			},
+			onError: function(err) { closeAndCallback(callback, session, err); }
 		});
 }
 
@@ -235,9 +242,9 @@ DbConnector.prototype.countOutgoingRecommendations = function(asin, callback) {
 				log.debug({result: result}, 'outgoing relationships');
 			},
 			onCompleted: function(summary) {
-				closeAndCallback(callback, null, summary);
+				closeAndCallback(callback, session, null, summary);
 			},
-			onError: function(err) { closeAndCallback(callback, err); }
+			onError: function(err) { closeAndCallback(callback, session, err); }
 		});
 };
 
