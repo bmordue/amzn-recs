@@ -152,7 +152,7 @@ CrawlQueue.prototype.crawl = function(rootAsin, depth, callback) {
 
 CrawlQueue.prototype.addToGraph = function(parent, item, callback) {
 	var self = this;
-	self.ensureRequiredFields(parent, item, function(err, result) {
+	self.ensureRequiredFields(parent, item, function(err) {
 		if (err) {
 			log.error(item, 'Could not add required fields for graph node');
 			return callback(err);

@@ -100,7 +100,7 @@ function createChildBookNode(driver, data, callback) {
 	session.run(text, query.params)
 		.subscribe({
 			onNext: ()=>{},
-			onCompleted: function(summary) {
+			onCompleted: function() {
 				return closeAndCallback(callback, session);
 			},
 			onError: (err) => {

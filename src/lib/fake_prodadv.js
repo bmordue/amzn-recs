@@ -58,7 +58,7 @@ function processDataForSimilarityLookup(data, callback) {
 			log.warn({}, 'did not manage to find expected attribute on similar items carousel');
 			return callback(null, {});
 		}
-		var carousel = JSON.parse(carouselOptions.replace('\"', '"'));
+		var carousel = JSON.parse(carouselOptions.replace('\\"', '"'));
 		var almostAsins = carousel.ajax.id_list;
 		if (!almostAsins) {
 			log.warn(carousel, 'did not manage to extract ASINs from carousel data');
