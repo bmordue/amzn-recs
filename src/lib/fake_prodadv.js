@@ -80,7 +80,7 @@ function itemLookup(asin, callback) {
 	if (fs.existsSync(filename)) {
 		log.debug(filename, 'using cached file for item lookup');
 		var data = fs.readFileSync(filename);
-		return processDataForItemLookup(data, callback);
+		return processDataForItemLookup(asin, data, callback);
 	} else if (!process.env.OFFLINE) {
 		log.debug(asin, 'making amzn request for item lookup');
 		amznRequest(asin, function(err, respBody) {
@@ -122,9 +122,12 @@ function processDataForItemLookup(asin, data, callback) {
 	var price = $('#buyOneClick input[name="displayedPrice"]').attr('value');
 	result.Items.Item.ItemAttributes.ListPrice.Amount = price * 100;
 
-	var bylineElements = $('#bylineInfo span a');
-	var authors = bylineElemnts.map(el => el.text());
-	result.Items.Item.Author = authors;
+	var authors = [];
+	$('a[data-asin]').each(function(ie, el) {
+		authors.push(($(el).text()));
+	});
+	log.debug({authors: authors}, 'authors');
+	result.Items.Item.ItemAttributes.Author = authors;
 
 	result.Items.Item.DetailPageUrl = api_endpoint + asin;
 	result.Items.Item.ASIN = asin;
