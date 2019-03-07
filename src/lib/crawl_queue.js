@@ -150,14 +150,14 @@ CrawlQueue.prototype.crawl = function(rootAsin, depth, callback) {
 	});
 };
 
-CrawlQueue.prototype.addToGraph() = function(parent, item, callback) {
+CrawlQueue.prototype.addToGraph = function(parent, item, callback) {
 	var self = this;
 	self.ensureRequiredFields(parent, item, function(err, result) {
 		if (err) {
 			log.error(item, 'Could not add required fields for graph node');
 			return callback(err);
 		}
-		
+
 		self.throttledPriceLookup(item.ASIN, function(err, result) {
 			if (err) {
 				log.error({error: err.message}, "error looking up price for ASIN " + item.ASIN);

@@ -32,6 +32,9 @@ function closeAndCallback(callback, session, err, result) {
 	} else {
 		statsd.increment('query_complete');
 	}
+	if (typeof callback != 'function') {
+		log.error(new Error().stack, 'closeAndCallback: callback is not a function');
+	}
 	session.close(function() {
 		callback(err, result);
 	});
@@ -56,17 +59,18 @@ DbConnector.prototype.init = function(callback) {
 
 function buildMergeWithPriceQuery(data) {
 	var mergeQueryStr;
-	var mergeParams = {
-		ASIN: data.ASIN,
-		DetailPageURL: data.DetailPageURL
-	};
-	if (data.ItemAttributes) {
-		mergeParams.Title = data.ItemAttributes.Title;
-		mergeParams.Author = data.ItemAttributes.Author;
-	}
+
 	var mergeQueryChunks = [];
 	mergeQueryChunks.push("MERGE (b:Book { ASIN: {ASIN} })");
-	mergeQueryChunks.push("SET b.DetailPageURL = {DetailPageURL}, b.Title = {Title}, b.Author = {Author}");
+
+	var mergeParams = {
+		ASIN: data.ASIN,
+	};
+	if (data.ItemAttributes && data.ItemAttributes.Title && data.ItemAttributes.Author) {
+		mergeParams.Title = data.ItemAttributes.Title;
+		mergeParams.Author = data.ItemAttributes.Author;
+		mergeQueryChunks.push("SET b.Title = {Title}, b.Author = {Author}");
+	}
 	if (data.price && data.currency) {
 		mergeQueryChunks.push("SET b.Price = {Price}, b.Currency = {Currency}");
 		mergeParams.Price = data.price;
@@ -97,11 +101,11 @@ function createChildBookNode(driver, data, callback) {
 		.subscribe({
 			onNext: ()=>{},
 			onCompleted: function(summary) {
-				log.debug({result: summary}, 'initial merge query complete');
-				closeAndCallback(callback, session);
+				return closeAndCallback(callback, session);
 			},
 			onError: (err) => {
-				closeAndCallback(callback, session, err);
+				log.debug(query, 'failed query');
+				return closeAndCallback(callback, session, err);
 			}
 		});
 }
@@ -118,7 +122,10 @@ function addParentChildRelation(driver, parentAsin, childAsin, callback) {
 	session.run(queryStr, params)
 		.subscribe({
 			onNext: ()=>{},
-			onCompleted: function(summary) { closeAndCallback(callback, session, null, summary); },
+			onCompleted: function(summary) {
+				log.debug(callback, 'typeof callback: ' + typeof callback);
+				closeAndCallback(callback, session, null, summary);
+			},
 			onError: function(err) { closeAndCallback(callback, session, err); }
 		});
 }
@@ -152,20 +159,15 @@ function addAuthorRelations(driver, data, callback) {
 	});
 }
 
+// TODO: what is the purpose of newNodeResult?
 DbConnector.prototype.createChildBookNodeAndRelations = function(parentAsin, data, callback) {
 	var self = this;
-	if (!data.ItemAttributes) {
-		log.debug(data, "Missing ItemAttributes!");
-	}
-	if (data.ItemAttributes && !data.ItemAttributes.Author) {
-		log.debug(data, "Missing Author field!");
-	}
 	var newNodeResult = [];
 	async.waterfall([
 		function(cb) {
 			createChildBookNode(self.driver, data, cb);
 		},
-		function(cb) {
+		function(result, cb) {
 			addParentChildRelation(self.driver, parentAsin, data.ASIN, cb);
 		},
 		function(result, cb) {
@@ -200,7 +202,6 @@ function simpleQuery(connector, query, callback) {
 	session.run(query)
 		.subscribe({
 			onNext: function(record) {
-//				log.debug(record, 'onNext record');
 				records.push(record);
 			},
 			onCompleted: function() {
