@@ -1,5 +1,11 @@
 version: 2
 jobs:
+  build:
+    docker:
+    - image: node:8.10-alpine
+    steps:
+    - checkout
+    - run: npm install
   test:
     docker:
       - image: node:8.10-alpine
@@ -11,9 +17,12 @@ jobs:
       - image: node:8.10-alpine
     steps:
       - checkout
-      - run: sh coverage.sh
+      - run: rm -rf coverage
+      - run: npm install
+      - run: ./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov npm test
   analyse:
+    docker:
+      - image: newtmitch/sonar-scanner:3.2.0-alpine
     steps:
       - checkout
-      - run: sh sonar.sh
-
+      - run: sonar-scanner -Dsonar.login=$SONAR_LOGIN
