@@ -15,7 +15,7 @@ var getDockerSecret = function(secret) {
 module.exports = {
   // Get a secret from its name
       get(secret, required = false) {
-            secretValue = process.env[secret] || getDockerSecret(secret)
+            const secretValue = process.env[secret] || getDockerSecret(secret)
             if (required && !secretValue) {
             	throw new Error("Missing required env var");
             }

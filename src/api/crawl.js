@@ -168,6 +168,7 @@ router.put('tasks', function(req, res) {
 			log.warn(taskId, "Request to set task status back to WAITING");
 			break;
 		default:
+			updateTaskFn = function(_, cb) {cb(new Error('Unrecognised status'));}
 			handleBadRequest(util.format("Unrecognised status: %s", taskStatus), req, res);
 	}
 	updateTaskFn(taskId, function(err) {

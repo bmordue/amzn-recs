@@ -16,8 +16,6 @@ var statsd = new StatsD({
 
 var fakeProdAdv = require("./fake_prodadv");
 
-var statsd = new StatsD();
-
 const BACKOFF_SECONDS = 10;
 
 function callProdAdv(crawlQueue, query, params, callback) {
