@@ -26,6 +26,14 @@ var crawl_from_existing = function(callback) {
 		log.debug(leaf_nodes.length, 'Found leaf nodes');
 		log.debug({count: max}, "Start crawling nodes");
 
+		var crawlerCb = function(err) {
+			if (err) { crawl_errors.push(err); }
+			done++;
+			if (done == max) {
+				return checkAndCallback(crawl_errors, callback);
+			}
+		};
+
 		for (var i = 0; i < max; i++) {
 			if (!leaf_nodes[i] || !leaf_nodes[i].get('asin')) {
 				log.debug(leaf_nodes[i], 'Skipping leaf node ' + i);
@@ -34,15 +42,7 @@ var crawl_from_existing = function(callback) {
 
 			var asin = leaf_nodes[i].get('asin');
 			log.debug({asin: asin}, "leaf node ASIN");
-			crawler.crawl(asin, 0, function(err) {
-				if (err) {
-					crawl_errors.push(err);
-				}
-				done++;
-				if (done == max) {
-					return checkAndCallback(crawl_errors, callback);
-				}
-			});
+			crawler.crawl(asin, 0, crawlerCb);
 		}
 	});
 };
