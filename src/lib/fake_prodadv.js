@@ -80,12 +80,12 @@ function itemLookup(asin, callback) {
 	if (fs.existsSync(filename)) {
 		log.debug(filename, 'using cached file for item lookup');
 		var data = fs.readFileSync(filename);
-		return processDataForItempLookup(data, callback);
+		return processDataForItemLookup(data, callback);
 	} else if (!process.env.OFFLINE) {
 		log.debug(asin, 'making amzn request for item lookup');
 		amznRequest(asin, function(err, respBody) {
 			if (err) { return callback(err); }
-			return processDataForItemLookup(asin, data, callback);
+			return processDataForItemLookup(asin, respBody, callback);
 		});
 	} else {
 		log.debug(asin, 'skipping item lookup');
