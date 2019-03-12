@@ -24,7 +24,7 @@ function paths() {
 			onNext: (record) => { record.get('p').segments.forEach(function(el, i) {console.log(el.start);}); },
 			onCompleted: () => { session.close(); process.exit(); }
 		});
-};
+}
 
 function main() {
 	paths();
