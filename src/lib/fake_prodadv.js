@@ -3,8 +3,16 @@ var log = require('./log');
 var needle = require('needle');
 var fs = require('fs');
 var cheerio = require('cheerio');
+var StatsD = require('node-statsd');
+
+var statsd = new StatsD({
+	prefix: 'amzn_recs.fake_prodadv.',
+	host: process.env.STATSD_HOST || 'localhost'
+});
 
 const api_endpoint = process.env.AMZN_ENDPOINT || 'https://www.amazon.co.uk/gp/product/';
+
+var workOffline = process.env.OFFLINE;
 
 
 module.exports = function(query, params, callback) {
@@ -34,7 +42,7 @@ function similarityLookup(asin, callback) {
 		log.debug(filename, 'using cached file for similarity lookup');
 		var data = fs.readFileSync(filename);
 		return processDataForSimilarityLookup(data, callback);
-	} else if (!process.env.OFFLINE) {
+	} else if (!workOffline) {
 		log.debug(asin, 'making amzn request for similarity lookup');
 		amznRequest(asin, function(err, respBody) {
 			if (err) { return callback(err); }
@@ -55,7 +63,7 @@ function processDataForSimilarityLookup(data, callback) {
 		}
 		var carouselOptions = carouselElement.attr('data-a-carousel-options');
 		if (!carouselOptions) {
-			log.warn({}, 'did not manage to find expected attribute on similar items carousel');
+			log.info({}, 'did not manage to find expected attribute on similar items carousel');
 			return callback(null, {});
 		}
 		try {
@@ -66,7 +74,7 @@ function processDataForSimilarityLookup(data, callback) {
 		}
 		var almostAsins = carousel.ajax.id_list;
 		if (!almostAsins) {
-			log.warn(carousel, 'did not manage to extract ASINs from carousel data');
+			log.info(carousel, 'did not manage to extract ASINs from carousel data');
 			return callback(null, {});
 		}
 		var items = almostAsins.map(function(i) { return { 'ASIN': i.substring(0, i.length - 1), 'ItemAttributes': {} } }); // strip trailing colon from asins
@@ -86,7 +94,7 @@ function itemLookup(asin, callback) {
 		log.debug(filename, 'using cached file for item lookup');
 		var data = fs.readFileSync(filename);
 		return processDataForItemLookup(asin, data, callback);
-	} else if (!process.env.OFFLINE) {
+	} else if (!workOffline) {
 		log.debug(asin, 'making amzn request for item lookup');
 		amznRequest(asin, function(err, respBody) {
 			if (err) { return callback(err); }
@@ -150,13 +158,14 @@ function amznRequest(asin, callback) {
 		if (err) {
 			return callback(err);
 		}
+		statsd.increment(result.statusCode);
+		if (result.statusCode == 503) {
+			log.warn({}, 'Going offline; fake_prodadv will stop making requests to amzn');
+			workOffline = true;
+		}
 		if (result.statusCode != 200) {
 			log.error({}, 'Response code is ' + result.statusCode);
 			return callback({code: result.statusCode, message: 'amzn request failed'});
-		}
-		if (result.statusCode == 503) {
-			log.warn({}, 'fake_prodadv will stop making requests to amzn');
-			process.env.OFFLINE = 'true';
 		}
 		if (!result.body) {
 			return callback(new Error('No response body'));

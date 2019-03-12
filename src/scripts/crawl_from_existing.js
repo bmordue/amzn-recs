@@ -51,7 +51,6 @@ var main = function() {
 	crawl_from_existing(function(err) {
 		if (err) {
 			log.error(err, "crawl_from_existing.js finished with error");
-			console.log(err.stack);
 			process.exit(1);
 		} else {
 			log.info({}, "crawl_from_existing.js finished successfully");
