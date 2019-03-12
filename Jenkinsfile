@@ -21,7 +21,7 @@ node {
   }
 
   stage ('Coverage') {
-    sh "docker run --rm ${volumes} --network=host ${image_name}:${tag} npm run-script coverage"
+    sh "docker run --rm ${volumes} ${image_name}:${tag} ./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov npm test"
     publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false,
         reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Coverage Report'])
   }
