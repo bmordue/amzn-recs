@@ -27,7 +27,7 @@ node {
   }
 
   stage ('Analysis') {
-    if (${env.BRANCH_NAME} == 'master') {
+    if (env.BRANCH_NAME == 'master') {
       withCredentials([string(credentialsId: 'SONAR_LOGIN', variable: 'SONAR_LOGIN')]) {
         sh "docker run --rm ${volumes} -v ${WORKSPACE}/.sonarcloud.properties:/root/sonar-scanner/conf/sonar-scanner.properties " +
            "newtmitch/sonar-scanner:3.2.0-alpine " +
