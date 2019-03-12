@@ -26,6 +26,15 @@ node {
         reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Coverage Report'])
   }
 
+  stage ('Analysis') {
+    withCredentials([string(credentialsId: 'SONAR_LOGIN', variable: 'SONAR_LOGIN')]) {
+      sh "docker run --rm ${volumes} -v $(pwd)/.sonarcloud.properties:/root/sonar-scanner/conf/sonar-scanner.properties " +
+         "newtmitch/sonar-scanner:3.2.0-alpine " +
+         "sonar-scanner " +
+         "-Dsonar.login=${SONAR_LOGIN}"
+    }
+  }
+
   stage ('Archive artifacts') {
     archiveArtifacts artifacts: 'coverage/**/*', onlyIfSuccessful: true
   }
