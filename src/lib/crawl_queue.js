@@ -124,7 +124,7 @@ CrawlQueue.prototype.crawl = function(rootAsin, depth, callback) {
 		},
 		function(similar, cb) {
 			if (!similar.Items || !similar.Items.Item) {
-				log.warn({asin: rootAsin}, "Similar items list is empty");
+				log.info({asin: rootAsin}, "Similar items list is empty");
 				return cb();
 			}
 			log.debug({asin: rootAsin, child_count: similar.Items.Item.length}, "Start crawling children");
