@@ -18,7 +18,7 @@ services:
       - DB_URL=bolt://graphdb
       - PRICE_LOOKUP_ENDPOINT=http://prices:3000/price
       - AMZN_RECS_LOG_LEVEL=DEBUG
-      - CRAWL_API_ENDPOINT=http://localhost:3000/crawl
+      - CRAWL_API_ENDPOINT=http://127.0.0.1:3000
       - STATSD_HOST=datadog_agent
     networks:
       - default
