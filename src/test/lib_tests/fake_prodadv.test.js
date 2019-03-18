@@ -10,6 +10,7 @@ describe("fake_prodadv", function() {
 	});
 
 
+if (process.env.RUN_UNSAFE_TESTS == "true") {
 	it("parse authors list", function(done) {
 		var query = "ItemLookup";
 		var params = { ItemId: "B0042AMD2M" };
@@ -30,4 +31,6 @@ describe("fake_prodadv", function() {
 			done();
 		});
 	});
+}
+
 });
