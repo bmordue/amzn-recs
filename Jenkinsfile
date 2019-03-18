@@ -16,7 +16,7 @@ node {
   }
   
   stage ('Run tests') {
-    sh "docker run --rm ${volumes} ${test_env_vars} --network=host ${image_name}:${tag} npm test"
+    sh "docker run --rm ${volumes} ${test_env_vars} --network=host ${image_name}:${tag} ./node_modules/.bin/mocha src/test/lib_tests"
     junit testResults: 'results_xunit.xml'
   }
 
