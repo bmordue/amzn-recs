@@ -48,7 +48,7 @@ function CrawlQueue(options) {
 		this.prodAdv = fakeProdAdv;
 	}
 //	this.limiter = new RateLimiter(50, "minute");
-	this.limiter = new RateLimiter(1, 3000); // 1 every N ms
+	this.limiter = new RateLimiter(1, 60500); // 1 every N ms
 	this.db = new DbConnector();
 }
 

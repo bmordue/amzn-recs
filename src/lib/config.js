@@ -12,10 +12,16 @@ var getDockerSecret = function(secret) {
       }
 }
 
+const parameters = {
+      DB_PATH: './temp/db.sqlite',
+      HTML_DUMP_DIR: 'temp/html/',
+      PORT: 3000
+};
+
 module.exports = {
   // Get a secret from its name
       get(secret, required = false) {
-            const secretValue = process.env[secret] || getDockerSecret(secret)
+            const secretValue = parameters[secret] || process.env[secret] || getDockerSecret(secret);
             if (required && !secretValue) {
             	throw new Error("Missing required env var");
             }

@@ -1,5 +1,6 @@
 // crawl prod adv API and write results to JSON files
 var async = require("async");
+var config = require("./config");
 var CrawlQueue = require("../lib/crawl_queue");
 var log = require("../lib/log");
 var MessageQueue = require("../lib/message_queue");
@@ -7,7 +8,7 @@ var MessageQueue = require("../lib/message_queue");
 const DEFAULT_CRAWL_DEPTH = 2;
 
 var work = function(callback) {
-	var queue = new MessageQueue({dbPath: './temp/db.sqlite'});
+	var queue = new MessageQueue({dbPath: config.get("DB_PATH")});
 	var task = {};
 	var crawler;
 	async.waterfall([
