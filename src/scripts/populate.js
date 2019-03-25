@@ -15,6 +15,10 @@ var limiter = new RateLimiter(1, "second");
 var nodes_count = 0;
 
 function throttledPriceLookup (asin, callback) {
+	var workOffline = process.env.OFFLINE;
+	if (workOffline) {
+		return callback(null, {});
+	}
 	limiter.removeTokens(1, function(err) {
 		if (err) {
 			return callback(err);
