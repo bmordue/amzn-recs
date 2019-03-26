@@ -10,7 +10,6 @@ var util         = require('util');
 var Whitelist    = require('../lib/whitelist');
 
 const PORT = config.get('PORT') || 3000;
-const TASKS_DB_PATH = config.get('DB_PATH');
 
 var statsd = new StatsD();
 
