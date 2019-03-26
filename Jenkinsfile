@@ -10,20 +10,27 @@ node {
   def test_env_vars = "-e CRAWL_API_HOST=http://localhost:3000"
   def test_token = "111111"
 
-  def DOCKER = tool 'docker' + '/bin/docker'
+  def DOCKER_HOME = tool 'docker'
+  def DOCKER_BIN = "${DOCKER_HOME}/bin/docker"
 
   stage ('Install') {
-    sh "${DOCKER} run --rm ${volumes} ${image_name}:${tag} npm install > npm_install.log"
-    sh "${DOCKER} run --rm ${volumes} ${image_name}:${tag} node src/scripts/add_to_api_whitelist.js ${test_token}"
+    docker.image("${image_name}:${tag}").inside("--rm ${volumes}") {
+      sh "npm install > npm_install.log"
+      sh "node src/scripts/add_to_api_whitelist.js ${test_token}"
+    }
   }
   
   stage ('Run tests') {
-    sh "${DOCKER} run --rm ${volumes} ${test_env_vars} --network=host ${image_name}:${tag} ./node_modules/.bin/mocha --exit src/test/lib_tests"
+    docker.image("${image_name}:${tag}").inside("--rm ${volumes} ${test_env_vars} --network=host") {
+      sh "./node_modules/.bin/mocha --exit src/test/lib_tests"
+    }
     junit testResults: 'results_xunit.xml'
   }
 
   stage ('Coverage') {
-    sh "${DOCKER} run --rm ${volumes} ${image_name}:${tag} ./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov npm test"
+    docker.image("${image_name}:${tag}").inside("--rm ${volumes}") {
+      sh "./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov npm test"
+    }
     publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false,
         reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Coverage Report'])
   }
