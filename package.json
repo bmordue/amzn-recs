@@ -24,6 +24,7 @@
     "dotenv": "^6.2.0",
     "finalhandler": "^1.1.1",
     "limiter": "^1.1.4",
+    "mocha-junit-reporter": "^1.18.0",
     "needle": "^2.2.4",
     "neo4j-driver": "^1.7.3",
     "node-statsd": "^0.1.1",

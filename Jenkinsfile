@@ -22,7 +22,7 @@ node {
   
   stage ('Run tests') {
     docker.image("${image_name}:${tag}").inside("${volumes} ${test_env_vars} --network=host") {
-      sh "./node_modules/.bin/mocha --exit src/test/lib_tests"
+      sh "./node_modules/.bin/mocha --exit --reporter mocha-junit-reporter src/test/lib_tests"
     }
     junit testResults: 'results_xunit.xml'
   }
