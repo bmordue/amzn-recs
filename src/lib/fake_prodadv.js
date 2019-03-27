@@ -1,4 +1,5 @@
 
+var config = require('./config');
 var log = require('./log');
 var needle = require('needle');
 var fs = require('fs');
@@ -37,7 +38,7 @@ module.exports = function(query, params, callback) {
 }
 
 function similarityLookup(asin, callback) {
-	var filename = asin + '_dump.html';
+	var filename = config.get('HTML_DUMP_DIR') + asin + '_dump.html';
 	if (fs.existsSync(filename)) {
 		log.debug(filename, 'using cached file for similarity lookup');
 		var data = fs.readFileSync(filename);

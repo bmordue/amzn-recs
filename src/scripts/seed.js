@@ -1,5 +1,6 @@
 // add the first node to the graph
 require("dotenv").load({silent: true});
+var config = require("../lib/config");
 var MessageQueue = require("../lib/message_queue");
 
 
@@ -11,7 +12,7 @@ function main() {
 		depth: 1
 	};
 
-	var queue = new MessageQueue({dbPath: './temp/db.sqlite'});
+	var queue = new MessageQueue({dbPath: config.get("DB_PATH"});
 	queue.init(function(err) {
         if (err) {
             console.log(err);

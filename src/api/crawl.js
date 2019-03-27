@@ -1,4 +1,5 @@
 var bodyParser   = require('body-parser');
+var config       = require('./config');
 var finalhandler = require('finalhandler');
 var http         = require('http');
 var log          = require('../lib/log');
@@ -8,8 +9,7 @@ var StatsD = require('node-statsd');
 var util         = require('util');
 var Whitelist    = require('../lib/whitelist');
 
-const PORT = 3000;
-const TASKS_DB_PATH = './temp/db.sqlite'; // TODO: configure this in one place only
+const PORT = config.get('PORT') || 3000;
 
 var statsd = new StatsD();
 
