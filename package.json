@@ -20,11 +20,11 @@
     "async": "^2.6.2",
     "aws-lib": "^0.3.0",
     "body-parser": "^1.18.3",
-    "cheerio": "^1.0.0-rc.2",
-    "dotenv": "^6.2.0",
+    "cheerio": "^1.0.0-rc.3",
+    "dotenv": "^7.0.0",
     "finalhandler": "^1.1.1",
     "limiter": "^1.1.4",
-    "mocha-junit-reporter": "^1.18.0",
+    "mocha-junit-reporter": "^1.21.0",
     "needle": "^2.2.4",
     "neo4j-driver": "^1.7.3",
     "node-statsd": "^0.1.1",
@@ -33,7 +33,7 @@
     "verror": "^1.10.0"
   },
   "devDependencies": {
-    "mocha": "^6.0.2",
+    "mocha": "^6.1.2",
     "nyc": "^13.3.0",
     "should": "^13.2.3"
   }
