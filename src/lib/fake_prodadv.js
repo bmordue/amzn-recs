@@ -90,7 +90,7 @@ function itemSearch(asin, callback) {
 }
 
 function itemLookup(asin, callback) {
-	var filename = asin + '_dump.html';
+	var filename = config.get('HTML_DUMP_DIR') + asin + '_dump.html';
 	if (fs.existsSync(filename)) {
 		log.debug(filename, 'using cached file for item lookup');
 		var data = fs.readFileSync(filename);
@@ -172,7 +172,7 @@ function amznRequest(asin, callback) {
 			return callback(new Error('No response body'));
 		}
 
-		var filename = asin + '_dump.html';
+		var filename = config.get('HTML_DUMP_DIR') + asin + '_dump.html';
 		fs.writeFileSync(filename, result.body);
 
 		callback(null, result.body);

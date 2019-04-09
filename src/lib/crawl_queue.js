@@ -48,7 +48,7 @@ function CrawlQueue(options) {
 		this.prodAdv = fakeProdAdv;
 	}
 //	this.limiter = new RateLimiter(50, "minute");
-	this.limiter = new RateLimiter(1, 60500); // 1 every N ms
+	this.limiter = new RateLimiter(1, 3000); // 1 every N ms
 	this.db = new DbConnector();
 }
 
@@ -118,6 +118,7 @@ CrawlQueue.prototype.crawl = function(rootAsin, depth, callback) {
 		log.debug({}, util.format("Reached depth %s, stop crawling", depth));
 		return callback();
 	}
+	var nodesAdded = [];
 	async.waterfall([
 		function(cb) {
 			self.throttledSimilarityLookup(rootAsin, cb);
@@ -131,6 +132,7 @@ CrawlQueue.prototype.crawl = function(rootAsin, depth, callback) {
 			async.each(similar.Items.Item, function(item, each_cb) {
 				async.waterfall([
 					function(cb) {
+						nodesAdded.push(item);
 						self.addToGraph(rootAsin, item, cb);
 					},
 					function(cb) {
@@ -144,7 +146,7 @@ CrawlQueue.prototype.crawl = function(rootAsin, depth, callback) {
 		}
 	], function(err) {
 		log.debug({asin: rootAsin}, "Finished crawling");
-		callback(err);
+		callback(err, nodesAdded);
 	});
 };
 
