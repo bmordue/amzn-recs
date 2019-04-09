@@ -272,5 +272,16 @@ DbConnector.prototype.close = function() {
 	this.driver.close();
 }
 
+DbConnector.prototype.getPath = function(startAsin, finishAsin, callback) {
+	var query = {
+		text: "MATCH p=((a:Book {ASIN: {start}}) -[*1..10]-> (b:Book {ASIN: {finish}})) RETURN p LIMIT 1;",
+		parameters: {
+			start: startAsin,
+			finish: finishAsin
+		}
+	};
+	simpleQuery(this, query, callback);
+}
+
 
 module.exports = DbConnector;
