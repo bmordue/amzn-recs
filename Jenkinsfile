@@ -44,7 +44,7 @@ node {
         }
       }
     } 
-/*    else {
+    else {
       withCredentials([string(credentialsId: 'GITHUB_PERSONAL_ACCESS_TOKEN, variable: 'GITHUB_PAT')]) {
         sh "docker run ${volumes} -v ${WORKSPACE}/.sonarcloud.properties:/root/sonar-scanner/conf/sonar-scanner.properties " +
            "newtmitch/sonar-scanner:3.2.0-alpine " +
@@ -54,7 +54,7 @@ node {
            "-Dsonar.pullrequest.base=${env.BASE} " +
            "-Dsonar.github.oath=${GITHUB_PAT}"
       }
-    }*/
+    }
   }
 
   stage ('Archive artifacts') {
