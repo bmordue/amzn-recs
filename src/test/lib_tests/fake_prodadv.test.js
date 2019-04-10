@@ -1,4 +1,3 @@
-require("dotenv").load({silent: true});
 var should = require("should");
 var fake_prodadv = require('../../lib/fake_prodadv');
 

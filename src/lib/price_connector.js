@@ -1,4 +1,3 @@
-require("dotenv").load({silent: true});
 var log = require("./log");
 var needle = require("needle");
 

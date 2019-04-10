@@ -1,5 +1,3 @@
-//TODO remove dotenv? or move to config.js
-require("dotenv").load({silent: true});
 var async = require("async");
 var config = require("./config");
 var log = require("./log");
