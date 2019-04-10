@@ -1,5 +1,4 @@
 // count nodes in the graph
-require("dotenv").load({silent: true});
 //var MessageQueue = require("../lib/message_queue");
 //var graph = require('../lib/graphdb_connector');
 var neo4j = require('neo4j-driver').v1;

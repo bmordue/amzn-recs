@@ -1,5 +1,4 @@
 // populate graph DB from JSON files
-require("dotenv").load({silent: true});
 var async = require("async");
 var CrawlQueue = require("../lib/crawl_queue");
 var DbConnector = require("../lib/graphdb_connector");

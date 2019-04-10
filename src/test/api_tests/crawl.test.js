@@ -1,4 +1,3 @@
-require("dotenv").load({silent: true});
 var assert = require("assert");
 var needle = require("needle");
 var util = require("util");

@@ -1,4 +1,3 @@
-require("dotenv").load({silent: true});
 var async = require("async");
 var aws = require("aws-lib");
 var config = require("./config");

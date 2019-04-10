@@ -1,5 +1,4 @@
 // add the first node to the graph
-require("dotenv").load({silent: true});
 var config = require("../lib/config");
 var MessageQueue = require("../lib/message_queue");
 
