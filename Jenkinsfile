@@ -29,7 +29,7 @@ node {
 
   stage ('Coverage') {
     docker.image("${image_name}:${tag}").inside("${volumes}") {
-      sh "./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov npm test"
+      sh "./node_modules/.bin/nyc --reporter=lcov npm test"
     }
     publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false,
         reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Coverage Report'])
