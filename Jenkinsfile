@@ -51,8 +51,8 @@ node {
            "newtmitch/sonar-scanner:3.2.0-alpine " +
            "sonar-scanner " +
            "-Dsonar.pullrequest.branch=${env.BRANCH_NAME} " + 
-           "-Dsonar.pullrequest.key=${env.PR_NUMBER} " +
-           "-Dsonar.pullrequest.base=${env.BASE} " +
+           "-Dsonar.pullrequest.key=${env.JOB_BASE_NAME} " +
+           "-Dsonar.pullrequest.base=master " +
            "-Dsonar.github.oath=${GITHUB_PAT} " +
            "-Dsonar.sources=src " +
            "-Dsonar.exclusions=src/test/**,src/scripts/** " +
