@@ -29,32 +29,25 @@ node {
 
   stage ('Coverage') {
     docker.image("${image_name}:${tag}").inside("${volumes}") {
-      sh "./node_modules/.bin/nyc --reporter=lcov --reporter=text-lcov npm test"
+      sh "./node_modules/.bin/nyc --reporter=lcov npm test"
     }
     publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false,
         reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Coverage Report'])
   }
 
   stage ('Analysis') {
-    if (env.BRANCH_NAME == 'master') {
-      withCredentials([string(credentialsId: 'SONAR_LOGIN', variable: 'SONAR_LOGIN')]) {
-        def sonarProperties = "-v ${WORKSPACE}/conf:/root/sonar-scanner/conf"
-        docker.image("newtmitch/sonar-scanner:3.2.0-alpine").inside("${volumes} ${sonarProperties}") {
-          sh "sonar-scanner -Dsonar.login=${SONAR_LOGIN}"
-        }
+    def sonarProperties = "-v ${WORKSPACE}/conf:/root/sonar-scanner/conf"
+    def sonarParams = ""
+    if (env.BRANCH_NAME != 'master') {
+        sonarParams = " -Dsonar.pullrequest.branch=${env.BRANCH_NAME}" +
+            " -Dsonar.pullrequest.key=${env.CHANGE_ID}" +
+            " -Dsonar.pullrequest.base=${env.CHANGE_TARGET}"
+    }
+    withCredentials([string(credentialsId: 'SONAR_LOGIN', variable: 'SONAR_LOGIN')]) {
+      docker.image("newtmitch/sonar-scanner:3.2.0-alpine").inside("${volumes} ${sonarProperties}") {
+        sh "sonar-scanner -Dsonar.login=${SONAR_LOGIN} ${sonarParams}"
       }
-    } 
-/*    else {
-      withCredentials([string(credentialsId: 'GITHUB_PERSONAL_ACCESS_TOKEN, variable: 'GITHUB_PAT')]) {
-        sh "docker run ${volumes} -v ${WORKSPACE}/.sonarcloud.properties:/root/sonar-scanner/conf/sonar-scanner.properties " +
-           "newtmitch/sonar-scanner:3.2.0-alpine " +
-           "sonar-scanner " +
-           "-Dsonar.pullrequest.branch=${env.BRANCH_NAME} " + 
-           "-Dsonar.pullrequest.key=${env.PR_NUMBER} " +
-           "-Dsonar.pullrequest.base=${env.BASE} " +
-           "-Dsonar.github.oath=${GITHUB_PAT}"
-      }
-    }*/
+    }
   }
 
   stage ('Archive artifacts') {
