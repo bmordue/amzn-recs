@@ -54,9 +54,9 @@ node {
            "-Dsonar.pullrequest.key=${env.JOB_BASE_NAME} " +
            "-Dsonar.pullrequest.base=master " +
            "-Dsonar.github.oath=${GITHUB_PAT} " +
-           "-Dsonar.sources=. " +
-           "-Dsonar.exclusions=test/**,scripts/** " +
-           "-Dsonar.tests=test " +
+           "-Dsonar.sources=/opt/src " +
+           "-Dsonar.exclusions=/opt/src/test/**,/opt/src/scripts/** " +
+           "-Dsonar.tests=/opt/src/test " +
            "-Dsonar.host.url=https://sonarcloud.io " +
            "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.infosonar.sources " +
            "-Dsonar.projectKey=bmordue_amzn-recs"
