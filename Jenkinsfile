@@ -50,8 +50,8 @@ node {
 
         def scannerCmd = 
            "-Dsonar.pullrequest.branch=${env.BRANCH_NAME} " + 
-           "-Dsonar.pullrequest.key=${env.JOB_BASE_NAME} " +
-           "-Dsonar.pullrequest.base=master " +
+           "-Dsonar.pullrequest.key=${env.CHANGE_ID} " +
+           "-Dsonar.pullrequest.base=${env.CHANGE_TARGET} " +
            "-Dsonar.github.oath=${GITHUB_PAT} " +
 //           "-Dsonar.sources=/opt/src/src " +
 //           "-Dsonar.exclusions=/opt/src/src/test/**,/opt/src/src/scripts/** " +
@@ -60,7 +60,7 @@ node {
            "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.infosonar.sources " +
            "-Dsonar.projectKey=bmordue_amzn-recs"
 
-        docker.image('newtmitch/sonar-scanner:3.2.0-alpine').run("--rm ${volumes} ${sonarProperties}", scannerCmd)
+        docker.image('newtmitch/sonar-scanner:3.2.0-alpine').run("--rm ${volumes} ${sonarProperties}", "'${scannerCmd}'")
 
 //        sh "docker run ${volumes} ${sonarProperties} " +
 //           "newtmitch/sonar-scanner:3.2.0-alpine " +
