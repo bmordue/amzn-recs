@@ -36,7 +36,6 @@ node {
   }
 
   stage ('Analysis') {
-    sh "env | sort"
     def sonarProperties = "-v ${WORKSPACE}/conf:/root/sonar-scanner/conf"
     def sonarParams = ""
     if (env.BRANCH_NAME != 'master') {
