@@ -54,11 +54,11 @@ node {
            "-Dsonar.pullrequest.key=${env.JOB_BASE_NAME} " +
            "-Dsonar.pullrequest.base=master " +
            "-Dsonar.github.oath=${GITHUB_PAT} " +
-           "-Dsonar.sources=src " +
-           "-Dsonar.exclusions=src/test/**,src/scripts/** " +
-           "-Dsonar.tests=src/test " +
+           "-Dsonar.sources=. " +
+           "-Dsonar.exclusions=test/**,scripts/** " +
+           "-Dsonar.tests=test " +
            "-Dsonar.host.url=https://sonarcloud.io " +
-           "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.infosonar.sources=src " +
+           "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.infosonar.sources " +
            "-Dsonar.projectKey=bmordue_amzn-recs"
       }
     }
