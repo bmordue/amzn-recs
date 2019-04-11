@@ -46,6 +46,7 @@ node {
     } 
     else {
       withCredentials([string(credentialsId: 'Github-pat', variable: 'GITHUB_PAT')]) {
+        sh "env | sort"
         sh "docker run ${volumes} ${sonarProperties} " +
            "newtmitch/sonar-scanner:3.2.0-alpine " +
            "sonar-scanner " +
@@ -53,6 +54,11 @@ node {
            "-Dsonar.pullrequest.key=${env.PR_NUMBER} " +
            "-Dsonar.pullrequest.base=${env.BASE} " +
            "-Dsonar.github.oath=${GITHUB_PAT}"
+           "-Dsonar.sources=src
+           "-Dsonar.exclusions=src/test/**,src/scripts/**
+           "-Dsonar.tests=src/test
+           "-Dsonar.host.url=https://sonarcloud.io
+           "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.infosonar.sources=src
       }
     }
   }
