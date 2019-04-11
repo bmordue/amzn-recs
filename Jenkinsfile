@@ -48,7 +48,7 @@ node {
       withCredentials([string(credentialsId: 'Github-pat', variable: 'GITHUB_PAT')]) {
         sh "env | sort"
 
-        def scannerCmd = 
+        def scannerCmd = "sonar-scanner " +
            "-Dsonar.pullrequest.branch=${env.BRANCH_NAME} " + 
            "-Dsonar.pullrequest.key=${env.CHANGE_ID} " +
            "-Dsonar.pullrequest.base=${env.CHANGE_TARGET} " +
