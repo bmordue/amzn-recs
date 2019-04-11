@@ -60,7 +60,9 @@ node {
            "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.infosonar.sources " +
            "-Dsonar.projectKey=bmordue_amzn-recs"
 
-        docker.image('newtmitch/sonar-scanner:3.2.0-alpine').run("--rm ${volumes} ${sonarProperties}", "'${scannerCmd}'")
+        docker.image('newtmitch/sonar-scanner:3.2.0-alpine').inside("${volumes} ${sonarProperties}") {
+            sh "${scannerCmd}"
+	}
 
 //        sh "docker run ${volumes} ${sonarProperties} " +
 //           "newtmitch/sonar-scanner:3.2.0-alpine " +
