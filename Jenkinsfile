@@ -47,19 +47,34 @@ node {
     else {
       withCredentials([string(credentialsId: 'Github-pat', variable: 'GITHUB_PAT')]) {
         sh "env | sort"
-        sh "docker run ${volumes} ${sonarProperties} " +
-           "newtmitch/sonar-scanner:3.2.0-alpine " +
-           "sonar-scanner " +
+
+        var scannerCmd = 
            "-Dsonar.pullrequest.branch=${env.BRANCH_NAME} " + 
            "-Dsonar.pullrequest.key=${env.JOB_BASE_NAME} " +
            "-Dsonar.pullrequest.base=master " +
            "-Dsonar.github.oath=${GITHUB_PAT} " +
-           "-Dsonar.sources=/opt/src/src " +
-           "-Dsonar.exclusions=/opt/src/src/test/**,/opt/src/src/scripts/** " +
-           "-Dsonar.tests=/opt/src/src/test " +
+//           "-Dsonar.sources=/opt/src/src " +
+//           "-Dsonar.exclusions=/opt/src/src/test/**,/opt/src/src/scripts/** " +
+//           "-Dsonar.tests=/opt/src/src/test " +
            "-Dsonar.host.url=https://sonarcloud.io " +
            "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.infosonar.sources " +
            "-Dsonar.projectKey=bmordue_amzn-recs"
+
+        docker.image('newtmitch/sonar-scanner:3.2.0-alpine').run("--rm ${volumes} ${sonarProperties}", scannerCmd)
+
+//        sh "docker run ${volumes} ${sonarProperties} " +
+//           "newtmitch/sonar-scanner:3.2.0-alpine " +
+//           "sonar-scanner " +
+//           "-Dsonar.pullrequest.branch=${env.BRANCH_NAME} " + 
+//          "-Dsonar.pullrequest.key=${env.JOB_BASE_NAME} " +
+//           "-Dsonar.pullrequest.base=master " +
+//           "-Dsonar.github.oath=${GITHUB_PAT} " +
+//           "-Dsonar.sources=/opt/src/src " +
+//           "-Dsonar.exclusions=/opt/src/src/test/**,/opt/src/src/scripts/** " +
+//           "-Dsonar.tests=/opt/src/src/test " +
+//           "-Dsonar.host.url=https://sonarcloud.io " +
+//           "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.infosonar.sources " +
+//           "-Dsonar.projectKey=bmordue_amzn-recs"
       }
     }
   }
