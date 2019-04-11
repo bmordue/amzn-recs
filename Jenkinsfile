@@ -45,7 +45,7 @@ node {
       }
     } 
     else {
-      withCredentials([string(credentialsId: 'GITHUB_PERSONAL_ACCESS_TOKEN', variable: 'GITHUB_PAT')]) {
+      withCredentials([string(credentialsId: 'Github-pat', variable: 'GITHUB_PAT')]) {
         sh "docker run ${volumes} ${sonarProperties} " +
            "newtmitch/sonar-scanner:3.2.0-alpine " +
            "sonar-scanner " +
