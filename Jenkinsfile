@@ -53,12 +53,12 @@ node {
            "-Dsonar.pullrequest.branch=${env.BRANCH_NAME} " + 
            "-Dsonar.pullrequest.key=${env.PR_NUMBER} " +
            "-Dsonar.pullrequest.base=${env.BASE} " +
-           "-Dsonar.github.oath=${GITHUB_PAT}"
-           "-Dsonar.sources=src
-           "-Dsonar.exclusions=src/test/**,src/scripts/**
-           "-Dsonar.tests=src/test
-           "-Dsonar.host.url=https://sonarcloud.io
-           "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.infosonar.sources=src
+           "-Dsonar.github.oath=${GITHUB_PAT}" +
+           "-Dsonar.sources=src" +
+           "-Dsonar.exclusions=src/test/**,src/scripts/**" +
+           "-Dsonar.tests=src/test" +
+           "-Dsonar.host.url=https://sonarcloud.io" +
+           "-Dsonar.javascript.lcov.reportPaths=coverage/lcov.infosonar.sources=src"
       }
     }
   }
