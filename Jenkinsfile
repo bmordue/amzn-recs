@@ -36,9 +36,9 @@ node {
   }
 
   stage ('Analysis') {
+    def sonarProperties = "-v ${WORKSPACE}/conf:/root/sonar-scanner/conf"
     if (env.BRANCH_NAME == 'master') {
       withCredentials([string(credentialsId: 'SONAR_LOGIN', variable: 'SONAR_LOGIN')]) {
-        def sonarProperties = "-v ${WORKSPACE}/conf:/root/sonar-scanner/conf"
         docker.image("newtmitch/sonar-scanner:3.2.0-alpine").inside("${volumes} ${sonarProperties}") {
           sh "sonar-scanner -Dsonar.login=${SONAR_LOGIN}"
         }
@@ -46,7 +46,7 @@ node {
     } 
     else {
       withCredentials([string(credentialsId: 'GITHUB_PERSONAL_ACCESS_TOKEN', variable: 'GITHUB_PAT')]) {
-        sh "docker run ${volumes} -v ${WORKSPACE}/.sonarcloud.properties:/root/sonar-scanner/conf/sonar-scanner.properties " +
+        sh "docker run ${volumes} ${sonarProperties} " +
            "newtmitch/sonar-scanner:3.2.0-alpine " +
            "sonar-scanner " +
            "-Dsonar.pullrequest.branch=${env.BRANCH_NAME} " + 
