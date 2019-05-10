@@ -21,7 +21,7 @@
     "aws-lib": "^0.3.0",
     "body-parser": "^1.18.3",
     "cheerio": "^1.0.0-rc.3",
-    "finalhandler": "^1.1.1",
+    "finalhandler": "^1.1.2",
     "limiter": "^1.1.4",
     "needle": "^2.3.0",
     "neo4j-driver": "^1.7.3",
