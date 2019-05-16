@@ -1,5 +1,5 @@
 var bodyParser   = require('body-parser');
-var config       = require('./config');
+var config       = require('../lib/config');
 var finalhandler = require('finalhandler');
 var http         = require('http');
 var log          = require('../lib/log');

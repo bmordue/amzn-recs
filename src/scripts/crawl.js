@@ -8,9 +8,9 @@ var main = function() {
 		log.error({}, "Missing required argument: starting ASIN");
 		process.exit(1);
 	}
-	
+
 	var maxDepth = process.argv[3] || 2;
-	
+
 	var crawler = new CrawlQueue({maxCrawlDepth: maxDepth});
 	log.info({root: rootAsin, depth: maxDepth}, "Start crawling...");
 	crawler.crawl(rootAsin, 0, function(err) {
