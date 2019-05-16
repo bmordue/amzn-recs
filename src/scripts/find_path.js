@@ -57,16 +57,16 @@ function main() {
 	var start = process.argv[2] || 'B07HFC2KQM';
 	var finish = process.argv[3] || 'B07DHRMBCJ';
 	console.log('Try to find path from ' + start + 'to ' + finish);
-//	crawler.db.getPath(start, finish, function(err, path) {
-//		console.log('PATH:\n' + util.inspect(path, {compact: false, depth: 10}));
-//		process.exit();
-//	});
-
-	findPath(start, finish, 1, [start, finish], function(err) {
-		if (err) { console.log(err); process.exit(1); }
-		console.log('Finished finding path without error');
+	crawler.db.getPath(start, finish, function(err, path) {
+		console.log(JSON.stringify(path, null, 4));
 		process.exit();
 	});
+
+//	findPath(start, finish, 1, [start, finish], function(err) {
+//		if (err) { console.log(err); process.exit(1); }
+//		console.log('Finished finding path without error');
+//		process.exit();
+//	});
 }
 
 main();

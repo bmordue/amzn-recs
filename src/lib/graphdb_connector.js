@@ -121,7 +121,6 @@ function addParentChildRelation(driver, parentAsin, childAsin, callback) {
 		.subscribe({
 			onNext: ()=>{},
 			onCompleted: function(summary) {
-				log.debug(callback, 'typeof callback: ' + typeof callback);
 				closeAndCallback(callback, session, null, summary);
 			},
 			onError: function(err) { closeAndCallback(callback, session, err); }

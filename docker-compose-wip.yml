@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   app:
-    image: node:11.11
+    image: node:11.11-alpine
     volumes:
       - .:/proj
       - ./temp:/temp
@@ -37,6 +37,13 @@ services:
     networks:
       - monitoring
       - default
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.enable=true"
+      - "traefik.basic.frontend.rule=Host:neo4j.pentland.ml"
+      - "traefik.http.port=7474"
+      - "traefik.bolt.port=7687"
+      - "traefik.basic.protocol=http"
   prices:
     image: bmordue/price-for-asin:latest
     environment:
