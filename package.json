@@ -33,7 +33,7 @@
   "devDependencies": {
     "mocha": "^6.1.4",
     "mocha-junit-reporter": "^1.22.0",
-    "nyc": "^13.3.0",
+    "nyc": "^15.0.0",
     "should": "^13.2.3"
   }
 }
