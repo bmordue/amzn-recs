@@ -22,7 +22,7 @@
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
     "finalhandler": "^1.1.2",
-    "limiter": "^1.1.4",
+    "limiter": "^1.1.5",
     "needle": "^2.4.0",
     "neo4j-driver": "^1.7.6",
     "node-statsd": "^0.1.1",
