@@ -8,6 +8,7 @@ var util = require("util");
 // TODO: put queue size verification in some kind of neat wrapper
 
 function dumpDb(db, callback) {
+	return callback(null, []);
 	// TODO: this is out of place; table name is hard-coded, cf CRAWL_TASKS_TABLE_NAME in MessageQueue.js
 	var queryStr = "SELECT *, rowid from crawl_tasks";
 	var stmt = db.prepare(queryStr);
@@ -146,7 +147,6 @@ describe("message queue", function() {
 						console.log(util.format("Completed task; result is %j", result));
 						cb();
 					}
-					,function(cb) { dumpDb(queue.db, cb); }
 				], done);
 			 });
 		});

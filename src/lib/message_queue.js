@@ -8,76 +8,75 @@ var statsd = new StatsD({
                         host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'
                 });
 
-MessageQueue.STATUS_WAITING			= 'waiting';
-MessageQueue.STATUS_PROCESSING	= 'processing';
-MessageQueue.STATUS_DONE				= 'done';
 
 
-function MessageQueue(options) {
+class MessageQueue {
+
+static STATUS_WAITING			= 'waiting';
+static STATUS_PROCESSING	= 'processing';
+static STATUS_DONE				= 'done';
+
+
+constructor(options) {
 	this.options = options || {};
 	this.mq = [];
 }
 
-MessageQueue.prototype.init = function(callback) {
+init = function(callback) {
 	callback();
 };
 
-MessageQueue.prototype.close = function(callback) {
+close = function(callback) {
 	callback();
 };
 
 // TODO: also return break-down by statusCode
 //callback(err, result) where result = { total:x, done:y, waiting:z, processing:w}
-MessageQueue.prototype.size = function(callback) {
-	callback(null, this.mq.length);
+size = function(callback) {
+	callback(null, { 'total': this.mq.length } );
 };
 
-MessageQueue.prototype.add = function(job, callback) {
+add = function(job, callback) {
 	statsd.increment('add');
 	job.status = MessageQueue.STATUS_WAITING;
 	const len = this.mq.push(job);
-	callback(null, len - 1);
+	const row = len - 1;
+	this.mq[row].rowid = row;
+	callback(null, row);
 };
 
 // claim the item at the top of the queue
 // callback(err, task)
-MessageQueue.prototype.claim = function(callback) {
+claim = function(callback) {
 	statsd.increment('claim');
-	const i = this.mq.find((el) => el.status === MessageQueue.STATUS_WAITING);
-	if (!i) {
+	const i = this.mq.findIndex((el) => el.status === MessageQueue.STATUS_WAITING);
+	if (typeof(i) === "undefined") {
 		return callback(new Error("Could not take a task from queue"));
+	}
+	if (!this.mq[i]) {
+		return callback(new Error(util.format("Could not find task with id %s", i)));
 	}
 	this.mq[i].status = MessageQueue.STATUS_PROCESSING;
 	callback(null, this.mq[i]);
 };
 
-//callback(err)
-function beginTransaction(db, callback) {
-	callback();
-}
-
-//callback(err)
-function endTransaction(db, callback) {
-	callback();
-}
-
 
 // mark a claimed task as complete
 // TODO: check status before update is MessageQueue.STATUS_PROCESSING
 // TODO: record requester; verify same requester is marking the task complete
-MessageQueue.prototype.complete = function(rowid, callback) {
+complete = function(rowid, callback) {
 	statsd.increment('complete');
 	if (rowid >= this.mq.length) {
 		return callback(new Error("Index out of bounds"));
 	}
 	this.mq[rowid].status = MessageQueue.STATUS_DONE;
-	callback();
+	callback(null, this.mq[rowid]);
 };
 
 // 'unclaim' a task to return it to the queue (ie processing was not completed)
 // TODO: check status before update is MessageQueue.STATUS_PROCESSING
 // TODO: record requester; verify same requester is marking the task complete
-MessageQueue.prototype.unclaim = function(rowid, callback) {
+unclaim = function(rowid, callback) {
 	statsd.increment('unclaim');
 	if (!rowid) {
 		log.warn({}, "Called MessageQueue.unclaim without providing a task id");
@@ -89,5 +88,7 @@ MessageQueue.prototype.unclaim = function(rowid, callback) {
 	this.mq[rowid].status = MessageQueue.STATUS_WAITING;
 	callback(null, this.mq[rowid]);
 };
+
+}
 
 module.exports = MessageQueue;
