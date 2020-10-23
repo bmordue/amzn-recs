@@ -38,7 +38,7 @@ node {
   stage ('Analysis') {
     def sonarProperties = "-v ${WORKSPACE}/conf:/root/sonar-scanner/conf"
     def sonarParams = ""
-    if (env.BRANCH_NAME != 'master') {
+    if (env.BRANCH_NAME != 'main') {
         sonarParams = " -Dsonar.pullrequest.branch=${env.BRANCH_NAME}" +
             " -Dsonar.pullrequest.key=${env.CHANGE_ID}" +
             " -Dsonar.pullrequest.base=${env.CHANGE_TARGET}"
