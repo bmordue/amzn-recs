@@ -17,22 +17,21 @@
   },
   "homepage": "https://github.com/bmordue/amzn-recs",
   "dependencies": {
-    "async": "^2.6.2",
+    "async": "^2.6.3",
     "aws-lib": "^0.3.0",
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
     "finalhandler": "^1.1.2",
-    "limiter": "^1.1.4",
-    "needle": "^2.4.0",
-    "neo4j-driver": "^1.7.4",
+    "limiter": "^1.1.5",
+    "needle": "^2.5.2",
+    "neo4j-driver": "^1.7.7",
     "node-statsd": "^0.1.1",
-    "router": "^1.3.3",
-    "sqlite3": "^4.0.8",
+    "router": "^1.3.5",
     "verror": "^1.10.0"
   },
   "devDependencies": {
-    "mocha": "^6.1.4",
-    "mocha-junit-reporter": "^1.22.0",
+    "mocha": "^6.2.3",
+    "mocha-junit-reporter": "^1.23.3",
     "nyc": "^13.3.0",
     "should": "^13.2.3"
   }
