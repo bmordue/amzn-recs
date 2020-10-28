@@ -1,5 +1,4 @@
-module.exports = {
-	checkOnlyOneNodeMatchesAsin: function(dbConnector, options, callback) {
+export function checkOnlyOneNodeMatchesAsin(dbConnector, options, callback) {
 		if (options.message) {
 			console.log(options.message);
 		}
@@ -17,5 +16,3 @@ module.exports = {
 			return callback();
 		});
 	}
-};
-

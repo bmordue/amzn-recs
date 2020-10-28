@@ -1,19 +1,19 @@
 // add an API token to the whitelist
-var util = require("util");
-var Whitelist = require("../lib/whitelist");
+import util = require("util");
+import { Whitelist } from "../lib/whitelist";
 
 function usage() {
     console.log("Usage: node check.js token");
 }
 
-var main = function() {
-    var token = process.argv[2];
+const main = function() {
+    const token = process.argv[2];
     if (!token) {
         usage();
         process.exit(1);
     }
     console.log(util.format("Checking for token in API whitelist. Token: %s", token));
-    var whitelist = new Whitelist();
+    const whitelist = new Whitelist();
     whitelist.check(token, function(err, whitelisted) {
         if (err) {
             console.log(err);

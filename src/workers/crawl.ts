@@ -1,16 +1,20 @@
 // crawl prod adv API and write results to JSON files
-var async = require("async");
-var config = require("./config");
-var CrawlQueue = require("../lib/crawl_queue");
-var log = require("../lib/log");
-var MessageQueue = require("../lib/message_queue");
+import async = require("async");
+import config = require("../lib/config");
+import { CrawlQueue } from "../lib/crawl_queue";
+import log = require("../lib/log");
+import { MessageQueue } from "../lib/message_queue";
 
 const DEFAULT_CRAWL_DEPTH = 2;
 
-var work = function(callback) {
-	var queue = new MessageQueue({dbPath: config.get("DB_PATH")});
-	var task = {};
-	var crawler;
+const work = function(callback) {
+	const queue = new MessageQueue({dbPath: config.get("DB_PATH")});
+	let task = {
+		depth: null,
+		asin: null,
+		rowid: null
+	};
+	let crawler;
 	async.waterfall([
 			function(cb) {
 				queue.init(cb);
@@ -23,10 +27,10 @@ var work = function(callback) {
 				return cb(new Error("Failed to retrieve a task from queue"));
 			}
 			task = result;
-			var maxDepth = task.depth || DEFAULT_CRAWL_DEPTH;
-			var rootAsin = task.asin;
+			const maxDepth = task.depth || DEFAULT_CRAWL_DEPTH;
+			const rootAsin = task.asin;
 			if (!rootAsin) {
-				var errMsg = "Task did not contain an ASIN";
+				const errMsg = "Task did not contain an ASIN";
 				log.error(task, errMsg);
 				return cb(new Error(errMsg));
 			}
@@ -44,7 +48,7 @@ var work = function(callback) {
 		});
 };
 
-var main = function() {
+const main = function() {
 	work(function(err) {
 		if (err) {
 			log.error(err, "Error in workers/crawl.js#work()");

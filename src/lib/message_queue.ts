@@ -3,21 +3,23 @@ import log = require("./log");
 import StatsD = require('node-statsd');
 import util = require("util");
 
-var statsd = new StatsD({
+const statsd = new StatsD({
                         prefix: 'amzn-recs.message_queue.',
                         host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'
                 });
 
 
 
-class MessageQueue {
+export class MessageQueue {
 
 static STATUS_WAITING			= 'waiting';
 static STATUS_PROCESSING	= 'processing';
 static STATUS_DONE				= 'done';
 
+options;
+mq;
 
-constructor(options) {
+constructor(options = {}) {
 	this.options = options || {};
 	this.mq = [];
 }
@@ -90,5 +92,3 @@ unclaim = function(rowid, callback) {
 };
 
 }
-
-module.exports = MessageQueue;

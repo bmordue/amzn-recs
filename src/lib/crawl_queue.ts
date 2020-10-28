@@ -1,19 +1,19 @@
 import async = require("async");
 import aws = require("aws-lib");
 import config = require("./config");
-import DbConnector = require("./graphdb_connector");
+import { DbConnector } from "./graphdb_connector";
 import log = require("./log");
-import priceAsin = require("./price_connector");
-import RateLimiter = require("limiter").RateLimiter;
+import { fetch } from "./price_connector";
+import { RateLimiter } from "limiter";
 import StatsD = require("node-statsd");
 import util = require("util");
 
-var statsd = new StatsD({
+const statsd = new StatsD({
                         prefix: 'amzn-recs.crawl_queue.',
                         host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'
                 });
 
-var fakeProdAdv = require("./fake_prodadv");
+const fakeProdAdv = require("./fake_prodadv");
 
 const BACKOFF_SECONDS = 10;
 
@@ -23,7 +23,20 @@ function callProdAdv(crawlQueue, query, params, callback) {
 	crawlQueue.prodAdv.call(this, query, params, callback);
 }
 
-function CrawlQueue(options) {
+export class CrawlQueue {
+static inputDir = './temp/output';
+static doneDir = './temp/done';
+static errorDir = './temp/errors';
+
+
+	private maxCrawlDepth;
+	nodeCount;
+	private doPriceLookup;
+	prodAdv;
+	private limiter;
+	db;
+	
+	constructor(options) {
 	if (!options) {
 		options = {};
 	}
@@ -36,10 +49,10 @@ function CrawlQueue(options) {
 		log.info({}, "Price lookup is not enabled");
 	}
 
-	var keyId = config.get("AMZN_ACCESS_KEY_ID");
-	var keySecret = config.get("AMZN_ACCESS_KEY_SECRET");
-	var associateTag = config.get("AMZN_ASSOCIATE_TAG");
-	var amazonServiceHost = config.get("AMZN_SERVICE_HOST") || "webservices.amazon.co.uk";
+	const keyId = config.get("AMZN_ACCESS_KEY_ID");
+	const keySecret = config.get("AMZN_ACCESS_KEY_SECRET");
+	const associateTag = config.get("AMZN_ASSOCIATE_TAG");
+	const amazonServiceHost = config.get("AMZN_SERVICE_HOST") || "webservices.amazon.co.uk";
 
 	if (keyId && keySecret && associateTag) {
 		this.prodAdv = aws.createProdAdvClient(keyId, keySecret, associateTag, { host: amazonServiceHost});
@@ -51,8 +64,8 @@ function CrawlQueue(options) {
 	this.db = new DbConnector();
 }
 
-CrawlQueue.prototype.throttledSimilarityLookup = function(asin, callback) {
-	var self = this;
+throttledSimilarityLookup(asin, callback) {
+	const self = this;
 	log.debug({}, 'throttledSimilarityLookup');
 	this.limiter.removeTokens(1, function(err) {
 		log.debug({}, 'called back from limited');
@@ -72,7 +85,7 @@ CrawlQueue.prototype.throttledSimilarityLookup = function(asin, callback) {
 	});
 };
 
-CrawlQueue.prototype.throttledPriceLookup = function(asin, callback) {
+throttledPriceLookup(asin, callback) {
 	if (!this.doPriceLookup) {
 		return callback(null, {});
 	}
@@ -80,13 +93,13 @@ CrawlQueue.prototype.throttledPriceLookup = function(asin, callback) {
 		if (err) {
 			return callback(err);
 		}
-		priceAsin.fetch(asin, callback);
+		fetch(asin, callback);
 	});
 };
 
 
-CrawlQueue.prototype.alreadyCrawled = function(asin, callback) {
-	var self = this;
+alreadyCrawled(asin, callback) {
+	const self = this;
 	this.db.getBookNode(asin, function(err, node) {
 		if (err) {
 			return callback(err);
@@ -107,17 +120,17 @@ CrawlQueue.prototype.alreadyCrawled = function(asin, callback) {
 	});
 };
 
-CrawlQueue.prototype.crawl = function(rootAsin, depth, callback) {
+crawl(rootAsin, depth, callback) {
 
 	this.nodeCount++;
 	log.debug({current_depth: depth, parent_node: rootAsin}, "crawling");
-	var self = this;
+	const self = this;
 	depth += 1;
 	if (depth > self.maxCrawlDepth) {
 		log.debug({}, util.format("Reached depth %s, stop crawling", depth));
 		return callback();
 	}
-	var nodesAdded = [];
+	const nodesAdded = [];
 	async.waterfall([
 		function(cb) {
 			self.throttledSimilarityLookup(rootAsin, cb);
@@ -149,8 +162,8 @@ CrawlQueue.prototype.crawl = function(rootAsin, depth, callback) {
 	});
 };
 
-CrawlQueue.prototype.addToGraph = function(parent, item, callback) {
-	var self = this;
+addToGraph(parent, item, callback) {
+	const self = this;
 	self.ensureRequiredFields(parent, item, function(err) {
 		if (err) {
 			log.error(item, 'Could not add required fields for graph node');
@@ -175,8 +188,8 @@ CrawlQueue.prototype.addToGraph = function(parent, item, callback) {
 	});
 };
 
-CrawlQueue.prototype.ensureRequiredFields = function(parent, item, callback) {
-	var self = this;
+ensureRequiredFields(parent, item, callback) {
+	const self = this;
 	if (!item.Title || !item.Author || !item.DetailPageUrl) {
 		log.debug(item, 'Missing required field; attempt to add it');
 		this.limiter.removeTokens(1, function(err) {
@@ -195,8 +208,8 @@ CrawlQueue.prototype.ensureRequiredFields = function(parent, item, callback) {
 	}
 };
 
-CrawlQueue.prototype.createNodeWithAsin = function(asin, callback) {
-	var self = this;
+createNodeWithAsin(asin, callback) {
+	const self = this;
 	this.limiter.removeTokens(1, function(err) {
 		if (err) {
 			return callback(err);
@@ -210,13 +223,9 @@ CrawlQueue.prototype.createNodeWithAsin = function(asin, callback) {
 	});
 };
 
-CrawlQueue.prototype.keywordSearch = function(keyword, responseGroup, callback) {
+keywordSearch(keyword, responseGroup, callback) {
 	callProdAdv(this, "ItemSearch", { Keywords: keyword, ResponseGroup: responseGroup }, callback);
 };
 
-CrawlQueue.inputDir = './temp/output';
-CrawlQueue.doneDir = './temp/done';
-CrawlQueue.errorDir = './temp/errors';
 
-
-module.exports = CrawlQueue;
+}

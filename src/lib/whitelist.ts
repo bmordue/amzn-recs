@@ -1,14 +1,12 @@
-import util = require("util");
+// stub implementation
+export class Whitelist {
+	constructor() {}
 
-function Whitelist(options) {
+	add(token, callback) {
+		callback();
+	}
+
+	check(token, callback) {
+		callback(true);
+	}
 }
-
-Whitelist.prototype.add = function(token, callback) {
-	return callback();
-};
-
-Whitelist.prototype.check = function(token, callback) {
-	return callback(true);
-};
-
-module.exports = Whitelist;

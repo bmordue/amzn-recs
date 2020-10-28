@@ -1,21 +1,21 @@
-var bodyParser   = require('body-parser');
-var config       = require('../lib/config');
-var finalhandler = require('finalhandler');
-var http         = require('http');
-var log          = require('../lib/log');
-var MessageQueue = require('../lib/message_queue');
-var Router       = require('router');
-var StatsD = require('node-statsd');
-var util         = require('util');
-var Whitelist    = require('../lib/whitelist');
+import bodyParser   = require('body-parser');
+import config       = require('../lib/config');
+import finalhandler = require('finalhandler');
+import http         = require('http');
+import log          = require('../lib/log');
+import { MessageQueue } from '../lib/message_queue';
+import Router       = require('router');
+import StatsD = require('node-statsd');
+import util         = require('util');
+import { Whitelist } from '../lib/whitelist';
 
 const PORT = config.get('PORT') || 3000;
 
-var statsd = new StatsD();
+const statsd = new StatsD();
 
-var msg_queue = new MessageQueue();
-var whitelist = new Whitelist();
-msg_queue.init();
+const msg_queue = new MessageQueue();
+const whitelist = new Whitelist();
+//msg_queue.init();
 
 //TODO: request IDs
 
@@ -27,8 +27,8 @@ function handleError(side, code, msg, req, res) {
 	res.end(JSON.stringify({error: msg}));
 }
 
-var handleClientError = handleError.bind(this, "CLIENT");
-var handleServerError = handleError.bind(this, "SERVER");
+const handleClientError = handleError.bind(this, "CLIENT");
+const handleServerError = handleError.bind(this, "SERVER");
 
 function handleBadRequest(errorMsg, req, res) {
 	statsd.increment('bad_requests');
@@ -39,17 +39,17 @@ function handleSuccess(responseJson, req, res) {
 	statsd.increment('success_responses');
 	res.statusCode = 200;
 	res.setHeader('Content-Type', 'application/json; charset=utf-8');
-	var responseBody = JSON.stringify(responseJson, null, 4) + '\n';
+	const responseBody = JSON.stringify(responseJson, null, 4) + '\n';
 	res.end(responseBody);
 	log.info({status: res.statusCode, method: req.method, url: req.url}, 'Finished processing request');
 }
 
-var router = Router();
+const router = Router();
 router.use(bodyParser.json());
 
 // "auth middleware"
 router.use(function (req, res, next) {
-	var token = req.headers["x-api-token"];
+	const token = req.headers["x-api-token"];
 	if (!token) {
 		return handleClientError(401, "Missing X-Api-Token header", req, res);
 	}
@@ -79,33 +79,33 @@ router.post('/tasks', function (req, res) {
 		return handleBadRequest("Request body must not be empty", req, res);
 	}
 
-	var asin = req.body.asin;
+	const asin = req.body.asin;
 	if (!asin) {
 		return handleBadRequest("No ASIN in query string", req, res);
 	}
 
-	var depth = req.body.depth;	//undefined is OK
+	const depth = req.body.depth;	//undefined is OK
 
-	var task = {
+	const task = {
 		asin: asin,
 		token: req.token,
 		depth: depth,
-		status: msg_queue.STATUS_WAITING
+		status: MessageQueue.STATUS_WAITING
 	};
 
 	msg_queue.add(task, function(err, job_id) {
 		if (err) {
-			var errMsg = 'Failed to ask task to queue';
+			const errMsg = 'Failed to ask task to queue';
 			log.error(err, errMsg);
 			return handleServerError(503, errMsg, req, res);
 		}
 
 		res.statusCode = 202;
 		res.setHeader('Content-Type', 'application/json; charset=utf-8');
-		var responseJson = {
+		const responseJson = {
 			id: job_id
 		};
-		var responseBody = JSON.stringify(responseJson, null, 4) + '\n';
+		const responseBody = JSON.stringify(responseJson, null, 4) + '\n';
 		res.end(responseBody);
 		log.debug({task: task}, 'Finished processing request');
 		log.info({status: res.statusCode, method: req.method, url: req.url}, 'Sent response');
@@ -117,18 +117,18 @@ router.post('/tasks', function (req, res) {
 router.post('tasks/take', function(req,res) {
 	msg_queue.claim(function(err, task) {
 		if (err) {
-			var errMsg = 'Failed to get a task from the queue';
+			const errMsg = 'Failed to get a task from the queue';
 			log.error(err, errMsg);
 			return handleServerError(503, errMsg, req, res);
 		}
 
 		res.statusCode = 200;
 		res.setHeader('Content-Type', 'application/json; charset=utf-8');
-		var responseJson = {
+		const responseJson = {
 			asin: task.asin,
 			depth: task.depth
 		};
-		var responseBody = JSON.stringify(responseJson, null, 4) + '\n';
+		const responseBody = JSON.stringify(responseJson, null, 4) + '\n';
 		res.end(responseBody);
 		log.info({status: res.statusCode, method: req.method, url: req.url}, 'Finished processing request');
 	});
@@ -148,17 +148,17 @@ router.put('tasks', function(req, res) {
 		return handleBadRequest("Request body must not be empty", req, res);
 	}
 
-	var taskId = req.body.id;
+	const taskId = req.body.id;
 	if (!taskId) {
 		return handleBadRequest("Request is missing task id", req, res);
 	}
 
-	var taskStatus = req.body.status;
+	const taskStatus = req.body.status;
 	if (!taskStatus) {
 		return handleBadRequest("Request is missing task status", req, res);
 	}
 
-	var updateTaskFn;
+	let updateTaskFn;
 	switch (taskStatus) {
 		case MessageQueue.STATUS_DONE:
 			updateTaskFn = msg_queue.complete;
@@ -173,7 +173,7 @@ router.put('tasks', function(req, res) {
 	}
 	updateTaskFn(taskId, function(err) {
 		if (err) {
-			var errMsg = "Unable to update status in queue";
+			const errMsg = "Unable to update status in queue";
 			log.error(err, errMsg);
 			handleServerError(503, errMsg, req, res);
 		} else {
@@ -190,7 +190,7 @@ router.use(function(req, res) {
 });
 
 
-var server = http.createServer(function(req, res) {
+const server = http.createServer(function(req, res) {
 	router(req, res, finalhandler(req, res));
 });
 

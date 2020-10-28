@@ -1,8 +1,8 @@
 // Crawl based on search for author
 // The intent is to populate the DB with all titles by an author
-var async = require("async");
-var CrawlQueue = require("../lib/crawl_queue");
-var log = require("../lib/log");
+import async = require("async");
+import { CrawlQueue } from "../lib/crawl_queue";
+import log = require("../lib/log");
 
 // client is a Product Advertising API client -- see lib/crawl_queue.js
 // author is an author's full name
@@ -22,15 +22,15 @@ function resultsForAuthor(client, author, callback) {
 	});
 }
 
-var main = function() {
-	var author = process.argv[2]; //eg "Neal Stephenson"
+function main() {
+	const author = process.argv[2]; //eg "Neal Stephenson"
 	if (!author) {
 		log.error({}, "Missing required argument: author");
 		process.exit(1);
 	}
-	var depth = process.argv[3] || 1;
+	const depth = process.argv[3] || 1;
 
-	var crawler = new CrawlQueue({maxCrawlDepth: depth, doPriceLookup: true});
+	const crawler = new CrawlQueue({maxCrawlDepth: depth, doPriceLookup: true});
 
 	resultsForAuthor(crawler.prodAdv, author, function(err, items) {
 		log.info({author: author, titles: items.length}, "Number of titles found");

@@ -6,21 +6,21 @@ import fs = require('fs');
 import cheerio = require('cheerio');
 import StatsD = require('node-statsd');
 
-var statsd = new StatsD({
+const statsd = new StatsD({
 	prefix: 'amzn_recs.fake_prodadv.',
 	host: process.env.STATSD_HOST || 'localhost'
 });
 
 const api_endpoint = process.env.AMZN_ENDPOINT || 'https://www.amazon.co.uk/gp/product/';
 
-var workOffline = process.env.OFFLINE;
+let workOffline = process.env.OFFLINE.toLowerCase() === 'true';
 
 
 module.exports = function(query, params, callback) {
 
 	log.debug({query: query, params: params}, 'Query using fake prodadv');
 
-	var asin = params.ItemId;
+	const asin = params.ItemId;
 	if (!asin) {
 		return callback(new Error('Missing ItemId in parameters'));
 	}
@@ -38,10 +38,10 @@ module.exports = function(query, params, callback) {
 }
 
 function similarityLookup(asin, callback) {
-	var filename = config.get('HTML_DUMP_DIR') + asin + '_dump.html';
+	const filename = config.get('HTML_DUMP_DIR') + asin + '_dump.html';
 	if (fs.existsSync(filename)) {
 		log.debug(filename, 'using cached file for similarity lookup');
-		var data = fs.readFileSync(filename);
+		const data = fs.readFileSync(filename);
 		return processDataForSimilarityLookup(data, callback);
 	} else if (!workOffline) {
 		log.debug(asin, 'making amzn request for similarity lookup');
@@ -57,28 +57,30 @@ function similarityLookup(asin, callback) {
 
 function processDataForSimilarityLookup(data, callback) {
 		const $ = cheerio.load(data);
-		var carouselElement = $('div.similarities-aui-carousel')
+		let items = [];
+		const carouselElement = $('div.similarities-aui-carousel')
 		if (!carouselElement) {
 			log.info({}, 'did not manage to find similar items carousel in page');
 			return callback(null, {});
 		}
-		var carouselOptions = carouselElement.attr('data-a-carousel-options');
+		const carouselOptions = carouselElement.attr('data-a-carousel-options');
 		if (!carouselOptions) {
 			log.info({}, 'did not manage to find expected attribute on similar items carousel');
 			return callback(null, {});
 		}
+		let carousel;
 		try {
-			var carousel = JSON.parse(carouselOptions.replace('\"', '"'));
+			carousel = JSON.parse(carouselOptions.replace('\"', '"'));
 		} catch (e) {
 			log.debug(carouselOptions, 'carouselOptions');
 			return callback(null, {'Items': {'Item': items}});
 		}
-		var almostAsins = carousel.ajax.id_list;
+		const almostAsins = carousel.ajax.id_list;
 		if (!almostAsins) {
 			log.info(carousel, 'did not manage to extract ASINs from carousel data');
 			return callback(null, {});
 		}
-		var items = almostAsins.map(function(i) { return { 'ASIN': i.substring(0, i.length - 1), 'ItemAttributes': {} } }); // strip trailing colon from asins
+		items = almostAsins.map(function(i) { return { 'ASIN': i.substring(0, i.length - 1), 'ItemAttributes': {} } }); // strip trailing colon from asins
 		log.debug(items.length, 'found similar items');
 
 		callback(null, {'Items': {'Item': items}});
@@ -90,10 +92,10 @@ function itemSearch(asin, callback) {
 }
 
 function itemLookup(asin, callback) {
-	var filename = config.get('HTML_DUMP_DIR') + asin + '_dump.html';
+	const filename = config.get('HTML_DUMP_DIR') + asin + '_dump.html';
 	if (fs.existsSync(filename)) {
 		log.debug(filename, 'using cached file for item lookup');
-		var data = fs.readFileSync(filename);
+		const data = fs.readFileSync(filename);
 		return processDataForItemLookup(asin, data, callback);
 	} else if (!workOffline) {
 		log.debug(asin, 'making amzn request for item lookup');
@@ -107,12 +109,16 @@ function itemLookup(asin, callback) {
 	}
 }
 
+function concatWithSpacedComma(arr: Array<string>) :string {
+	return arr.join(', ');
+}
+
 function processDataForItemLookup(asin, data, callback) {
-	var result = {
+	const result = {
 		Items: {
 			Item: {
 				ASIN: 0,
-				DetailPageURL: '',
+				DetailPageUrl: '',
 				ItemAttributes: {
 					Title: '',
 					Author: '',
@@ -127,21 +133,21 @@ function processDataForItemLookup(asin, data, callback) {
 
 	const $ = cheerio.load(data);
 
-	var title = $('#ebooksProductTitle').text();
+	const title = $('#ebooksProductTitle').text();
 	result.Items.Item.ItemAttributes.Title = title;
 
-	var currencyCode = $('#buyOneClick input[name="displayedCurrencyCode"]').attr('value');
+	const currencyCode = $('#buyOneClick input[name="displayedCurrencyCode"]').attr('value');
 	result.Items.Item.ItemAttributes.ListPrice.CurrencyCode = currencyCode;
 
-	var price = $('#buyOneClick input[name="displayedPrice"]').attr('value');
+	const price = $('#buyOneClick input[name="displayedPrice"]').attr('value');
 	result.Items.Item.ItemAttributes.ListPrice.Amount = price * 100;
 
-	var authors = [];
+	const authors = [];
 	$('a[data-asin]').each(function(ie, el) {
 		authors.push(($(el).text()));
 	});
 	log.debug({authors: authors}, 'authors');
-	result.Items.Item.ItemAttributes.Author = authors;
+	result.Items.Item.ItemAttributes.Author = concatWithSpacedComma(authors);
 
 	result.Items.Item.DetailPageUrl = api_endpoint + asin;
 	result.Items.Item.ASIN = asin;
@@ -151,9 +157,10 @@ function processDataForItemLookup(asin, data, callback) {
 
 function amznRequest(asin, callback) {
 	// https://www.amazon.co.uk/gp/product/B003GK21A8
-	var reqUrl = api_endpoint + asin;
-	var options = {};
-	options.proxy = null; // Or eg 'http://localhost:8888'
+	const reqUrl = api_endpoint + asin;
+	const options = {
+		proxy: null
+	};
 
 	needle.get(reqUrl, options, function(err, result) {
 		if (err) {
@@ -172,7 +179,7 @@ function amznRequest(asin, callback) {
 			return callback(new Error('No response body'));
 		}
 
-		var filename = config.get('HTML_DUMP_DIR') + asin + '_dump.html';
+		const filename = config.get('HTML_DUMP_DIR') + asin + '_dump.html';
 		fs.writeFileSync(filename, result.body);
 
 		callback(null, result.body);

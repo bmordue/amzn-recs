@@ -1,17 +1,17 @@
 // add the first node to the graph
-var config = require("../lib/config");
-var MessageQueue = require("../lib/message_queue");
+import config = require("../lib/config");
+import { MessageQueue } from "../lib/message_queue";
 
 
 function main() {
-	var nodeAsin = process.argv[2] || 'B014V4DXMW'; //starting ASIN
-	var job = {
+	const nodeAsin = process.argv[2] || 'B014V4DXMW'; //starting ASIN
+	const job = {
 		asin: nodeAsin,
 		token: 222222,
 		depth: 1
 	};
 
-	var queue = new MessageQueue({dbPath: config.get("DB_PATH")});
+	const queue = new MessageQueue({dbPath: config.get("DB_PATH")});
 	queue.init(function(err) {
         if (err) {
             console.log(err);

@@ -1,11 +1,11 @@
-var DbConnector = require("../../lib/graphdb_connector");
-var fs = require("fs");
-var path = require("path");
-var should = require("should");
-var test_utils = require("../test_utils");
-var util = require("util");
+import { DbConnector } from "../../lib/graphdb_connector";
+import fs = require("fs");
+import path = require("path");
+import should = require("should");
+import test_utils = require("../test_utils");
+import util = require("util");
 
-var LOG_ALL = false;
+const LOG_ALL = false;
 
 describe("DbConnector", function() {
 	if (process.env.RUN_UNSAFE_TESTS !== "true") {
@@ -14,13 +14,13 @@ describe("DbConnector", function() {
 	}
 	this.timeout(10000);
 
-	var dbConnector = new DbConnector();
+	const dbConnector = new DbConnector();
 
-	var bookData = JSON.parse(fs.readFileSync(path.join("test", "fixtures", "simple_item_1.json")));
+	const bookData = JSON.parse(fs.readFileSync(path.join("test", "fixtures", "simple_item_1.json")).toString());
 
-	var childBookData = JSON.parse(fs.readFileSync(path.join("test", "fixtures", "simple_item_2.json")));
+	const childBookData = JSON.parse(fs.readFileSync(path.join("test", "fixtures", "simple_item_2.json")).toString());
 
-	var logAllNodes = function(callback) {
+	const logAllNodes = function(callback) {
 		if (!LOG_ALL) {
 			return callback();
 		}
@@ -107,7 +107,7 @@ describe("DbConnector", function() {
 			if (err) {
 				return done(err);
 			}
-			var key = "COUNT(n)";
+			const key = "COUNT(n)";
 			result[0][key].should.eql(1);
 			done();
 		});
@@ -118,7 +118,7 @@ describe("DbConnector", function() {
 			if (err) {
 				return done(err);
 			}
-			var key = "COUNT(n)";
+			const key = "COUNT(n)";
 			result[0][key].should.eql(0);
 			done();
 		});
@@ -181,7 +181,7 @@ describe("DbConnector", function() {
 	afterEach(logAllNodes);
 
 	// after(function(done) {
-	// 	var deleteQuery = "MATCH (n {ASIN: {asin}}) DETACH DELETE n";
+	// 	const deleteQuery = "MATCH (n {ASIN: {asin}}) DETACH DELETE n";
 	// 	dbConnector.db.cypher({query: deleteQuery, params: { asin: bookData.ASIN}}, function(err, result) {
 	// 		if (err) {
 	// 			console.log(err);

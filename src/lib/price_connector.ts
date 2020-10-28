@@ -1,12 +1,12 @@
 import log = require("./log");
 import needle = require("needle");
 
-module.exports = {
-	fetch: function(asin, callback) {
-		var api_endpoint = process.env.PRICE_LOOKUP_ENDPOINT;
-		var reqUrl = api_endpoint + "?asin=" + asin;
-		var options = {};
-		options.proxy = null; // Or eg 'http://localhost:8888'
+	export function fetch(asin, callback) {
+		const api_endpoint = process.env.PRICE_LOOKUP_ENDPOINT;
+		const reqUrl = api_endpoint + "?asin=" + asin;
+		const options = {
+			proxy: null
+		};
 
 		needle.get(reqUrl, options, function(err, result) {
 			if (err) {
@@ -22,4 +22,3 @@ module.exports = {
 			callback(null, result.body);
 		});
 	}
-};
