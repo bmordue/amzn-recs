@@ -1,10 +1,10 @@
 
-var config = require('./config');
-var log = require('./log');
-var needle = require('needle');
-var fs = require('fs');
-var cheerio = require('cheerio');
-var StatsD = require('node-statsd');
+import config = require('./config');
+import log = require('./log');
+import needle = require('needle');
+import fs = require('fs');
+import cheerio = require('cheerio');
+import StatsD = require('node-statsd');
 
 var statsd = new StatsD({
 	prefix: 'amzn_recs.fake_prodadv.',

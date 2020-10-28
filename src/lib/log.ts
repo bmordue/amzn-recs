@@ -5,7 +5,7 @@ const VERBOSITY_VALUES = {
 	"DEBUG": 40
 };
 
-var StatsD = require('node-statsd');
+import StatsD = require('node-statsd');
 var statsd = new StatsD({
 			prefix: 'amzn-recs.logging.',
 			host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'

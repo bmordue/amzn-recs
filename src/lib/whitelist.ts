@@ -1,4 +1,4 @@
-var util = require("util");
+import util = require("util");
 
 function Whitelist(options) {
 }

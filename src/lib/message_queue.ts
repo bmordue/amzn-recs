@@ -1,7 +1,7 @@
-var async = require("async");
-var log = require("./log");
-var StatsD = require('node-statsd');
-var util = require("util");
+import async = require("async");
+import log = require("./log");
+import StatsD = require('node-statsd');
+import util = require("util");
 
 var statsd = new StatsD({
                         prefix: 'amzn-recs.message_queue.',

@@ -1,5 +1,5 @@
-var log = require("./log");
-var needle = require("needle");
+import log = require("./log");
+import needle = require("needle");
 
 module.exports = {
 	fetch: function(asin, callback) {

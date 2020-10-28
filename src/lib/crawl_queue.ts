@@ -1,12 +1,12 @@
-var async = require("async");
-var aws = require("aws-lib");
-var config = require("./config");
-var DbConnector = require("./graphdb_connector");
-var log = require("./log");
-var priceAsin = require("./price_connector");
-var RateLimiter = require("limiter").RateLimiter;
-var StatsD = require("node-statsd");
-var util = require("util");
+import async = require("async");
+import aws = require("aws-lib");
+import config = require("./config");
+import DbConnector = require("./graphdb_connector");
+import log = require("./log");
+import priceAsin = require("./price_connector");
+import RateLimiter = require("limiter").RateLimiter;
+import StatsD = require("node-statsd");
+import util = require("util");
 
 var statsd = new StatsD({
                         prefix: 'amzn-recs.crawl_queue.',

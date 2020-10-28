@@ -1,8 +1,8 @@
-var async = require("async");
-var config = require("./config");
-var log = require("./log");
-var neo4j = require("neo4j-driver");
-var StatsD = require("node-statsd");
+import async = require("async");
+import config = require("./config");
+import log = require("./log");
+import neo4j = require("neo4j-driver");
+import StatsD = require("node-statsd");
 
 var statsd = new StatsD({
                         prefix: 'amzn-recs.graphdb_connector.',
