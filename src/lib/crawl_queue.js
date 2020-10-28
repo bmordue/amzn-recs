@@ -214,9 +214,9 @@ CrawlQueue.prototype.keywordSearch = function(keyword, responseGroup, callback) 
 	callProdAdv(this, "ItemSearch", { Keywords: keyword, ResponseGroup: responseGroup }, callback);
 };
 
-CrawlQueue.inputDir = '/temp/output';
-CrawlQueue.doneDir = '/temp/done';
-CrawlQueue.errorDir = '/temp/errors';
+CrawlQueue.inputDir = './temp/output';
+CrawlQueue.doneDir = './temp/done';
+CrawlQueue.errorDir = './temp/errors';
 
 
 module.exports = CrawlQueue;
