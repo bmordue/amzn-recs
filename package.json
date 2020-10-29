@@ -4,7 +4,7 @@
   "description": "Crawl recommendations",
   "main": "src/scripts/crawl.js",
   "scripts": {
-    "test": "mocha --recursive --reporter xunit --reporter-options output=results_xunit.xml --exit built/test/lib_tests"
+    "test": "mocha --recursive --reporter xunit --reporter-options output=output/results_xunit.xml --exit built/test/lib_tests"
   },
   "repository": {
     "type": "git",
