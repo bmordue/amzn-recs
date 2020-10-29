@@ -134,7 +134,7 @@ function simpleQuery(connector, query, callback) {
 	const session = connector.driver.session();
 
 	const records = [];
-	session.run(query)
+	session.run(query.text, query.parameters)
 		.subscribe({
 			onNext: function (record) {
 				records.push(record);
@@ -158,7 +158,7 @@ export class DbConnector {
 	//TODO: review result passed to callback for each function
 	// if they're always [], is there any point...?
 	options;
-	driver;
+	driver :neo4j.Driver;
 
 	constructor(options = {}) {
 		this.options = options;
@@ -172,10 +172,18 @@ export class DbConnector {
 
 		//	const auth = dbUsername && dbPassword ? neo4j.auth.basic(dbUsername, dbPassword) : {};
 		const auth = neo4j.auth.basic(dbUsername, dbPassword);
-		this.driver = neo4j.driver(dbUrl, auth);
+		this.driver = neo4j.driver(dbUrl, auth, { disableLosslessIntegers: true });
 	}
 
-
+	run(query: string, parameters, callback: Function) {
+		const session = this.driver.session();
+		let records = [];
+		session.run(query, parameters).subscribe({
+			onNext: (nextRecord) => { records.push([nextRecord]); },
+			onError: (err) => { return closeAndCallback(callback, session, err); },
+			onCompleted: () => { return closeAndCallback(callback, session, null, records); }
+		})
+	}
 
 
 	init(callback) {
@@ -229,11 +237,12 @@ export class DbConnector {
 		const query = buildMergeWithPriceQuery(data);
 		const session = this.driver.session();
 		log.debug(query, "Query: ");
+		const records = [];
 
 		session.run(query.text, query.params)
 			.subscribe({
-				onNext: () => { log.debug(null, "onNext"); },
-				onCompleted: function () { log.debug(null, "onCompleted"); closeAndCallback(callback, session); },
+				onNext: (nextRecord) => { log.debug(nextRecord, "onNext"); records.push(nextRecord); },
+				onCompleted: function () { log.debug(null, "onCompleted"); closeAndCallback(callback, session, null, records[0]?.get('b')); },
 				onError: function (err) { log.debug({ err: err, query: query }, "onError: "); closeAndCallback(callback, session, err); }
 			});
 	};
@@ -243,12 +252,17 @@ export class DbConnector {
 
 	getBookNode = function (asin, callback) {
 		const text = "MATCH (n { ASIN: $ASIN }) RETURN n";
-		simpleQueryForAsin(this, text, asin, callback);
+		simpleQueryForAsin(this, text, asin, function(err, res: Array<neo4j.Record>) {
+			callback(err, res[0]?.get('n'));
+		});
 	};
 
 	deleteBookNode = function (asin, callback) {
 		const text = "MATCH (n { ASIN: $ASIN }) DETACH DELETE n RETURN COUNT(n)";
-		simpleQueryForAsin(this, text, asin, callback);
+		simpleQueryForAsin(this, text, asin, function(err, res) {
+			const key = "COUNT(n)";
+			callback(err, res[0]?.get(key));
+		});
 	};
 
 	countOutgoingRecommendations = function (asin, callback) {

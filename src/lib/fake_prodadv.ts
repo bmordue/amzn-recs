@@ -13,7 +13,7 @@ const statsd = new StatsD({
 
 const api_endpoint = process.env.AMZN_ENDPOINT || 'https://www.amazon.co.uk/gp/product/';
 
-let workOffline = process.env.OFFLINE.toLowerCase() === 'true';
+let workOffline = process.env.OFFLINE?.toLowerCase() === 'true';
 
 
 module.exports = function(query, params, callback) {

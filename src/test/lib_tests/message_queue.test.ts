@@ -1,7 +1,7 @@
-const assert = require("assert");
-const async = require("async");
-const MessageQueue = require("../../lib/message_queue");
-const util = require("util");
+import assert = require("assert");
+import async = require("async");
+import { MessageQueue } from "../../lib/message_queue";
+import util = require("util");
 
 // TODO: make test assertions beyond lack of error
 // TODO: waterfalls
@@ -40,7 +40,7 @@ function verifyQueueSize(queue, expected_size, callback) {
 describe("message queue", function() {
 	describe("success responses", function() {
 
-		const queue;
+		let queue;
 		before(function(done) {
 			queue = new MessageQueue();
 			queue.init(done);
