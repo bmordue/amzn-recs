@@ -6,6 +6,6 @@ jobs:
     steps:
       - checkout
       - run: npm install && npx tsc && npm test
-      - store_test_results
+      - store_test_results:
         path: ~/output/results_xunit.xml
 
