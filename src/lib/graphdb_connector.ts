@@ -4,6 +4,7 @@ import log = require("./log");
 import neo4j = require("neo4j-driver");
 import StatsD = require("node-statsd");
 import { toNumber } from "neo4j-driver/types/integer";
+import { Func } from "mocha";
 
 const statsd = new StatsD({
 	prefix: 'amzn-recs.graphdb_connector.',
@@ -23,7 +24,7 @@ function closeAndCallback(callback, session, err = null, result = null) {
 	session.close().then(() => callback(err, result));
 }
 
-async function createChildBookNode(driver: neo4j.Driver, data, callback) {
+async function createChildBookNode(driver: neo4j.Driver, data, callback: Function) {
 	const query = buildMergeWithPriceQuery(data);
 
 	if (!query.params) {
@@ -77,7 +78,7 @@ function buildMergeWithPriceQuery(data) {
 	return { text: mergeQueryStr, params: mergeParams };
 }
 
-async function addParentChildRelation(driver: neo4j.Driver, parentAsin, childAsin, callback) {
+async function addParentChildRelation(driver: neo4j.Driver, parentAsin: string, childAsin: string, callback: Function) {
 	const queryStr = "MATCH (parent:Book {ASIN: $parentAsin}),(child:Book {ASIN: $childAsin}) MERGE (parent)-[r:SIMILAR_TO]->(child) RETURN r";
 	const params = {
 		parentAsin: parentAsin,
@@ -212,7 +213,7 @@ export class DbConnector {
 			function (cb) {
 				createChildBookNode(self.driver, data, cb);
 			},
-			function (result, cb) {
+			function (cb) {
 				addParentChildRelation(self.driver, parentAsin, data.ASIN, cb);
 			},
 			function (result, cb) {
