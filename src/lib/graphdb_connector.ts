@@ -34,7 +34,7 @@ async function createChildBookNode(driver: neo4j.Driver, data, callback: Functio
 	let err = null;
 	const session = driver.session();
 	try {
-		await session.readTransaction((tx) => tx.run(query.text, query.params));
+		await session.writeTransaction((tx) => tx.run(query.text, query.params));
 	} catch(e) {
 		err = e;
 	} finally {
