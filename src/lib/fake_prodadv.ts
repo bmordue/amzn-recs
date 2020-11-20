@@ -15,8 +15,12 @@ const api_endpoint = config.get('AMZN_ENDPOINT');
 
 let workOffline = process.env.OFFLINE?.toLowerCase() === 'true';
 
+interface Parameters {
+	ItemId: string,
+	Author?: string
+}
 
-export function fakeProdAdv(query, params, callback) {
+export function fakeProdAdv(query: string, params: Parameters, callback: Function) {
 
 	log.debug({query: query, params: params}, 'Query using fake prodadv');
 
@@ -37,7 +41,7 @@ export function fakeProdAdv(query, params, callback) {
 	}
 }
 
-function similarityLookup(asin, callback) {
+function similarityLookup(asin: string, callback: Function) {
 	const filename = config.get('HTML_DUMP_DIR') + asin + '_dump.html';
 	if (fs.existsSync(filename)) {
 		log.debug(filename, 'using cached file for similarity lookup');
@@ -55,7 +59,7 @@ function similarityLookup(asin, callback) {
 	}
 }
 
-function processDataForSimilarityLookup(data, callback) {
+function processDataForSimilarityLookup(data, callback: Function) {
 		const $ = cheerio.load(data);
 		let items = [];
 		const carouselElement = $('div.similarities-aui-carousel')
@@ -86,13 +90,13 @@ function processDataForSimilarityLookup(data, callback) {
 		callback(null, {'Items': {'Item': items}});
 }
 
-function itemSearch(asin: string, params, callback: Function) {
+function itemSearch(asin: string, params: Parameters, callback: Function) {
 //	log.warn(asin, 'skipped itemSearch(), not yet implemented');
 //	return callback(new Error('Not yet implemented'));
 	itemLookup(params.Author, callback);
 }
 
-function itemLookup(asin, callback) {
+function itemLookup(asin: string, callback: Function) {
 	const filename = config.get('HTML_DUMP_DIR') + asin + '_dump.html';
 	if (fs.existsSync(filename)) {
 		log.debug(filename, 'using cached file for item lookup');
@@ -114,11 +118,11 @@ function concatWithSpacedComma(arr: Array<string>) :string {
 	return arr.join(', ');
 }
 
-function processDataForItemLookup(asin, data, callback) {
+function processDataForItemLookup(asin: string, data, callback: Function) {
 	const result = {
 		Items: {
 			Item: {
-				ASIN: 0,
+				ASIN: '',
 				DetailPageUrl: '',
 				ItemAttributes: {
 					Title: '',
@@ -156,7 +160,7 @@ function processDataForItemLookup(asin, data, callback) {
 	return callback(null, result);
 }
 
-function amznRequest(asin, callback) {
+function amznRequest(asin: string, callback: Function) {
 	// https://www.amazon.co.uk/gp/product/B003GK21A8
 	const reqUrl = api_endpoint + asin;
 	const options = {
