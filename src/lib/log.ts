@@ -1,3 +1,6 @@
+import config = require("./config");
+import StatsD = require('node-statsd');
+
 const VERBOSITY_VALUES = {
 	"ERROR": 10,
 	"WARN": 20,
@@ -5,13 +8,12 @@ const VERBOSITY_VALUES = {
 	"DEBUG": 40
 };
 
-import StatsD = require('node-statsd');
 const statsd = new StatsD({
 			prefix: 'amzn-recs.logging.',
-			host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'
+			host: config.get('STATSD_HOST')
 		});
 
-const output_verbosity = process.env.AMZN_RECS_LOG_LEVEL ? VERBOSITY_VALUES[process.env.AMZN_RECS_LOG_LEVEL] : "DEBUG";
+const output_verbosity = config.get('AMZN_RECS_LOG_LEVEL');
 
 const log_msg = function(level, obj, msg, verbosity) {
 	if (verbosity > output_verbosity) {

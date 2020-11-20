@@ -1,6 +1,7 @@
 // try different search responseGroups to find the one with the info we want
 import { CrawlQueue } from "../lib/crawl_queue";
 import log = require("../lib/log")
+import { fakeProdAdv } from '../lib/fake_prodadv';
 
 const responseGroups = [
 	"Small",
@@ -22,7 +23,8 @@ const main = function() {
 	const searchTerm = rootAsin;
 	let searched = 0;
 	responseGroups.forEach(function(responseGroup) {
-		crawler.keywordSearch(searchTerm, responseGroup,function(err, result) {
+//		crawler.keywordSearch(searchTerm, responseGroup,function(err, result) {
+		fake_prodadv('ItemLookup', {ItemId: rootAsin}, function(err, result) {
 			log.info(responseGroup, "RESPONSE GROUP");
 			if (err) {
 				log.error(err, "Error in scripts/search.js#main()");

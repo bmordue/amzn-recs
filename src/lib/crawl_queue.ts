@@ -10,7 +10,7 @@ import util = require("util");
 
 const statsd = new StatsD({
                         prefix: 'amzn-recs.crawl_queue.',
-                        host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'
+                        host: config.get('STATSD_HOST')
                 });
 
 import { fakeProdAdv } from "./fake_prodadv";
@@ -52,12 +52,14 @@ static errorDir = './temp/errors';
 	const keyId = config.get("AMZN_ACCESS_KEY_ID");
 	const keySecret = config.get("AMZN_ACCESS_KEY_SECRET");
 	const associateTag = config.get("AMZN_ASSOCIATE_TAG");
-	const amazonServiceHost = config.get("AMZN_SERVICE_HOST") || "webservices.amazon.co.uk";
+	const amazonServiceHost = config.get("AMZN_SERVICE_HOST");
 
 	if (keyId && keySecret && associateTag) {
 		this.prodAdv = aws.createProdAdvClient(keyId, keySecret, associateTag, { host: amazonServiceHost});
+		log.info({}, "Created prodAdv client");
 	} else {
 		this.prodAdv = fakeProdAdv;
+		log.info({}, "Using fakeProdAdv");
 	}
 //	this.limiter = new RateLimiter(50, "minute");
 	this.limiter = new RateLimiter(1, 3000); // 1 every N ms

@@ -2,10 +2,11 @@ import async = require("async");
 import log = require("./log");
 import StatsD = require('node-statsd');
 import util = require("util");
+import config = require("./config");
 
 const statsd = new StatsD({
                         prefix: 'amzn-recs.message_queue.',
-                        host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'
+                        host: config.get('STATSD_HOST')
                 });
 
 

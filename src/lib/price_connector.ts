@@ -1,8 +1,9 @@
+import config = require("./config");
 import log = require("./log");
 import needle = require("needle");
 
 	export function fetch(asin, callback) {
-		const api_endpoint = process.env.PRICE_LOOKUP_ENDPOINT;
+		const api_endpoint = config.get('PRICE_LOOKUP_ENDPOINT');
 		const reqUrl = api_endpoint + "?asin=" + asin;
 		const options = {
 			proxy: null

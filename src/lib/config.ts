@@ -12,14 +12,19 @@ const getDockerSecret = function(secret) {
       }
 }
 
-const parameters = {
+const defaults = {
       DB_PATH: './temp/db.sqlite',
       HTML_DUMP_DIR: 'temp/html/',
-      PORT: 3000
+      PORT: 3000,
+      AMZN_SERVICE_HOST: 'webservices.amazon.co.uk',
+      AMZN_ENDPOINT: 'https://www.amazon.co.uk/gp/product/',
+      STATSD_HOST: 'localhost',
+      AMZN_RECS_LOG_LEVEL: 'DEBUG',
+      CRAWL_API_ENDPOINT: 'http://127.0.0.1:3000'
 };
 
 export function get(secret, required = false) {
-      const secretValue = parameters[secret] || process.env[secret] || getDockerSecret(secret);
+      const secretValue = process.env[secret] || getDockerSecret(secret) || defaults[secret];
       if (required && !secretValue) {
             throw new Error("Missing required env var");
       }

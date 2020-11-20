@@ -8,7 +8,7 @@ import { Func } from "mocha";
 
 const statsd = new StatsD({
 	prefix: 'amzn-recs.graphdb_connector.',
-	host: process.env.STATSD_HOST || 'localhost'
+	host: config.get('STATSD_HOST')
 });
 
 function closeAndCallback(callback, session, err = null, result = null) {

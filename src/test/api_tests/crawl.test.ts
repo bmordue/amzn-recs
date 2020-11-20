@@ -1,9 +1,10 @@
 import assert = require("assert");
 import needle = require("needle");
 import util = require("util");
+import config = require("../../lib/config");
 
 describe("crawl API", function() {
-	const endpoint = process.env.CRAWL_API_ENDPOINT || "http://127.0.0.1:3000";
+	const endpoint = config.get('CRAWL_API_ENDPOINT');
 	const uri = endpoint + "/tasks";
 
 	const req_options = {

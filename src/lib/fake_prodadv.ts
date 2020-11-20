@@ -8,10 +8,10 @@ import StatsD = require('node-statsd');
 
 const statsd = new StatsD({
 	prefix: 'amzn_recs.fake_prodadv.',
-	host: process.env.STATSD_HOST || 'localhost'
+	host: config.get('STATSD_HOST')
 });
 
-const api_endpoint = process.env.AMZN_ENDPOINT || 'https://www.amazon.co.uk/gp/product/';
+const api_endpoint = config.get('AMZN_ENDPOINT');
 
 let workOffline = process.env.OFFLINE?.toLowerCase() === 'true';
 
@@ -23,7 +23,6 @@ export function fakeProdAdv(query, params, callback) {
 	const asin = params.ItemId;
 	if (!asin) {
 		log.warn({}, 'No ItemId in parameters');
-//		return callback(new Error('Missing ItemId in parameters'));
 	}
 
 	switch (query) {
