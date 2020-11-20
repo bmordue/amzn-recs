@@ -13,7 +13,7 @@ const statsd = new StatsD({
                         host: process.env.STATSD_HOST ? process.env.STATSD_HOST : 'localhost'
                 });
 
-const fakeProdAdv = require("./fake_prodadv");
+import { fakeProdAdv } from "./fake_prodadv";
 
 const BACKOFF_SECONDS = 10;
 

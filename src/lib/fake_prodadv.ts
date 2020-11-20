@@ -16,20 +16,21 @@ const api_endpoint = process.env.AMZN_ENDPOINT || 'https://www.amazon.co.uk/gp/p
 let workOffline = process.env.OFFLINE?.toLowerCase() === 'true';
 
 
-module.exports = function(query, params, callback) {
+export function fakeProdAdv(query, params, callback) {
 
 	log.debug({query: query, params: params}, 'Query using fake prodadv');
 
 	const asin = params.ItemId;
 	if (!asin) {
-		return callback(new Error('Missing ItemId in parameters'));
+		log.warn({}, 'No ItemId in parameters');
+//		return callback(new Error('Missing ItemId in parameters'));
 	}
 
 	switch (query) {
 		case 'SimilarityLookup':
 			return similarityLookup(asin, callback);
 		case 'ItemSearch':
-			return itemSearch(asin, callback);
+			return itemSearch(asin, params, callback);
 		case 'ItemLookup':
 			return itemLookup(asin, callback);
 		default:
@@ -86,9 +87,10 @@ function processDataForSimilarityLookup(data, callback) {
 		callback(null, {'Items': {'Item': items}});
 }
 
-function itemSearch(asin, callback) {
-	log.warn(asin, 'skipped itemSearch(), not yet implemented');
-	return callback(new Error('Not yet implemented'));
+function itemSearch(asin: string, params, callback: Function) {
+//	log.warn(asin, 'skipped itemSearch(), not yet implemented');
+//	return callback(new Error('Not yet implemented'));
+	itemLookup(params.Author, callback);
 }
 
 function itemLookup(asin, callback) {

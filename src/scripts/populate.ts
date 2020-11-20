@@ -57,13 +57,11 @@ function moveInputFile(cb, filename, err) {
 	} else {
 		newPath = path.join(CrawlQueue.doneDir, filename);
 	}
-	log.debug({}, "before fs.rename in populate.moveInputFile()");
 	fs.rename(path.join(CrawlQueue.inputDir, filename), newPath, function(renameErr) {
 		// if there's a problem moving the file, log it, but don't fail
 		if (renameErr) {
 			log.error({err: renameErr, file: filename}, "Error while moving input file");
 		}
-		log.debug({}, "before callback in populate.moveInputFile()");
 		cb(err);
 	});
 }
