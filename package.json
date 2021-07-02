@@ -21,7 +21,7 @@
     "async": "^2.6.3",
     "aws-lib": "^0.3.0",
     "body-parser": "^1.19.0",
-    "cheerio": "^1.0.0-rc.3",
+    "cheerio": "^1.0.0-rc.5",
     "finalhandler": "^1.1.2",
     "limiter": "^1.1.5",
     "needle": "^2.5.2",
