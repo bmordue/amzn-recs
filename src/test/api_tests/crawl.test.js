@@ -3,7 +3,8 @@ var needle = require("needle");
 var util = require("util");
 
 describe("crawl API", function() {
-	const endpoint = process.env.CRAWL_API_ENDPOINT || "http://127.0.0.1:3000";
+	const endpoint = process.env.CRAWL_API_ENDPOINT;
+	if (!endpoint) return;
 	var uri = endpoint + "/tasks";
 
 	var req_options = {
