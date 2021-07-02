@@ -11,8 +11,6 @@ const statsd = new StatsD({
 	host: config.get('STATSD_HOST')
 });
 
-const api_endpoint = config.get('AMZN_ENDPOINT');
-
 let workOffline = process.env.OFFLINE?.toLowerCase() === 'true';
 
 interface Parameters {
@@ -118,6 +116,10 @@ function concatWithSpacedComma(arr: Array<string>) :string {
 	return arr.join(', ');
 }
 
+function buildDetailPageUrl(asin: string): string {
+	return config.get('AMZN_ENDPOINT') + asin;
+}
+
 function processDataForItemLookup(asin: string, data, callback: Function) {
 	const result = {
 		Items: {
@@ -154,7 +156,7 @@ function processDataForItemLookup(asin: string, data, callback: Function) {
 	log.debug({authors: authors}, 'authors');
 	result.Items.Item.ItemAttributes.Author = concatWithSpacedComma(authors);
 
-	result.Items.Item.DetailPageUrl = api_endpoint + asin;
+	result.Items.Item.DetailPageUrl = buildDetailPageUrl(asin);
 	result.Items.Item.ASIN = asin;
 
 	return callback(null, result);
@@ -162,7 +164,7 @@ function processDataForItemLookup(asin: string, data, callback: Function) {
 
 function amznRequest(asin: string, callback: Function) {
 	// https://www.amazon.co.uk/gp/product/B003GK21A8
-	const reqUrl = api_endpoint + asin;
+	const reqUrl = buildDetailPageUrl(asin);
 	const options = {
 		proxy: null
 	};
