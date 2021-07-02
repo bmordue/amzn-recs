@@ -146,7 +146,8 @@ function processDataForItemLookup(asin: string, data, callback: Function) {
 	const currencyCode = $('#buyOneClick input[name="displayedCurrencyCode"]').attr('value');
 	result.Items.Item.ItemAttributes.ListPrice.CurrencyCode = currencyCode;
 
-	const price = $('#buyOneClick input[name="displayedPrice"]').attr('value');
+	const priceStr = $('#buyOneClick input[name="displayedPrice"]').attr('value');
+	const price = Number(priceStr);
 	result.Items.Item.ItemAttributes.ListPrice.Amount = price * 100;
 
 	const authors = [];

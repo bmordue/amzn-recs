@@ -3,8 +3,6 @@ import config = require("./config");
 import log = require("./log");
 import neo4j = require("neo4j-driver");
 import StatsD = require("node-statsd");
-import { toNumber } from "neo4j-driver/types/integer";
-import { Func } from "mocha";
 
 const statsd = new StatsD({
 	prefix: 'amzn-recs.graphdb_connector.',
