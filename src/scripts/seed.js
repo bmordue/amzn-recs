@@ -11,7 +11,7 @@ function main() {
 		depth: 1
 	};
 
-	var queue = new MessageQueue({dbPath: config.get("DB_PATH"});
+	var queue = new MessageQueue({dbPath: config.get("DB_PATH")});
 	queue.init(function(err) {
         if (err) {
             console.log(err);

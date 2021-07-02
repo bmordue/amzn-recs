@@ -28,6 +28,7 @@ function throttledPriceLookup (asin, callback) {
 
 function processItem(parentAsin, item, callback) {
 	nodes_count++;
+	log.debug(item.ASIN, "processItem called for ");
 	throttledPriceLookup(item.ASIN, function(err, result) {
 		if (err) {
 			log.error({error: err.message}, "error looking up price for ASIN " + item.ASIN);
@@ -36,6 +37,7 @@ function processItem(parentAsin, item, callback) {
 			item.price = result.price;
 			item.currency = result.currency;
 		}
+//		dbCon.createBookNode(item, function(err) {
 		dbCon.createChildBookNodeAndRelations(parentAsin, item, function(err) {
 			if (err) {
 				log.error({error: err.message, item: item}, "populate.processItem() - error adding node: ");
@@ -55,11 +57,13 @@ function moveInputFile(cb, filename, err) {
 	} else {
 		newPath = path.join(CrawlQueue.doneDir, filename);
 	}
+	log.debug("before fs.rename in populate.moveInputFile()");
 	fs.rename(path.join(CrawlQueue.inputDir, filename), newPath, function(renameErr) {
 		// if there's a problem moving the file, log it, but don't fail
 		if (renameErr) {
 			log.error({err: renameErr, file: filename}, "Error while moving input file");
 		}
+		log.debug("before callback in populate.moveInputFile()");
 		cb(err);
 	});
 }
@@ -79,12 +83,14 @@ function processFile(filename, cb) {
 		try {
 			item_list = JSON.parse(data).Items.Item;
 		} catch (e) {
+			log.error(filename, 'error parsing json for ');
 			return callback(e);
 		}
-		//log.debug(item_list, "item_list: ")
+		log.debug(item_list.length, "item_list.length: ");
 		async.each(item_list, function(item, each_cb) {
 			processItem(parentAsin, item, each_cb);
 		}, callback);
+//		processItem(parentAsin, item_list[0], cb);
 	});
 }
 
@@ -110,14 +116,22 @@ function main() {
 			log.warn(err, "Error creating doneDir or errorDir directory")// log but otherwise ignore
 		}
 		populate(function(err) {
+			var exitCode = 0;
 			if (err) {
 				log.error(err, "Error");
-				process.exit(1);
+				exitCode = 1;
 			}
 			log.info(nodes_count, "Node count: ");
-			process.exit(0);
+			dbCon.close();
+			process.exit(exitCode);
 		});
 	});
 }
 
+
+function check() {
+	dbCon.driver.verifyConnectivity().then(()=> {log.info('ok'); process.exit(); }, (err)=> {log.error(err); process.exit(1);});
+}
+
+//check();
 main();
