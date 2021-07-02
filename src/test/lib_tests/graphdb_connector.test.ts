@@ -9,10 +9,8 @@ import { Record, Node, Neo4jError } from "neo4j-driver";
 const LOG_ALL = false;
 
 describe("DbConnector", function() {
-	// if (process.env.RUN_UNSAFE_TESTS !== "true") {
-	// 	console.log("RUN_UNSAFE_TESTS is not set to true; exiting");
-	// 	return;
-	// }
+	console.log("RUN_UNSAFE_TESTS is not set to true; exiting");
+	return;
 	this.timeout(10000);
 
 	const dbConnector = new DbConnector();
