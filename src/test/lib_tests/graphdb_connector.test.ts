@@ -16,12 +16,12 @@ describe("DbConnector", function() {
 	const dbConnector = new DbConnector();
 
     var bookData = {
-        "ASIN": "B014V4DXMW-testdata", 
-        "DetailPageURL": "http://amzn.co/B014V4DXMW", 
+        "ASIN": "B014V4DXMW-testdata",
+        "DetailPageURL": "http://amzn.co/B014V4DXMW",
         "ItemAttributes": {
-            "Author": "China Mi\u00e9ville", 
-            "Manufacturer": "Picador", 
-            "ProductGroup": "eBooks", 
+            "Author": "China Mi\u00e9ville",
+            "Manufacturer": "Picador",
+            "ProductGroup": "eBooks",
             "Title": "This Census-Taker"
         }
     };
