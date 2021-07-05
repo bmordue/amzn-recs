@@ -1,6 +1,9 @@
 import fs = require("fs");
 import util = require("util");
 
+require('dotenv').config();
+
+
 // Read in secrets managed by docker swarm
 // https://medium.com/lucjuggery/from-env-variables-to-docker-secrets-bc8802cacdfd
 const getDockerSecret = function(secret) {
