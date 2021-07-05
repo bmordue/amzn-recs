@@ -1,15 +1,15 @@
 // count nodes in the graph
-//var MessageQueue = require("../lib/message_queue");
-var DbConnector = require('../lib/graphdb_connector');
-var neo4j = require('neo4j-driver');
+//const MessageQueue = require("../lib/message_queue");
+const DbConnector = require('../lib/graphdb_connector');
+const neo4j = require('neo4j-driver');
 const util = require('util');
 
 function simpleQuery(queryStr, callback) {
 
-//	var driver = neo4j.driver('neo4j://192.168.0.48:7474', neo4j.auth.basic('neo4j', 'tester'));
-	var driver = neo4j.driver('bolt://192.168.0.48:7687', neo4j.auth.basic('neo4j', 'tester'));
-//	var driver = neo4j.driver('neo4j://localhost', neo4j.auth.basic('neo4j', 'tester'));
-	var session = driver.session();
+//	const driver = neo4j.driver('neo4j://192.168.0.48:7474', neo4j.auth.basic('neo4j', 'tester'));
+	const driver = neo4j.driver('bolt://192.168.0.48:7687', neo4j.auth.basic('neo4j', 'tester'));
+//	const driver = neo4j.driver('neo4j://localhost', neo4j.auth.basic('neo4j', 'tester'));
+	const session = driver.session();
 
 	session.run(queryStr)
 		.subscribe({
@@ -24,9 +24,9 @@ function count(callback) {
 }
 
 function cheap() {
-	var session = neo4j.driver('bolt://graphdb:7687').session()
+	const session = neo4j.driver('bolt://graphdb:7687').session()
 
-	var query = 'MATCH (b) RETURN COUNT(b)';
+	const query = 'MATCH (b) RETURN COUNT(b)';
 	session.run(query).subscribe({
 			onError: () => { session.close(); process.exit(1); },
 			onNext: (record) => { console.log(record); },
@@ -38,7 +38,7 @@ function cheap() {
 }
 
 function paths() {
-	var session = neo4j.driver('bolt://graphdb:7687').session()
+	const session = neo4j.driver('bolt://graphdb:7687').session()
 
 	session.run('Match p=((n) -[*11]-> (m)) return p limit 3;')
 		.subscribe({
@@ -55,7 +55,7 @@ function main() {
 }
 
 function check() {
-	var driver = neo4j.driver('bolt://192.168.0.48:7687', neo4j.auth.basic('neo4j', 'tester'));
+	const driver = neo4j.driver('bolt://192.168.0.48:7687', neo4j.auth.basic('neo4j', 'tester'));
 	driver.verifyConnectivity().then(process.exit);
 }
 

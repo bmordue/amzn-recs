@@ -1,20 +1,20 @@
 // populate graph DB from JSON files
-var async = require("async");
-var CrawlQueue = require("../lib/crawl_queue");
-var DbConnector = require("../lib/graphdb_connector");
-var fs = require("fs");
-var log = require("../lib/log");
-var path = require("path");
-var priceAsin = require("../lib/price_connector");
-var RateLimiter = require("limiter").RateLimiter;
+import async = require("async");
+import { CrawlQueue } from "../lib/crawl_queue";
+import { DbConnector } from "../lib/graphdb_connector";
+import fs = require("fs");
+import log = require("../lib/log");
+import path = require("path");
+import priceAsin = require("../lib/price_connector");
+import { RateLimiter } from "limiter";
 
-var dbCon = new DbConnector();
-var limiter = new RateLimiter(1, "second");
+const dbCon = new DbConnector();
+const limiter = new RateLimiter(1, "second");
 
-var nodes_count = 0;
+let nodes_count = 0;
 
 function throttledPriceLookup (asin, callback) {
-	var workOffline = process.env.OFFLINE;
+	const workOffline = process.env.OFFLINE;
 	if (workOffline) {
 		return callback(null, {});
 	}
@@ -51,37 +51,35 @@ function processItem(parentAsin, item, callback) {
 // move files out of the input folder once they've been processed
 // move to doneDir if successful, or errorDir if not
 function moveInputFile(cb, filename, err) {
-	var newPath;
+	let newPath;
 	if (err) {
 		newPath = path.join(CrawlQueue.errorDir, filename);
 	} else {
 		newPath = path.join(CrawlQueue.doneDir, filename);
 	}
-	log.debug("before fs.rename in populate.moveInputFile()");
 	fs.rename(path.join(CrawlQueue.inputDir, filename), newPath, function(renameErr) {
 		// if there's a problem moving the file, log it, but don't fail
 		if (renameErr) {
 			log.error({err: renameErr, file: filename}, "Error while moving input file");
 		}
-		log.debug("before callback in populate.moveInputFile()");
 		cb(err);
 	});
 }
 
 function processFile(filename, cb) {
-	var callback = moveInputFile.bind(this, cb, filename);
+	const callback = moveInputFile.bind(this, cb, filename);
 	if (filename.length != 15 || filename.slice(-5) != ".json") {
 		return callback(); // primitive filter for interesting files
 	}
-	var parentAsin = filename.slice(0,-5); // asin.JSON -> asin
+	const parentAsin = filename.slice(0,-5); // asin.JSON -> asin
 	fs.readFile(path.join(CrawlQueue.inputDir, filename), function(err, data) {
 		if (err) {
 			return callback(err);
 		}
 		log.info(filename, "read file ");
-		var item_list = [];
+		let item_list = [];
 		try {
-			item_list = JSON.parse(data).Items.Item;
+			item_list = JSON.parse(data.toString()).Items.Item;
 		} catch (e) {
 			log.error(filename, 'error parsing json for ');
 			return callback(e);
@@ -116,7 +114,7 @@ function main() {
 			log.warn(err, "Error creating doneDir or errorDir directory")// log but otherwise ignore
 		}
 		populate(function(err) {
-			var exitCode = 0;
+			let exitCode = 0;
 			if (err) {
 				log.error(err, "Error");
 				exitCode = 1;
@@ -130,7 +128,7 @@ function main() {
 
 
 function check() {
-	dbCon.driver.verifyConnectivity().then(()=> {log.info('ok'); process.exit(); }, (err)=> {log.error(err); process.exit(1);});
+	dbCon.driver.verifyConnectivity().then(()=> {log.info({}, 'ok'); process.exit(); }, (err)=> {log.error({}, err); process.exit(1);});
 }
 
 //check();

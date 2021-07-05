@@ -1,17 +1,16 @@
-var async = require('async');
-var CrawlQueue = require("../lib/crawl_queue");
-var log = require("../lib/log")
-var util = require("util");
+import async = require('async');
+import { CrawlQueue } from "../lib/crawl_queue";
+import log = require("../lib/log")
+import util = require("util");
 
 // given two ASINs, start and finish, fill the database with enough nodes to be able to find a path between start and finish
 
 const MAX_ATTEMPTS = 3;
 
-var crawler = new CrawlQueue({maxCrawlDepth: 1, doPriceLookup: false});
+const crawler = new CrawlQueue({maxCrawlDepth: 1, doPriceLookup: false});
 
 function findPath(start, finish, attempts, crawlList, callback) {
-	console.log();
-	var newCrawlList = [];
+	let newCrawlList = [];
 	// must be eachSeries because callback writes to newCrawlList
 	async.eachSeries(crawlList, function(asin, each_cb) {
 		crawler.crawl(asin, 0, function(err, addedNodes) {
@@ -48,17 +47,17 @@ function addAsinsToCrawlList(asinList, nodeList) {
 function getAsinFromNode(node) {
 	console.log('getAsinFromNode');
 	console.log(util.inspect(node));
-	var asin = node.ASIN;
+	const asin = node.ASIN;
 	console.log('asin: ' + asin);
 	return asin;
 }
 
 function main() {
-	var start = process.argv[2] || 'B07HFC2KQM';
-	var finish = process.argv[3] || 'B07DHRMBCJ';
+	const start = process.argv[2] || 'B07HFC2KQM';
+	const finish = process.argv[3] || 'B07DHRMBCJ';
 	console.log('Try to find path from ' + start + 'to ' + finish);
 
-	var findpath = process.argv[4];
+	const findpath = process.argv[4];
 
 	if (findpath) {
 		console.log('Find path options is ' + findpath);

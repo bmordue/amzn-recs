@@ -1,8 +1,9 @@
 // try different search responseGroups to find the one with the info we want
-var CrawlQueue = require("../lib/crawl_queue");
-var log = require("../lib/log")
+import { CrawlQueue } from "../lib/crawl_queue";
+import log = require("../lib/log")
+import { fakeProdAdv } from '../lib/fake_prodadv';
 
-var responseGroups = [
+const responseGroups = [
 	"Small",
 	"Medium",
 	"Large",
@@ -14,15 +15,16 @@ var responseGroups = [
 	"VariationOffers"
 ];
 
-var main = function() {
-	var maxDepth = process.argv[2] || 2;
+const main = function() {
+	const maxDepth = process.argv[2] || 2;
 
-	var rootAsin = 'B014V4DXMW'; //starting ASIN
-	var crawler = new CrawlQueue({maxCrawlDepth: maxDepth});
-	var searchTerm = rootAsin;
-	var searched = 0;
+	const rootAsin = 'B014V4DXMW'; //starting ASIN
+	const crawler = new CrawlQueue({maxCrawlDepth: maxDepth});
+	const searchTerm = rootAsin;
+	let searched = 0;
 	responseGroups.forEach(function(responseGroup) {
-		crawler.keywordSearch(searchTerm, responseGroup,function(err, result) {
+//		crawler.keywordSearch(searchTerm, responseGroup,function(err, result) {
+		fake_prodadv('ItemLookup', {ItemId: rootAsin}, function(err, result) {
 			log.info(responseGroup, "RESPONSE GROUP");
 			if (err) {
 				log.error(err, "Error in scripts/search.js#main()");

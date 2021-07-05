@@ -1,12 +1,8 @@
-module.exports = {
-	checkOnlyOneNodeMatchesAsin: function(dbConnector, options, callback) {
+export function checkOnlyOneNodeMatchesAsin(dbConnector, options, callback) {
 		if (options.message) {
 			console.log(options.message);
 		}
-		dbConnector.db.cypher({
-			query: "MATCH (n {ASIN: {asin}}) RETURN n",
-			params: { asin: options.asin}
-		}, function(err, result) {
+		dbConnector.run("MATCH (n {ASIN: $asin}) RETURN n", { asin: options.asin}, function(err, result) {
 			if (err) {
 				return callback(err);
 			}
@@ -17,5 +13,3 @@ module.exports = {
 			return callback();
 		});
 	}
-};
-

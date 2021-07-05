@@ -1,13 +1,13 @@
-var assert = require("assert");
-var needle = require("needle");
-var util = require("util");
+import assert = require("assert");
+import needle = require("needle");
+import util = require("util");
+import config = require("../../lib/config");
 
 describe("crawl API", function() {
-	const endpoint = process.env.CRAWL_API_ENDPOINT;
-	if (!endpoint) return;
-	var uri = endpoint + "/tasks";
+	const endpoint = config.get('CRAWL_API_ENDPOINT');
+	const uri = endpoint + "/tasks";
 
-	var req_options = {
+	const req_options = {
 		json: true,
 		headers: {
 			'X-Api-Token': '111111'
@@ -46,7 +46,7 @@ describe("crawl API", function() {
 			});
 		});
 		it("should respond with 202 for valid POST request if unrecognised fields are included in request body", function(cb) {
-			var data = {
+			const data = {
 				asin: "xxxxxx",
 				unrecognised: "unknown",
 				extra: {
@@ -145,7 +145,7 @@ describe("crawl API", function() {
 		});
 
 		it("should respond with 401 if token header is missing", function(cb) {
-			var bad_options = {
+			const bad_options = {
 				json: true
 			};
 			needle.post(uri, {asin: "xxxxxx", depth: 2}, bad_options, function(err, result) {
@@ -161,7 +161,7 @@ describe("crawl API", function() {
 			});
 		});
 		it("should respond with 403 if token is not in whitelist", function(cb) {
-			var bad_options = {
+			const bad_options = {
 				json: true,
 				headers: {
 					'X-Api-Token': 'not-whitelisted'
@@ -180,7 +180,7 @@ describe("crawl API", function() {
 			});
 		});
 		it("should respond with 400 if content type header is missing", function(cb) {
-			var bad_options = {
+			const bad_options = {
 				json: false,
 				headers: {
 					'X-Api-Token': '111111'
@@ -199,7 +199,7 @@ describe("crawl API", function() {
 			});
 		});
 		it("should respond with 400 if content type header is not application/json", function(cb) {
-			var bad_options = {
+			const bad_options = {
 				json: false,
 				headers: {
 					'Content-Type': "text/plain",

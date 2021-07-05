@@ -1,12 +1,12 @@
-var log = require("./log");
-var needle = require("needle");
+import log = require("./log");
+import needle = require("needle");
 
 const CRAWL_API_TOKEN = '222222';
 
 module.exports = {
     add: function (task, callback) {
-        var endpoint = process.env.CRAWL_API_ENDPOINT;
-        var options = {
+        const endpoint = process.env.CRAWL_API_ENDPOINT;
+        const options = {
             json: true,
             headers: {
                 'X-Api-Token': CRAWL_API_TOKEN
@@ -16,7 +16,7 @@ module.exports = {
             if (err) {
                 return callback(err);
             }
-            var responseBody = '';
+            let responseBody = '';
             result.on('data', function(chunk) {
                 responseBody += chunk;
             });

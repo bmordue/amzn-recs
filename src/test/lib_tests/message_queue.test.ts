@@ -1,7 +1,7 @@
-var assert = require("assert");
-var async = require("async");
-var MessageQueue = require("../../lib/message_queue");
-var util = require("util");
+import assert = require("assert");
+import async = require("async");
+import { MessageQueue } from "../../lib/message_queue";
+import util = require("util");
 
 // TODO: make test assertions beyond lack of error
 // TODO: waterfalls
@@ -10,8 +10,8 @@ var util = require("util");
 function dumpDb(db, callback) {
 	return callback(null, []);
 	// TODO: this is out of place; table name is hard-coded, cf CRAWL_TASKS_TABLE_NAME in MessageQueue.js
-	var queryStr = "SELECT *, rowid from crawl_tasks";
-	var stmt = db.prepare(queryStr);
+	const queryStr = "SELECT *, rowid from crawl_tasks";
+	const stmt = db.prepare(queryStr);
 	stmt.all(function(err, rows) {
 		if (err) {
 			return callback(err);
@@ -40,7 +40,7 @@ function verifyQueueSize(queue, expected_size, callback) {
 describe("message queue", function() {
 	describe("success responses", function() {
 
-		var queue;
+		let queue;
 		before(function(done) {
 			queue = new MessageQueue();
 			queue.init(done);
@@ -62,7 +62,7 @@ describe("message queue", function() {
 
 		describe("#add()", function() {
 			it("add to queue", function(done) {
-				var job = {
+				const job = {
 					asin: 1,
 					token: 'test-one'
 				};
@@ -70,7 +70,7 @@ describe("message queue", function() {
 					if (err) {
 						return done(err);
 					}
-					var initial_queue_size = result.total;
+					const initial_queue_size = result.total;
 					queue.add(job, function(err, job_id) {
 						if (err) {
 							return done(err);
@@ -91,9 +91,9 @@ describe("message queue", function() {
 					if (err) {
 						return done(err);
 					}
-					var initial_queue_size = result.total;
+					const initial_queue_size = result.total;
 					async.times(num_items_to_add, function(n, cb) {
-						var job = {
+						const job = {
 							token: "test-two",
 							asin: "test-asin-" + n
 						};
