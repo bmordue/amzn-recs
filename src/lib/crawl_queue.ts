@@ -124,7 +124,7 @@ export class CrawlQueue {
 		});
 	};
 
-	crawl(rootAsin: string, depth: number, callback: Function) {
+	crawl(rootAsin: string, depth: number, callback: (err: Error, result: any) => void) {
 
 		this.nodeCount++;
 		log.debug({ current_depth: depth, parent_node: rootAsin }, "crawling");
@@ -132,7 +132,7 @@ export class CrawlQueue {
 		depth += 1;
 		if (depth > self.maxCrawlDepth) {
 			log.debug({}, util.format("Reached depth %s, stop crawling", depth));
-			return callback();
+			return callback(null, null);
 		}
 		const nodesAdded = [];
 		async.waterfall([
@@ -166,12 +166,12 @@ export class CrawlQueue {
 		});
 	};
 
-	addToGraph(parent, item, callback: Function) {
+	addToGraph(parent, item, callback: (err: Error) => void) {
 		const self = this;
 		self.ensureRequiredFields(parent, item, function (err) {
 			if (err) {
 				log.error(item, 'Could not add required fields for graph node');
-				return callback(err, null);
+				return callback(err);
 			}
 
 			self.throttledPriceLookup(item.ASIN, function (err, result) {
@@ -186,13 +186,13 @@ export class CrawlQueue {
 				self.db.createChildBookNodeAndRelations(parent, item, function (err, result) {
 					log.debug({ result: result }, "Finished creating node and relations");
 					// drop result to not cause problems at next step
-					callback(err, null);
+					callback(err);
 				});
 			});
 		});
 	};
 
-	ensureRequiredFields(parent, item, callback: Function) {
+	ensureRequiredFields(parent, item, callback: (err: Error, item: Item) => void) {
 		const self = this;
 		if (!item.Title || !item.Author || !item.DetailPageUrl) {
 			log.debug(item, 'Missing required field; attempt to add it');
@@ -212,7 +212,7 @@ export class CrawlQueue {
 		}
 	};
 
-	createNodeWithAsin(asin: string, callback: Function) {
+	createNodeWithAsin(asin: string, callback: (err: Error, result: any) => void) {
 		const self = this;
 		this.limiter.removeTokens(1, function (err) {
 			if (err) {
