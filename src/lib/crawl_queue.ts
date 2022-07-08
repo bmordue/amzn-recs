@@ -14,6 +14,10 @@ const statsd = new StatsD({
 	host: config.get('STATSD_HOST')
 });
 
+class Item {
+	ItemId: string
+}
+
 export class CrawlQueue {
 	static inputDir = './temp/output';
 	static doneDir = './temp/done';
@@ -223,9 +227,24 @@ export class CrawlQueue {
 		});
 	};
 
-	keywordSearch(keyword: string, responseGroup: string, callback: Function) {
+	keywordSearch(keyword: string, responseGroup: string, callback: (err: Error, items: Item[]) => void) {
 		this.callProdAdv("ItemSearch", { Keywords: keyword, ResponseGroup: responseGroup }, callback);
 	};
 
-
+	// client is a Product Advertising API client -- see lib/crawl_queue.js
+	// author is an author's full name
+	// callback(err, result)
+	// result is an array of ASIN strings, eg ["B014V4DXMW", "B003E4DFJJ"]
+	// TODO: this search result includes price; add it to DB
+	resultsForAuthor(author: any, callback: (err: Error, items: Item[]) => void) {
+		this.callProdAdv("ItemSearch", { Author: author, SearchIndex: "KindleStore", ResponseGroup: "Medium"}, function(err, result) {
+			if (err) {
+				return callback(err, []);
+			}
+			if (!result.Items) {
+				callback(new Error("Search response did not contain any items"), [])
+			}
+			return callback(null, result.Items.Item);
+		});
+	}
 }
