@@ -68,13 +68,13 @@ export class CrawlQueue {
 		this.prodAdv.call(this, query, params, callback);
 	}
 
-	throttledSimilarityLookup(asin: string, callback: Function) {
+	throttledSimilarityLookup(asin: string, callback: (err: Error, items: Item[]) => void) {
 		const self = this;
 		log.debug({}, 'throttledSimilarityLookup');
 		this.limiter.removeTokens(1, function (err) {
 			log.debug({}, 'called back from limited');
 			if (err) {
-				return callback(err);
+				return callback(err, null);
 			}
 			this.callProdAdv("SimilarityLookup", { ItemId: asin }, function (err, data) {
 				if (err && err.message.indexOf('submitting requests too quickly') != -1) {
@@ -95,7 +95,7 @@ export class CrawlQueue {
 		}
 		this.limiter.removeTokens(1, function (err) {
 			if (err) {
-				return callback(err);
+				return callback(err, null);
 			}
 			fetch(asin, callback);
 		});
@@ -106,14 +106,14 @@ export class CrawlQueue {
 		const self = this;
 		this.db.getBookNode(asin, function (err, node) {
 			if (err) {
-				return callback(err);
+				return callback(err, null);
 			}
 			if (!node) {
 				return callback(null, { crawled: false });
 			}
 			self.db.countOutgoingRecommendations(asin, function (err, result) {
 				if (err) {
-					return callback(err);
+					return callback(err, null);
 				}
 				if (!result.outgoing) {
 					return callback(null, { crawled: false });
@@ -171,7 +171,7 @@ export class CrawlQueue {
 		self.ensureRequiredFields(parent, item, function (err) {
 			if (err) {
 				log.error(item, 'Could not add required fields for graph node');
-				return callback(err);
+				return callback(err, null);
 			}
 
 			self.throttledPriceLookup(item.ASIN, function (err, result) {
@@ -186,7 +186,7 @@ export class CrawlQueue {
 				self.db.createChildBookNodeAndRelations(parent, item, function (err, result) {
 					log.debug({ result: result }, "Finished creating node and relations");
 					// drop result to not cause problems at next step
-					callback(err);
+					callback(err, null);
 				});
 			});
 		});
@@ -198,11 +198,11 @@ export class CrawlQueue {
 			log.debug(item, 'Missing required field; attempt to add it');
 			this.limiter.removeTokens(1, function (err) {
 				if (err) {
-					return callback(err);
+					return callback(err, null);
 				}
 				self.callProdAdv("ItemLookup", { ItemId: item.ASIN }, function (err, result) {
 					if (err) {
-						return callback(err);
+						return callback(err, null);
 					}
 					return callback(null, result.Items.Item);
 				});
@@ -216,11 +216,11 @@ export class CrawlQueue {
 		const self = this;
 		this.limiter.removeTokens(1, function (err) {
 			if (err) {
-				return callback(err);
+				return callback(err, null);
 			}
 			self.callProdAdv("ItemLookup", { ItemId: asin }, function (err, result) {
 				if (err) {
-					return callback(err);
+					return callback(err, null);
 				}
 				self.db.createBookNode(result.Items.Item, callback);
 			});
