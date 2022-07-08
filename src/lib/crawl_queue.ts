@@ -102,7 +102,7 @@ export class CrawlQueue {
 	};
 
 
-	alreadyCrawled(asin: string, callback: Function) {
+	alreadyCrawled(asin: string, callback: (err: Error, {crawled: boolean}) => void) {
 		const self = this;
 		this.db.getBookNode(asin, function (err, node) {
 			if (err) {
