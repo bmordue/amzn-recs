@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/bmordue/amzn-recs",
   "dependencies": {
-    "@types/node": "^18.0.3",
+    "@types/node": "^18.0.4",
     "async": "^3.2.4",
     "aws-lib": "^0.3.0",
     "body-parser": "^1.20.0",
