@@ -238,7 +238,7 @@ export class DbConnector {
 		} finally {
 			callback(err, createdNode);
 		}
-	};
+	}
 
 
 
