@@ -87,7 +87,7 @@ export class CrawlQueue {
 				}
 			});
 		});
-	};
+	}
 
 	throttledPriceLookup(asin: string, callback: Function) {
 		if (!this.doPriceLookup) {
@@ -99,7 +99,7 @@ export class CrawlQueue {
 			}
 			fetch(asin, callback);
 		});
-	};
+	}
 
 
 	alreadyCrawled(asin: string, callback: (err: Error, {crawled: boolean}) => void) {
@@ -122,7 +122,7 @@ export class CrawlQueue {
 			});
 
 		});
-	};
+	}
 
 	crawl(rootAsin: string, depth: number, callback: (err: Error, result: any) => void) {
 
@@ -164,7 +164,7 @@ export class CrawlQueue {
 			log.debug({ asin: rootAsin }, "Finished crawling");
 			callback(err, nodesAdded);
 		});
-	};
+	}
 
 	addToGraph(parent, item, callback: (err: Error) => void) {
 		const self = this;
@@ -190,7 +190,7 @@ export class CrawlQueue {
 				});
 			});
 		});
-	};
+	}
 
 	ensureRequiredFields(parent, item, callback: (err: Error, item: Item) => void) {
 		const self = this;
@@ -210,7 +210,7 @@ export class CrawlQueue {
 		} else {
 			callback(null, item);
 		}
-	};
+	}
 
 	createNodeWithAsin(asin: string, callback: (err: Error, result: any) => void) {
 		const self = this;
@@ -225,11 +225,11 @@ export class CrawlQueue {
 				self.db.createBookNode(result.Items.Item, callback);
 			});
 		});
-	};
+	}
 
 	keywordSearch(keyword: string, responseGroup: string, callback: (err: Error, items: Item[]) => void) {
 		this.callProdAdv("ItemSearch", { Keywords: keyword, ResponseGroup: responseGroup }, callback);
-	};
+	}
 
 	// client is a Product Advertising API client -- see lib/crawl_queue.js
 	// author is an author's full name
