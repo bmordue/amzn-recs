@@ -174,7 +174,7 @@ export class DbConnector {
 	run(query: string, parameters, callback: Function) {
 		log.warn({}, "DbConnector.run() should only be used for testing and ad-hoc scripts");
 		const session = this.driver.session();
-		const records = [];
+		let records = [];
 		session.run(query, parameters).subscribe({
 			onNext: (nextRecord) => { records.push([nextRecord]); },
 			onError: (err) => { return closeAndCallback(callback, session, err); },
