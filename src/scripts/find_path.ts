@@ -10,68 +10,68 @@ const MAX_ATTEMPTS = 3;
 const crawler = new CrawlQueue({maxCrawlDepth: 1, doPriceLookup: false});
 
 function findPath(start, finish, attempts, crawlList, callback) {
-	let newCrawlList = [];
-	// must be eachSeries because callback writes to newCrawlList
-	async.eachSeries(crawlList, function(asin, each_cb) {
-		crawler.crawl(asin, 0, function(err, addedNodes) {
-			if (err) { return each_cb(err); }
-			newCrawlList = addAsinsToCrawlList(newCrawlList, addedNodes);
-//			newCrawlList = newCrawlList.concat(addedNodes);
-			each_cb();
-		});
-	}, function(err) {
-		if (err) { return callback(err); }
+  let newCrawlList = [];
+  // must be eachSeries because callback writes to newCrawlList
+  async.eachSeries(crawlList, function(asin, each_cb) {
+    crawler.crawl(asin, 0, function(err, addedNodes) {
+      if (err) { return each_cb(err); }
+      newCrawlList = addAsinsToCrawlList(newCrawlList, addedNodes);
+//      newCrawlList = newCrawlList.concat(addedNodes);
+      each_cb();
+    });
+  }, function(err) {
+    if (err) { return callback(err); }
 
-		crawler.db.getPath(start, finish, function(err, path) {
-			if (err) { return callback(err); }
+    crawler.db.getPath(start, finish, function(err, path) {
+      if (err) { return callback(err); }
 
-			if (!path && attempts < MAX_ATTEMPTS) {
-				return findPath(start, finish, attempts + 1, newCrawlList, callback);
-			}
+      if (!path && attempts < MAX_ATTEMPTS) {
+        return findPath(start, finish, attempts + 1, newCrawlList, callback);
+      }
 
-			if (path) {
-				console.log('Found a path: ' + util.inspect(path, {depth: 8, compact: false}));
-			}
+      if (path) {
+        console.log('Found a path: ' + util.inspect(path, {depth: 8, compact: false}));
+      }
 
-			console.log('Finished looking for a path after ' + attempts + ' attempts (max ' + MAX_ATTEMPTS + ')');
+      console.log('Finished looking for a path after ' + attempts + ' attempts (max ' + MAX_ATTEMPTS + ')');
 
-			return callback(null, path);
-		});
-	});
+      return callback(null, path);
+    });
+  });
 }
 
 function addAsinsToCrawlList(asinList, nodeList) {
-	return asinList.concat(nodeList.map(getAsinFromNode));
+  return asinList.concat(nodeList.map(getAsinFromNode));
 }
 
 function getAsinFromNode(node) {
-	console.log('getAsinFromNode');
-	console.log(util.inspect(node));
-	const asin = node.ASIN;
-	console.log('asin: ' + asin);
-	return asin;
+  console.log('getAsinFromNode');
+  console.log(util.inspect(node));
+  const asin = node.ASIN;
+  console.log('asin: ' + asin);
+  return asin;
 }
 
 function main() {
-	const start = process.argv[2] || 'B07HFC2KQM';
-	const finish = process.argv[3] || 'B07DHRMBCJ';
-	console.log('Try to find path from ' + start + 'to ' + finish);
+  const start = process.argv[2] || 'B07HFC2KQM';
+  const finish = process.argv[3] || 'B07DHRMBCJ';
+  console.log('Try to find path from ' + start + 'to ' + finish);
 
-	const findpath = process.argv[4];
+  const findpath = process.argv[4];
 
-	if (findpath) {
-		console.log('Find path options is ' + findpath);
-		findPath(start, finish, 1, [start, finish], function(err) {
-			if (err) { console.log(err); process.exit(1); }
-			console.log('Finished finding path without error');
-			process.exit();
-		});
-	} else {
-		crawler.db.getPath(start, finish, function(err, path) {
-			console.log(JSON.stringify(path, null, 4));
-				process.exit();
-		});
-	}
+  if (findpath) {
+    console.log('Find path options is ' + findpath);
+    findPath(start, finish, 1, [start, finish], function(err) {
+      if (err) { console.log(err); process.exit(1); }
+      console.log('Finished finding path without error');
+      process.exit();
+    });
+  } else {
+    crawler.db.getPath(start, finish, function(err, path) {
+      console.log(JSON.stringify(path, null, 4));
+        process.exit();
+    });
+  }
 
 }
 

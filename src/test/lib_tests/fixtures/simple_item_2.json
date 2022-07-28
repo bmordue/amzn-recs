@@ -1,9 +1,9 @@
 {
-	"ASIN": "B01CDMP88Q-testdata",
-	"DetailPageURL": "http://amzn.co/B01CDMP88Q",
-	"ItemAttributes": {
-		"Author": "Zen Cho",
-		"ProductGroup": "eBooks",
-		"Title": "The Terracotta Bride"
-	}
+  "ASIN": "B01CDMP88Q-testdata",
+  "DetailPageURL": "http://amzn.co/B01CDMP88Q",
+  "ItemAttributes": {
+    "Author": "Zen Cho",
+    "ProductGroup": "eBooks",
+    "Title": "The Terracotta Bride"
+  }
 }
