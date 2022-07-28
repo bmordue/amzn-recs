@@ -65,3 +65,5 @@ results_xunit.xml
 #tsc output
 built/
 
+#eslint
+*sarif
