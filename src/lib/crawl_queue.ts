@@ -236,7 +236,7 @@ export class CrawlQueue {
 	// callback(err, result)
 	// result is an array of ASIN strings, eg ["B014V4DXMW", "B003E4DFJJ"]
 	// TODO: this search result includes price; add it to DB
-	resultsForAuthor(author: string, callback: (err: Error, items: Item[]) => void) {
+        resultsForAuthor(author: string, callback: (err: Error, items: Item[]) => void) {
 		this.callProdAdv("ItemSearch", { Author: author, SearchIndex: "KindleStore", ResponseGroup: "Medium"}, function(err, result) {
 			if (err) {
 				return callback(err, []);
