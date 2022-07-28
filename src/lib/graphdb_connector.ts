@@ -1,12 +1,12 @@
-import async = require("async");
-import config = require("./config");
-import log = require("./log");
-import neo4j = require("neo4j-driver");
-import StatsD = require("node-statsd");
+import async = require('async');
+import neo4j = require('neo4j-driver');
+import StatsD = require('node-statsd');
+import config = require('./config');
+import log = require('./log');
 
 const statsd = new StatsD({
   prefix: 'amzn-recs.graphdb_connector.',
-  host: config.get('STATSD_HOST')
+  host: config.get('STATSD_HOST'),
 });
 
 function closeAndCallback(callback, session, err = null, result = null) {
@@ -16,7 +16,7 @@ function closeAndCallback(callback, session, err = null, result = null) {
   } else {
     statsd.increment('query_complete');
   }
-  if (typeof callback != 'function') {
+  if (typeof callback !== 'function') {
     log.error(new Error().stack, 'closeAndCallback: callback is not a function');
   }
   session.close().then(() => callback(err, result));
@@ -33,7 +33,7 @@ async function createChildBookNode(driver: neo4j.Driver, data, callback: Functio
   const session = driver.session();
   try {
     await session.writeTransaction((tx) => tx.run(query.text, query.params));
-  } catch(e) {
+  } catch (e) {
     err = e;
   } finally {
     await session.close();
@@ -45,42 +45,42 @@ function buildMergeWithPriceQuery(data) {
   let mergeQueryStr;
 
   const mergeQueryChunks = [];
-  mergeQueryChunks.push("MERGE (b:Book { ASIN: $ASIN })");
+  mergeQueryChunks.push('MERGE (b:Book { ASIN: $ASIN })');
 
   const mergeParams = {
     ASIN: data.ASIN,
     Title: null,
     Author: null,
     Price: null,
-    Currency: null
+    Currency: null,
   };
   if (data.ItemAttributes && data.ItemAttributes.Title && data.ItemAttributes.Author) {
     mergeParams.Title = data.ItemAttributes.Title;
     mergeParams.Author = data.ItemAttributes.Author;
-    mergeQueryChunks.push("SET b.Title = $Title, b.Author = $Author");
+    mergeQueryChunks.push('SET b.Title = $Title, b.Author = $Author');
   }
   if (data.price && data.currency) {
-    mergeQueryChunks.push("SET b.Price = $Price, b.Currency = $Currency");
+    mergeQueryChunks.push('SET b.Price = $Price, b.Currency = $Currency');
     mergeParams.Price = data.price;
     mergeParams.Currency = data.currency;
   }
   if (data.ItemAttributes && data.ItemAttributes.ListPrice) {
-    mergeQueryChunks.push("SET b.Price = $Price, b.Currency = $Currency");
+    mergeQueryChunks.push('SET b.Price = $Price, b.Currency = $Currency');
     mergeParams.Price = data.ItemAttributes.ListPrice.Amount / 100;
     mergeParams.Currency = data.ItemAttributes.ListPrice.CurrencyCode;
   }
 
-  mergeQueryChunks.push("RETURN b");
-  mergeQueryStr = mergeQueryChunks.join(" ");
+  mergeQueryChunks.push('RETURN b');
+  mergeQueryStr = mergeQueryChunks.join(' ');
 
   return { text: mergeQueryStr, params: mergeParams };
 }
 
 async function addParentChildRelation(driver: neo4j.Driver, parentAsin: string, childAsin: string, callback: Function) {
-  const queryStr = "MATCH (parent:Book {ASIN: $parentAsin}),(child:Book {ASIN: $childAsin}) MERGE (parent)-[r:SIMILAR_TO]->(child) RETURN r";
+  const queryStr = 'MATCH (parent:Book {ASIN: $parentAsin}),(child:Book {ASIN: $childAsin}) MERGE (parent)-[r:SIMILAR_TO]->(child) RETURN r';
   const params = {
-    parentAsin: parentAsin,
-    childAsin: childAsin
+    parentAsin,
+    childAsin,
   };
 
   const session = driver.session();
@@ -89,7 +89,7 @@ async function addParentChildRelation(driver: neo4j.Driver, parentAsin: string, 
   try {
     result = await session.writeTransaction((tx) => tx.run(queryStr, params));
   } catch (error) {
-    err = error
+    err = error;
   } finally {
     await session.close();
     callback(err, result);
@@ -104,19 +104,18 @@ function addAuthorRelations(driver: neo4j.Driver, data, callback) {
   if (authorList.constructor !== Array) {
     authorList = [authorList];
   }
-  const queryStr =
-    "MATCH (b:Book {ASIN: $childAsin})" +
-    " MERGE (a:Author {name: $author})" +
-    " MERGE (b)<-[:AUTHOR_OF]-(a)";
-  async.each(authorList, async function (author, each_cb) {
+  const queryStr = 'MATCH (b:Book {ASIN: $childAsin})'
+    + ' MERGE (a:Author {name: $author})'
+    + ' MERGE (b)<-[:AUTHOR_OF]-(a)';
+  async.each(authorList, async (author, each_cb) => {
     const params = {
       childAsin: data.ASIN,
-      author: author
+      author,
     };
     let err = null;
     const session = driver.session();
     try {
-      await session.writeTransaction((tx) => { tx.run(queryStr, params) });
+      await session.writeTransaction((tx) => { tx.run(queryStr, params); });
     } catch (e) {
       err = e;
     } finally {
@@ -144,16 +143,17 @@ async function simpleQuery(connector: DbConnector, query: {text: string, paramet
 
 function simpleQueryForAsin(connector, text: string, asin: string, callback: Function) {
   const query = {
-    text: text,
-    parameters: { ASIN: asin }
+    text,
+    parameters: { ASIN: asin },
   };
   simpleQuery(connector, query, callback);
 }
 
 export class DbConnector {
-  //TODO: review result passed to callback for each function
+  // TODO: review result passed to callback for each function
   // if they're always [], is there any point...?
   options;
+
   driver :neo4j.Driver;
 
   constructor(options = {}) {
@@ -172,16 +172,15 @@ export class DbConnector {
   }
 
   run(query: string, parameters, callback: Function) {
-    log.warn({}, "DbConnector.run() should only be used for testing and ad-hoc scripts");
+    log.warn({}, 'DbConnector.run() should only be used for testing and ad-hoc scripts');
     const session = this.driver.session();
-    let records = [];
+    const records = [];
     session.run(query, parameters).subscribe({
       onNext: (nextRecord) => { records.push([nextRecord]); },
-      onError: (err) => { return closeAndCallback(callback, session, err); },
-      onCompleted: () => { return closeAndCallback(callback, session, null, records); }
-    })
+      onError: (err) => closeAndCallback(callback, session, err),
+      onCompleted: () => closeAndCallback(callback, session, null, records),
+    });
   }
-
 
   async init(callback) {
     const session = this.driver.session();
@@ -199,11 +198,6 @@ export class DbConnector {
     }
   }
 
-
-
-
-
-
   createChildBookNodeAndRelations = function (parentAsin, data, callback) {
     const self = this;
     const newNodeResult = [];
@@ -216,18 +210,18 @@ export class DbConnector {
       },
       function (result, cb) {
         addAuthorRelations(self.driver, data, cb);
-      }
+      },
     ], callback);
   };
 
   // TODO: createBookNode and createChildBookNode seem too similar; remove one
-  async createBookNode (data, callback) {
-    if (data.ItemAttributes.ProductGroup != "eBooks") {
-      log.warn(data, "Expected ItemAttributes.ProductGroup to be eBooks");
+  async createBookNode(data, callback) {
+    if (data.ItemAttributes.ProductGroup != 'eBooks') {
+      log.warn(data, 'Expected ItemAttributes.ProductGroup to be eBooks');
     }
     const query = buildMergeWithPriceQuery(data);
     const session: neo4j.Session = this.driver.session();
-    log.debug(query, "DbConnector.createBookNode query: ");
+    log.debug(query, 'DbConnector.createBookNode query: ');
     let createdNode;
     let err;
     try {
@@ -240,65 +234,61 @@ export class DbConnector {
     }
   }
 
-
-
-
   getBookNode = function (asin, callback) {
-    const text = "MATCH (n { ASIN: $ASIN }) RETURN n";
-    simpleQueryForAsin(this, text, asin, function(err, res: Array<neo4j.Record>) {
+    const text = 'MATCH (n { ASIN: $ASIN }) RETURN n';
+    simpleQueryForAsin(this, text, asin, (err, res: Array<neo4j.Record>) => {
       callback(err, res[0]?.get('n'));
     });
   };
 
   deleteBookNode = function (asin, callback) {
-    const queryStr = "MATCH (n { ASIN: $ASIN }) DETACH DELETE n RETURN COUNT(n)";
-    simpleQueryForAsin(this, queryStr, asin, function(err, res) {
-      const key = "COUNT(n)";
+    const queryStr = 'MATCH (n { ASIN: $ASIN }) DETACH DELETE n RETURN COUNT(n)';
+    simpleQueryForAsin(this, queryStr, asin, (err, res) => {
+      const key = 'COUNT(n)';
       callback(err, res[0]?.get(key));
     });
   };
 
   countOutgoingRecommendations = function (asin, callback) {
-    const queryStr = "MATCH (n { ASIN: $ASIN })-[r]->() RETURN COUNT(DISTINCT r) AS outgoing";
+    const queryStr = 'MATCH (n { ASIN: $ASIN })-[r]->() RETURN COUNT(DISTINCT r) AS outgoing';
     const session = this.driver.session();
     simpleQueryForAsin(this, queryStr, asin, callback);
   };
 
   listAllAsins = function (callback) {
     const query = {
-      text: "MATCH (n:Book) RETURN n.ASIN AS asin"
+      text: 'MATCH (n:Book) RETURN n.ASIN AS asin',
     };
-    simpleQuery(this, query, function (err, summary) {
+    simpleQuery(this, query, (err, summary) => {
       callback(err, summary);
     });
-  }
+  };
 
   listLeafNodeAsins = function (callback) {
     const query = {
-      text: "MATCH (n) WHERE NOT (n)-->() RETURN n.ASIN as asin;"
+      text: 'MATCH (n) WHERE NOT (n)-->() RETURN n.ASIN as asin;',
     };
-    simpleQuery(this, query, function (err, summary) {
+    simpleQuery(this, query, (err, summary) => {
       callback(err, summary);
     });
-  }
+  };
 
   close = function () {
     this.driver.close();
-  }
+  };
 
   getPath = function (startAsin, finishAsin, callback) {
     const query = {
-      text: "MATCH p=((a:Book {ASIN: $start}) -[*1..10]-> (b:Book {ASIN: $finish})) RETURN p LIMIT 1;",
+      text: 'MATCH p=((a:Book {ASIN: $start}) -[*1..10]-> (b:Book {ASIN: $finish})) RETURN p LIMIT 1;',
       parameters: {
         start: startAsin,
-        finish: finishAsin
-      }
+        finish: finishAsin,
+      },
     };
     simpleQuery(this, query, callback);
-  }
+  };
 
   count = function (callback) {
-    simpleQuery(this, { text: "MATCH (n) RETURN COUNT(n)" }, callback);
-  }
-
+    simpleQuery(this, { text: 'MATCH (n) RETURN COUNT(n)' }, callback);
+  };
 }
