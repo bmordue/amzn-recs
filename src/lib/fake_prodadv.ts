@@ -72,7 +72,7 @@ function processDataForSimilarityLookup(data, callback: Function) {
 		}
 		let carousel;
 		try {
-			carousel = JSON.parse(carouselOptions.replace('\"', '"'));
+			carousel = JSON.parse(carouselOptions.replace(/\\"/g, '"'));
 		} catch (e) {
 			log.debug(carouselOptions, 'carouselOptions');
 			return callback(null, {'Items': {'Item': items}});

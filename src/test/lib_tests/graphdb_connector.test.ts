@@ -15,7 +15,7 @@ describe("DbConnector", function() {
 
 	const dbConnector = new DbConnector();
 
-    var bookData = {
+    const bookData = {
         "ASIN": "B014V4DXMW-testdata",
         "DetailPageURL": "http://amzn.co/B014V4DXMW",
         "ItemAttributes": {
@@ -26,7 +26,7 @@ describe("DbConnector", function() {
         }
     };
     
-    var childBookData = {
+    const childBookData = {
         "ASIN": "B01CDMP88Q-testdata",
         "DetailPageURL": "http://amzn.co/B01CDMP88Q",
         "ItemAttributes": {
@@ -180,8 +180,8 @@ describe("DbConnector", function() {
 							return done(new Error("expected result to be present (truthy)"));
 						}
 						try {
-							let record: Record = result[0];
-							let rel: Node = record[0];
+							const record: Record = result[0];
+							const rel: Node = record[0];
 							should.exist(rel);
 						} catch (error) {
 							return done(error);

@@ -68,13 +68,13 @@ export class CrawlQueue {
 		this.prodAdv.call(this, query, params, callback);
 	}
 
-	throttledSimilarityLookup(asin: string, callback: Function) {
+	throttledSimilarityLookup(asin: string, callback: (err: Error, items: Item[]) => void) {
 		const self = this;
 		log.debug({}, 'throttledSimilarityLookup');
 		this.limiter.removeTokens(1, function (err) {
 			log.debug({}, 'called back from limited');
 			if (err) {
-				return callback(err);
+				return callback(err, null);
 			}
 			this.callProdAdv("SimilarityLookup", { ItemId: asin }, function (err, data) {
 				if (err && err.message.indexOf('submitting requests too quickly') != -1) {
@@ -87,7 +87,7 @@ export class CrawlQueue {
 				}
 			});
 		});
-	};
+	}
 
 	throttledPriceLookup(asin: string, callback: Function) {
 		if (!this.doPriceLookup) {
@@ -95,25 +95,25 @@ export class CrawlQueue {
 		}
 		this.limiter.removeTokens(1, function (err) {
 			if (err) {
-				return callback(err);
+				return callback(err, null);
 			}
 			fetch(asin, callback);
 		});
-	};
+	}
 
 
-	alreadyCrawled(asin: string, callback: Function) {
+	alreadyCrawled(asin: string, callback: (err: Error, {crawled: boolean}) => void) {
 		const self = this;
 		this.db.getBookNode(asin, function (err, node) {
 			if (err) {
-				return callback(err);
+				return callback(err, null);
 			}
 			if (!node) {
 				return callback(null, { crawled: false });
 			}
 			self.db.countOutgoingRecommendations(asin, function (err, result) {
 				if (err) {
-					return callback(err);
+					return callback(err, null);
 				}
 				if (!result.outgoing) {
 					return callback(null, { crawled: false });
@@ -122,9 +122,9 @@ export class CrawlQueue {
 			});
 
 		});
-	};
+	}
 
-	crawl(rootAsin: string, depth: number, callback: Function) {
+	crawl(rootAsin: string, depth: number, callback: (err: Error, result: any) => void) {
 
 		this.nodeCount++;
 		log.debug({ current_depth: depth, parent_node: rootAsin }, "crawling");
@@ -132,7 +132,7 @@ export class CrawlQueue {
 		depth += 1;
 		if (depth > self.maxCrawlDepth) {
 			log.debug({}, util.format("Reached depth %s, stop crawling", depth));
-			return callback();
+			return callback(null, null);
 		}
 		const nodesAdded = [];
 		async.waterfall([
@@ -164,9 +164,9 @@ export class CrawlQueue {
 			log.debug({ asin: rootAsin }, "Finished crawling");
 			callback(err, nodesAdded);
 		});
-	};
+	}
 
-	addToGraph(parent, item, callback: Function) {
+	addToGraph(parent, item, callback: (err: Error) => void) {
 		const self = this;
 		self.ensureRequiredFields(parent, item, function (err) {
 			if (err) {
@@ -190,19 +190,19 @@ export class CrawlQueue {
 				});
 			});
 		});
-	};
+	}
 
-	ensureRequiredFields(parent, item, callback: Function) {
+	ensureRequiredFields(parent, item, callback: (err: Error, item: Item) => void) {
 		const self = this;
 		if (!item.Title || !item.Author || !item.DetailPageUrl) {
 			log.debug(item, 'Missing required field; attempt to add it');
 			this.limiter.removeTokens(1, function (err) {
 				if (err) {
-					return callback(err);
+					return callback(err, null);
 				}
 				self.callProdAdv("ItemLookup", { ItemId: item.ASIN }, function (err, result) {
 					if (err) {
-						return callback(err);
+						return callback(err, null);
 					}
 					return callback(null, result.Items.Item);
 				});
@@ -210,26 +210,26 @@ export class CrawlQueue {
 		} else {
 			callback(null, item);
 		}
-	};
+	}
 
-	createNodeWithAsin(asin: string, callback: Function) {
+	createNodeWithAsin(asin: string, callback: (err: Error, result: any) => void) {
 		const self = this;
 		this.limiter.removeTokens(1, function (err) {
 			if (err) {
-				return callback(err);
+				return callback(err, null);
 			}
 			self.callProdAdv("ItemLookup", { ItemId: asin }, function (err, result) {
 				if (err) {
-					return callback(err);
+					return callback(err, null);
 				}
 				self.db.createBookNode(result.Items.Item, callback);
 			});
 		});
-	};
+	}
 
 	keywordSearch(keyword: string, responseGroup: string, callback: (err: Error, items: Item[]) => void) {
 		this.callProdAdv("ItemSearch", { Keywords: keyword, ResponseGroup: responseGroup }, callback);
-	};
+	}
 
 	// client is a Product Advertising API client -- see lib/crawl_queue.js
 	// author is an author's full name
