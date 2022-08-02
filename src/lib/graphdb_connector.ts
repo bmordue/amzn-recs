@@ -42,8 +42,6 @@ async function createChildBookNode(driver: neo4j.Driver, data, callback: Functio
 }
 
 function buildMergeWithPriceQuery(data) {
-  let mergeQueryStr;
-
   const mergeQueryChunks = [];
   mergeQueryChunks.push('MERGE (b:Book { ASIN: $ASIN })');
 
@@ -71,12 +69,17 @@ function buildMergeWithPriceQuery(data) {
   }
 
   mergeQueryChunks.push('RETURN b');
-  mergeQueryStr = mergeQueryChunks.join(' ');
+  const mergeQueryStr = mergeQueryChunks.join(' ');
 
   return { text: mergeQueryStr, params: mergeParams };
 }
 
-async function addParentChildRelation(driver: neo4j.Driver, parentAsin: string, childAsin: string, callback: Function) {
+async function addParentChildRelation(
+  driver: neo4j.Driver,
+  parentAsin: string,
+  childAsin: string,
+  callback: Function,
+) {
   const queryStr = 'MATCH (parent:Book {ASIN: $parentAsin}),(child:Book {ASIN: $childAsin}) MERGE (parent)-[r:SIMILAR_TO]->(child) RETURN r';
   const params = {
     parentAsin,

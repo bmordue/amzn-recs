@@ -8,15 +8,12 @@ import { DbConnector } from './graphdb_connector';
 import log = require('./log');
 import { fetch } from './price_connector';
 import { fakeProdAdv } from './fake_prodadv';
+import { Item } from './Item';
 
 const statsd = new StatsD({
   prefix: 'amzn-recs.crawl_queue.',
   host: config.get('STATSD_HOST'),
 });
-
-class Item {
-  ItemId: string;
-}
 
 export class CrawlQueue {
   static inputDir = './temp/output';
@@ -78,12 +75,12 @@ export class CrawlQueue {
   throttledSimilarityLookup(asin: string, callback: (err: Error, items: Item[]) => void) {
     const self = this;
     log.debug({}, 'throttledSimilarityLookup');
-    this.limiter.removeTokens(1, function (err) {
+    this.limiter.removeTokens(1, function (err: Error) {
       log.debug({}, 'called back from limited');
       if (err) {
         return callback(err, null);
       }
-      this.callProdAdv('SimilarityLookup', { ItemId: asin }, (err, data) => {
+      this.callProdAdv('SimilarityLookup', { ItemId: asin }, (err: Error, data: Item[]) => {
         if (err && err.message.indexOf('submitting requests too quickly') != -1) {
           log.warn({ err }, 'Submitting requests too quickly; back off and retry');
           setTimeout(() => self.throttledSimilarityLookup(asin, callback), self.BACKOFF_SECONDS);
