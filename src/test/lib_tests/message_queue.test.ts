@@ -8,7 +8,7 @@ import { MessageQueue } from '../../lib/message_queue';
 // TODO: put queue size verification in some kind of neat wrapper
 
 function dumpDb(db, callback) {
-  return callback(null, []);
+//  return callback(null, []);
   // TODO: this is out of place; table name is hard-coded, cf CRAWL_TASKS_TABLE_NAME in MessageQueue.js
   const queryStr = 'SELECT *, rowid from crawl_tasks';
   const stmt = db.prepare(queryStr);
