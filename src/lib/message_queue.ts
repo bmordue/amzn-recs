@@ -1,4 +1,3 @@
-import async = require('async');
 import StatsD = require('node-statsd');
 import util = require('util');
 import log = require('./log');

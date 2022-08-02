@@ -24,7 +24,7 @@ const main = function () {
   let searched = 0;
   responseGroups.forEach((responseGroup) => {
     //    crawler.keywordSearch(searchTerm, responseGroup,function(err, result) {
-    fake_prodadv('ItemLookup', { ItemId: rootAsin }, (err, result) => {
+    fakeProdAdv('ItemLookup', { ItemId: rootAsin }, (err, result) => {
       log.info(responseGroup, 'RESPONSE GROUP');
       if (err) {
         log.error(err, 'Error in scripts/search.js#main()');

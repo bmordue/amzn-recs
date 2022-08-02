@@ -3,8 +3,8 @@ import config = require('./config');
 import log = require('./log');
 
 export function fetch(asin, callback) {
-  const api_endpoint = config.get('PRICE_LOOKUP_ENDPOINT');
-  const reqUrl = `${api_endpoint}?asin=${asin}`;
+  const apiEndpoint = config.get('PRICE_LOOKUP_ENDPOINT');
+  const reqUrl = `${apiEndpoint}?asin=${asin}`;
   const options = {
     proxy: null,
   };

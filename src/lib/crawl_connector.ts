@@ -1,10 +1,8 @@
 import needle = require('needle');
-import log = require('./log');
 
 const CRAWL_API_TOKEN = '222222';
 
-module.exports = {
-  add(task, callback) {
+export function add(task, callback) {
     const endpoint = process.env.CRAWL_API_ENDPOINT;
     const options = {
       json: true,
@@ -27,5 +25,4 @@ module.exports = {
         callback(null, responseBody);
       });
     });
-  },
-};
+}
