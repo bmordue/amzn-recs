@@ -1,12 +1,12 @@
 // stub implementation
 export class Whitelist {
-	constructor() {}
+  constructor() {}
 
-	add(token, callback) {
-		callback();
-	}
+  add(token, callback) {
+    callback();
+  }
 
-	check(token, callback) {
-		callback(true);
-	}
+  check(token, callback) {
+    callback(true);
+  }
 }
