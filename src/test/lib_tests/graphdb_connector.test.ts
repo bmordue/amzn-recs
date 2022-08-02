@@ -1,16 +1,17 @@
-import fs = require('fs');
-import path = require('path');
 import should = require('should');
 import util = require('util');
-import { Record, Node, Neo4jError } from 'neo4j-driver';
+import { Record, Node } from 'neo4j-driver';
 import test_utils = require('../test_utils');
 import { DbConnector } from '../../lib/graphdb_connector';
 
 const LOG_ALL = false;
 
 describe('DbConnector', function () {
-  console.log('RUN_UNSAFE_TESTS is not set to true; exiting');
-  return;
+  if (!process.env['RUN_UNSAFE_TESTS']) {
+    console.log('RUN_UNSAFE_TESTS is not set to true; exiting');
+    return;  
+  }
+
   this.timeout(10000);
 
   const dbConnector = new DbConnector();
