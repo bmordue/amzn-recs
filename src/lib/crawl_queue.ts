@@ -15,6 +15,18 @@ const statsd = new StatsD({
   host: config.get('STATSD_HOST'),
 });
 
+type CrawledResponse = {
+  crawled: boolean;
+};
+
+export type PriceLookupResponse = {
+  price?: number;
+  currency?: string;
+};
+
+// eslint-disable-next-line no-unused-vars
+export type CallbackFn = (err?: Error, result?: Item[] | CrawledResponse | PriceLookupResponse) => void;
+
 export class CrawlQueue {
   static inputDir = './temp/output';
 
@@ -66,13 +78,13 @@ export class CrawlQueue {
     this.db = new DbConnector();
   }
 
-  callProdAdv(query: string, params: object, callback: Function) {
+  callProdAdv(query: string, params: object, callback) {
     statsd.increment('call_product_advertising_api');
 
     this.prodAdv.call(this, query, params, callback);
   }
 
-  throttledSimilarityLookup(asin: string, callback: (err: Error, items: Item[]) => void) {
+  throttledSimilarityLookup(asin: string, callback: CallbackFn) {
     const self = this;
     log.debug({}, 'throttledSimilarityLookup');
     this.limiter.removeTokens(1, function (err: Error) {
@@ -91,7 +103,7 @@ export class CrawlQueue {
     });
   }
 
-  throttledPriceLookup(asin: string, callback: Function) {
+  throttledPriceLookup(asin: string, callback: CallbackFn) {
     if (!this.doPriceLookup) {
       return callback(null, {});
     }
@@ -103,7 +115,7 @@ export class CrawlQueue {
     });
   }
 
-  alreadyCrawled(asin: string, callback: Function) {
+  alreadyCrawled(asin: string, callback: CallbackFn) {
     const self = this;
     this.db.getBookNode(asin, (err, node) => {
       if (err) {
@@ -124,7 +136,7 @@ export class CrawlQueue {
     });
   }
 
-  crawl(rootAsin: string, depth: number, callback: (err: Error, result: any) => void) {
+  crawl(rootAsin: string, depth: number, callback: CallbackFn) {
     this.nodeCount++;
     log.debug({ current_depth: depth, parent_node: rootAsin }, 'crawling');
     const self = this;
@@ -165,7 +177,7 @@ export class CrawlQueue {
     });
   }
 
-  addToGraph(parent, item, callback: (err: Error) => void) {
+  addToGraph(parent, item, callback: CallbackFn) {
     const self = this;
     self.ensureRequiredFields(parent, item, (err) => {
       if (err) {
@@ -173,7 +185,7 @@ export class CrawlQueue {
         return callback(err);
       }
 
-      self.throttledPriceLookup(item.ASIN, (err, result) => {
+      self.throttledPriceLookup(item.ASIN, (err: Error, result: PriceLookupResponse) => {
         if (err) {
           log.error({ error: err.message }, `error looking up price for ASIN ${item.ASIN}`);
           // add to graph without price, so drop this error
@@ -191,7 +203,7 @@ export class CrawlQueue {
     });
   }
 
-  ensureRequiredFields(parent, item, callback: (err: Error, item: Item) => void) {
+  ensureRequiredFields(parent, item, callback) {
     const self = this;
     if (!item.Title || !item.Author || !item.DetailPageUrl) {
       log.debug(item, 'Missing required field; attempt to add it');
@@ -211,7 +223,7 @@ export class CrawlQueue {
     }
   }
 
-  createNodeWithAsin(asin: string, callback: (err: Error, result: any) => void) {
+  createNodeWithAsin(asin: string, callback: CallbackFn) {
     const self = this;
     this.limiter.removeTokens(1, (err) => {
       if (err) {
@@ -226,7 +238,7 @@ export class CrawlQueue {
     });
   }
 
-  keywordSearch(keyword: string, responseGroup: string, callback: (err: Error, items: Item[]) => void) {
+  keywordSearch(keyword: string, responseGroup: string, callback: CallbackFn) {
     this.callProdAdv('ItemSearch', { Keywords: keyword, ResponseGroup: responseGroup }, callback);
   }
 
@@ -235,7 +247,7 @@ export class CrawlQueue {
   // callback(err, result)
   // result is an array of ASIN strings, eg ["B014V4DXMW", "B003E4DFJJ"]
   // TODO: this search result includes price; add it to DB
-  resultsForAuthor(author: string, callback: (err: Error, items: Item[]) => void) {
+  resultsForAuthor(author: string, callback: CallbackFn) {
     this.callProdAdv('ItemSearch', { Author: author, SearchIndex: 'KindleStore', ResponseGroup: 'Medium' }, (err, result) => {
       if (err) {
         return callback(err, []);
