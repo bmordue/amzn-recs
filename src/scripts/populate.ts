@@ -126,6 +126,7 @@ function main() {
   });
 }
 
+// eslint-disable-next-line no-unused-vars
 function check() {
   dbCon.driver.verifyConnectivity().then(() => { log.info({}, 'ok'); process.exit(); }, (err) => { log.error({}, err); process.exit(1); });
 }

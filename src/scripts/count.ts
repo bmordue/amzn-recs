@@ -2,7 +2,6 @@
 // const MessageQueue = require("../lib/message_queue");
 const neo4j = require('neo4j-driver');
 const util = require('util');
-const DbConnector = require('../lib/graphdb_connector');
 
 function simpleQuery(queryStr, callback) {
 //  const driver = neo4j.driver('neo4j://192.168.0.48:7474', neo4j.auth.basic('neo4j', 'tester'));

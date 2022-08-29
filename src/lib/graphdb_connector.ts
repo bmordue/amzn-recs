@@ -203,7 +203,6 @@ export class DbConnector {
 
   createChildBookNodeAndRelations = function (parentAsin, data, callback) {
     const self = this;
-    const newNodeResult = [];
     async.waterfall([
       function (cb) {
         createChildBookNode(self.driver, data, cb);
@@ -254,7 +253,6 @@ export class DbConnector {
 
   countOutgoingRecommendations = function (asin, callback) {
     const queryStr = 'MATCH (n { ASIN: $ASIN })-[r]->() RETURN COUNT(DISTINCT r) AS outgoing';
-    const session = this.driver.session();
     simpleQueryForAsin(this, queryStr, asin, callback);
   };
 
