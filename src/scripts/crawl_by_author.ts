@@ -2,6 +2,7 @@
 // The intent is to populate the DB with all titles by an author
 import async = require('async');
 import { CrawlQueue } from '../lib/crawl_queue';
+import { Item } from '../lib/Item';
 import log = require('../lib/log');
 
 function main() {
@@ -14,7 +15,7 @@ function main() {
 
   const crawler = new CrawlQueue({ maxCrawlDepth: depth, doPriceLookup: true });
 
-  crawler.resultsForAuthor(author, (err, items) => {
+  crawler.resultsForAuthor(author, (err, items: Item[]) => {
     log.info({ author, titles: items.length }, 'Number of titles found');
     async.each(
       items,

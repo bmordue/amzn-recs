@@ -1,7 +1,6 @@
 import async = require('async');
 import util = require('util');
 import { CrawlQueue } from '../lib/crawl_queue';
-import log = require('../lib/log')
 
 // given two ASINs, start and finish, fill the database with enough nodes to be able to find a path between start and finish
 

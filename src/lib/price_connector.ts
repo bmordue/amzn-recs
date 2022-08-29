@@ -1,8 +1,9 @@
 import needle = require('needle');
 import config = require('./config');
+import { CallbackFn } from './crawl_queue';
 import log = require('./log');
 
-export function fetch(asin, callback) {
+export function fetch(asin: string, callback: CallbackFn) {
   const apiEndpoint = config.get('PRICE_LOOKUP_ENDPOINT');
   const reqUrl = `${apiEndpoint}?asin=${asin}`;
   const options = {
