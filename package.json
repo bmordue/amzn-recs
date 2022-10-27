@@ -21,7 +21,7 @@
     "@types/node": "^18.7.13",
     "async": "^3.2.4",
     "aws-lib": "^0.3.0",
-    "body-parser": "^1.20.0",
+    "body-parser": "^1.20.1",
     "cheerio": "^1.0.0-rc.10",
     "dotenv": "^16.0.1",
     "finalhandler": "^1.2.0",
