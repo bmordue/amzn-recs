@@ -18,7 +18,7 @@
   "homepage": "https://github.com/bmordue/amzn-recs",
   "dependencies": {
     "@microsoft/eslint-formatter-sarif": "^3.0.0",
-    "@types/node": "^18.7.13",
+    "@types/node": "^18.11.9",
     "async": "^3.2.4",
     "aws-lib": "^0.3.0",
     "body-parser": "^1.20.0",
