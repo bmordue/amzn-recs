@@ -39,7 +39,7 @@
     "@typescript-eslint/parser": "^5.47.1",
     "eslint": "^8.22.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-import": "^2.27.5",
     "mocha": "^10.2.0",
     "mocha-junit-reporter": "^2.2.0",
     "nyc": "^15.1.0",
