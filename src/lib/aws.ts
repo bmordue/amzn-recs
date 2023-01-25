@@ -1,3 +1,4 @@
+import { create } from "domain";
 
 var http = require("http");
 var https = require("https");
@@ -169,4 +170,4 @@ function genericAWSClient(obj) {
     }
 }
 
-exports.createProdAdvClient = init(genericAWSClient);
+export const createProdAdvClient = init.bind(genericAWSClient);

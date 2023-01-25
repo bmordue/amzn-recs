@@ -1,5 +1,5 @@
 import async = require('async');
-import aws = require('aws-lib');
+import { createProdAdvClient } from './aws';
 import { RateLimiter } from 'limiter';
 import StatsD = require('node-statsd');
 import util = require('util');
@@ -67,7 +67,7 @@ export class CrawlQueue {
     const amazonServiceHost = config.get('AMZN_SERVICE_HOST');
 
     if (keyId && keySecret && associateTag) {
-      this.prodAdv = aws.createProdAdvClient(keyId, keySecret, associateTag, { host: amazonServiceHost });
+      this.prodAdv = createProdAdvClient(keyId, keySecret, associateTag, { host: amazonServiceHost });
       log.info({}, 'Created prodAdv client');
     } else {
       this.prodAdv = fakeProdAdv;
