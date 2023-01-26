@@ -1,5 +1,3 @@
-import { create } from "domain";
-
 var http = require("http");
 var https = require("https");
 var qs = require("querystring");
