@@ -24,7 +24,7 @@
     "cheerio": "^1.0.0-rc.10",
     "dotenv": "^16.0.3",
     "finalhandler": "^1.2.0",
-    "limiter": "^1.1.5",
+    "limiter": "^2.1.0",
     "needle": "^3.2.0",
     "neo4j-driver": "^4.4.10",
     "node-statsd": "^0.1.1",
