@@ -74,7 +74,7 @@ export class CrawlQueue {
       log.info({}, 'Using fakeProdAdv');
     }
     //  this.limiter = new RateLimiter(50, "minute");
-    this.limiter = new RateLimiter(1, 3000); // 1 every N ms
+    this.limiter = new RateLimiter({ tokensPerInterval: 1, interval: "minute" }); // 1 every N ms
     this.db = new DbConnector();
   }
 
@@ -87,12 +87,8 @@ export class CrawlQueue {
   throttledSimilarityLookup(asin: string, callback: CallbackFn) {
     const self = this;
     log.debug({}, 'throttledSimilarityLookup');
-    this.limiter.removeTokens(1, function (err: Error) {
-      log.debug({}, 'called back from limited');
-      if (err) {
-        return callback(err, null);
-      }
-      this.callProdAdv('SimilarityLookup', { ItemId: asin }, (err: Error, data: Item[]) => {
+    this.limiter.removeTokens(1).then(() => {
+      self.callProdAdv('SimilarityLookup', { ItemId: asin }, (err: Error, data: Item[]) => {
         if (err && err.message.indexOf('submitting requests too quickly') != -1) {
           log.warn({ err }, 'Submitting requests too quickly; back off and retry');
           setTimeout(() => self.throttledSimilarityLookup(asin, callback), self.BACKOFF_SECONDS);
@@ -100,19 +96,16 @@ export class CrawlQueue {
           return callback(err, data);
         }
       });
-    });
+    }).catch(callback);
   }
 
   throttledPriceLookup(asin: string, callback: CallbackFn) {
     if (!this.doPriceLookup) {
       return callback(null, {});
     }
-    this.limiter.removeTokens(1, (err) => {
-      if (err) {
-        return callback(err, null);
-      }
+    this.limiter.removeTokens(1).then(() => {
       fetch(asin, callback);
-    });
+    }).catch(callback);
   }
 
   alreadyCrawled(asin: string, callback: CallbackFn) {
@@ -207,17 +200,14 @@ export class CrawlQueue {
     const self = this;
     if (!item.Title || !item.Author || !item.DetailPageUrl) {
       log.debug(item, 'Missing required field; attempt to add it');
-      this.limiter.removeTokens(1, (err) => {
-        if (err) {
-          return callback(err, null);
-        }
+      this.limiter.removeTokens(1).then(() => {
         self.callProdAdv('ItemLookup', { ItemId: item.ASIN }, (err, result) => {
           if (err) {
             return callback(err, null);
           }
           return callback(null, result.Items.Item);
         });
-      });
+      }).catch(callback);
     } else {
       callback(null, item);
     }
@@ -225,17 +215,14 @@ export class CrawlQueue {
 
   createNodeWithAsin(asin: string, callback: CallbackFn) {
     const self = this;
-    this.limiter.removeTokens(1, (err) => {
-      if (err) {
-        return callback(err, null);
-      }
+    this.limiter.removeTokens(1).then(() => {
       self.callProdAdv('ItemLookup', { ItemId: asin }, (err, result) => {
         if (err) {
           return callback(err, null);
         }
         self.db.createBookNode(result.Items.Item, callback);
       });
-    });
+    }).catch(callback);
   }
 
   keywordSearch(keyword: string, responseGroup: string, callback: CallbackFn) {
