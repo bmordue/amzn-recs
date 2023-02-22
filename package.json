@@ -20,7 +20,7 @@
     "@microsoft/eslint-formatter-sarif": "^3.0.0",
     "@types/node": "^18.11.18",
     "async": "^3.2.4",
-    "body-parser": "^1.20.1",
+    "body-parser": "^1.20.2",
     "cheerio": "^1.0.0-rc.10",
     "dotenv": "^16.0.1",
     "finalhandler": "^1.2.0",
