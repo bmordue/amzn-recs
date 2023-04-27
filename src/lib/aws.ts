@@ -1,11 +1,15 @@
-var http = require("http");
-var https = require("https");
-var qs = require("querystring");
-var xml2js = require("xml2js");
-var utils = require('./utils');
-var _ = require('underscore');
-var metadata = require('./metadata');
+import http = require("http");
+import https = require("https");
+import qs = require("querystring");
+import xml2js = require("xml2js");
+import _ = require('underscore');
+import metadata = require('./metadata');
+import crypto = require("crypto")
 
+function hmacSha256(key, toSign) {
+  var hash = crypto.createHmac("sha256", key);
+  return hash.update(toSign).digest("base64");
+}
 
 // aws-lib/prodAdv
 function init(genericAWSClient) {
@@ -13,7 +17,7 @@ function init(genericAWSClient) {
 
     function createProdAdvClient(accessKeyId, secretAccessKey, associateTag, options) {
         options = options || {};
-        var client = genericAWSClient({
+        const client = genericAWSClient({
             host: options.host || "ecs.amazonaws.com",
             path: options.path || "/onca/xml",
             accessKeyId: accessKeyId,
@@ -41,22 +45,22 @@ function init(genericAWSClient) {
 
 // a generic AWS API Client which handles the general parts
 function genericAWSClient(obj) {
-    var securityToken = obj.token;
-    var signHeader = obj.signHeader;
-    var host = obj.host;
-    var accessKeyId = obj.accessKeyId;
-    var path = obj.path;
-    var agent = obj.agent;
-    var secretAccessKey = obj.secretAccessKey;
-    var secure = obj.secure == null ? true : false;
-    var connection = secure ? https : http;
+    const securityToken = obj.token;
+    const signHeader = obj.signHeader;
+    const host = obj.host;
+    const accessKeyId = obj.accessKeyId;
+    const path = obj.path;
+    const agent = obj.agent;
+    const secretAccessKey = obj.secretAccessKey;
+    const secure = obj.secure == null ? true : false;
+    const connection = secure ? https : http;
 
     return { call: call };
 
     function call(action, query, callback) {
         // Wrap the callback to prevent it from being called multiple times.
         callback = (function (next) {
-            var isCalled = false;
+            let isCalled = false;
             return function () {
                 if (isCalled) return;
                 isCalled = true;
@@ -67,33 +71,33 @@ function genericAWSClient(obj) {
         // Try to set credentials with metadata API if no credentials provided
         metadata.readCredentials(obj, function (err) {
             if (err) return callback(err);
-            var date = new Date();
+            const date = new Date();
 
             query = addQueryProperties(query, securityToken, accessKeyId, date);
-            var body = qs.stringify(query);
-            var headers = createHeaders(host, body.length, date, securityToken, accessKeyId, secretAccessKey);
+            const body = qs.stringify(query);
+            const headers = createHeaders(host, body.length, date, securityToken, accessKeyId, secretAccessKey);
             sendRequest();
             return;
 
             function sendRequest() {
-                var options = {
+                const options = {
                     host: host,
                     path: path,
                     agent: agent,
                     method: 'POST',
                     headers: headers
                 };
-                var req = connection.request(options, function (res) {
-                    var data = '';
+                const req = connection.request(options, function (res) {
+                    let data = '';
                     //the listener that handles the response chunks
                     res.addListener('data', function (chunk) {
                         data += chunk.toString()
                     })
                     res.addListener('end', function () {
-                        var parser = new xml2js.Parser();
+                        const parser = new xml2js.Parser();
                         parser.addListener('end', function (result) {
                             if (typeof result != "undefined") {
-                                var err = result.Error || (result.Errors ? result.Errors.Error : null)
+                                const err = result.Error || (result.Errors ? result.Errors.Error : null)
                                 if (err) {
                                     callback(new Error(err.Message), result)
                                 } else {
@@ -115,7 +119,7 @@ function genericAWSClient(obj) {
     }
 
     function addQueryProperties(query, securityToken, accessKeyId, date) {
-        var extendedQuery = _.clone(query);
+        const extendedQuery = _.clone(query);
         if (securityToken) extendedQuery["SecurityToken"] = securityToken;
         extendedQuery["Timestamp"] = date.toISOString();
         extendedQuery["AWSAccessKeyId"] = accessKeyId;
@@ -124,7 +128,7 @@ function genericAWSClient(obj) {
     }
 
     function createHeaders(host, bodyLength, date, securityToken, accessKeyId, secretAccessKey) {
-        var headers = {
+        const headers = {
             "Host": host,
             "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
             "Content-Length": bodyLength
@@ -137,25 +141,25 @@ function genericAWSClient(obj) {
                 "AWS3-HTTPS " +
                 "AWSAccessKeyId=" + accessKeyId + ", " +
                 "Algorithm=HmacSHA256, " +
-                "Signature=" + utils.hmacSha256(secretAccessKey, date.toUTCString());
+                "Signature=" + hmacSha256(secretAccessKey, date.toUTCString());
         }
         return headers;
     }
 
     function signQuery(query) {
-        var keys = []
-        var sorted = {}
+        let keys = []
+        const sorted = {}
 
-        for (var key in query)
+        for (const key in query)
             keys.push(key)
 
         keys = keys.sort()
 
-        for (var n in keys) {
+        for (const n in keys) {
             const theKey = keys[n]
             sorted[theKey] = query[theKey]
         }
-        var stringToSign = ["POST", host, path, qs.stringify(sorted)].join("\n");
+        let stringToSign = ["POST", host, path, qs.stringify(sorted)].join("\n");
 
         // Amazon signature algorithm seems to require this
         stringToSign = stringToSign.replace(/!/g, "%21");
@@ -164,7 +168,7 @@ function genericAWSClient(obj) {
         stringToSign = stringToSign.replace(/\(/g, "%28");
         stringToSign = stringToSign.replace(/\)/g, "%29");
 
-        return utils.hmacSha256(secretAccessKey, stringToSign);
+        return hmacSha256(secretAccessKey, stringToSign);
     }
 }
 
