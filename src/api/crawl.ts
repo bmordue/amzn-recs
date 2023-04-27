@@ -2,7 +2,7 @@ import bodyParser = require("body-parser");
 import finalhandler = require("finalhandler");
 import http = require("http");
 import Router = require("router");
-import { StatsD } from "node-statsd";
+import metrics from "../lib/metrics";
 import util = require("util");
 import { MessageQueue } from "../lib/message_queue";
 import log = require("../lib/log");
@@ -11,7 +11,7 @@ import { Whitelist } from "../lib/whitelist";
 
 const PORT = config.get("PORT") || 3000;
 
-const statsd = new StatsD();
+const statsd = metrics;
 
 const msg_queue = new MessageQueue();
 const whitelist = new Whitelist();
