@@ -3,7 +3,7 @@ import * as http from "http";
 function metadata(options, callback) {
   const version = options.version || "latest";
   const endpoint = options.endpoint || "";
-  const host = options.host || "http://169.254.169.254/";
+  const host = options.host || "https://169.254.169.254/";
   const url = host + version + "/meta-data/" + endpoint;
 
   http
