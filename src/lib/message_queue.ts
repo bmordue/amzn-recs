@@ -1,19 +1,19 @@
-import StatsD = require('node-statsd');
-import util = require('util');
-import log = require('./log');
-import config = require('./config');
+import { StatsD } from "node-statsd";
+import util from "util";
+import * as log from "./log";
+import * as config from "./config";
 
 const statsd = new StatsD({
-  prefix: 'amzn-recs.message_queue.',
-  host: config.get('STATSD_HOST'),
+  prefix: "amzn-recs.message_queue.",
+  host: config.get("STATSD_HOST"),
 });
 
 export class MessageQueue {
-  static STATUS_WAITING = 'waiting';
+  static STATUS_WAITING = "waiting";
 
-  static STATUS_PROCESSING = 'processing';
+  static STATUS_PROCESSING = "processing";
 
-  static STATUS_DONE = 'done';
+  static STATUS_DONE = "done";
 
   options;
 
@@ -39,7 +39,7 @@ export class MessageQueue {
   };
 
   add = function (job, callback) {
-    statsd.increment('add');
+    statsd.increment("add");
     job.status = MessageQueue.STATUS_WAITING;
     const len = this.mq.push(job);
     const row = len - 1;
@@ -50,13 +50,17 @@ export class MessageQueue {
   // claim the item at the top of the queue
   // callback(err, task)
   claim = function (callback) {
-    statsd.increment('claim');
-    const i = this.mq.findIndex((el) => el.status === MessageQueue.STATUS_WAITING);
-    if (typeof (i) === 'undefined') {
-      return callback(new Error('Could not take a task from queue'));
+    statsd.increment("claim");
+    const i = this.mq.findIndex(
+      (el) => el.status === MessageQueue.STATUS_WAITING
+    );
+    if (typeof i === "undefined") {
+      return callback(new Error("Could not take a task from queue"));
     }
     if (!this.mq[i]) {
-      return callback(new Error(util.format('Could not find task with id %s', i)));
+      return callback(
+        new Error(util.format("Could not find task with id %s", i))
+      );
     }
     this.mq[i].status = MessageQueue.STATUS_PROCESSING;
     callback(null, this.mq[i]);
@@ -66,9 +70,9 @@ export class MessageQueue {
   // TODO: check status before update is MessageQueue.STATUS_PROCESSING
   // TODO: record requester; verify same requester is marking the task complete
   complete = function (rowid, callback) {
-    statsd.increment('complete');
+    statsd.increment("complete");
     if (rowid >= this.mq.length) {
-      return callback(new Error('Index out of bounds'));
+      return callback(new Error("Index out of bounds"));
     }
     this.mq[rowid].status = MessageQueue.STATUS_DONE;
     callback(null, this.mq[rowid]);
@@ -78,13 +82,13 @@ export class MessageQueue {
   // TODO: check status before update is MessageQueue.STATUS_PROCESSING
   // TODO: record requester; verify same requester is marking the task complete
   unclaim = function (rowid, callback) {
-    statsd.increment('unclaim');
+    statsd.increment("unclaim");
     if (!rowid) {
-      log.warn({}, 'Called MessageQueue.unclaim without providing a task id');
+      log.warn({}, "Called MessageQueue.unclaim without providing a task id");
       return callback();
     }
     if (rowid >= this.mq.length) {
-      return callback(new Error('Index out of bounds'));
+      return callback(new Error("Index out of bounds"));
     }
     this.mq[rowid].status = MessageQueue.STATUS_WAITING;
     callback(null, this.mq[rowid]);

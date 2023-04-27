@@ -18,7 +18,7 @@ jobs:
       - name: Compile Typescript
         run: npx tsc
       - name: Test with coverage
-        run: npx nyc --reporter=lcov npm test
+        run: npx jest --coverage
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:

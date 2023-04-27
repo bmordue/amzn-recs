@@ -13,7 +13,7 @@
         "sourceType": "module"
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint", "jest"
     ],
     "rules": {
         "camelcase": "off",
