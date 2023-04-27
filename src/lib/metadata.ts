@@ -1,13 +1,10 @@
 import * as http from "http";
 
-module.exports = {
-  readCredentials,
-};
-
 function metadata(options, callback) {
   const version = options.version || "latest";
   const endpoint = options.endpoint || "";
-  const url = "http://169.254.169.254/" + version + "/meta-data/" + endpoint;
+  const host = options.host || "http://169.254.169.254/";
+  const url = host + version + "/meta-data/" + endpoint;
 
   http
     .get(url, (res) => {
@@ -35,8 +32,7 @@ function metadata(options, callback) {
 }
 
 // Try to get access id and secret key from ec2 metadata API
-function readCredentials(obj, cb) {
-
+export function readCredentials(obj, cb) {
   function firstAttempt(err, res) {
     if (err) return cb(err);
     if (typeof res === "undefined")
