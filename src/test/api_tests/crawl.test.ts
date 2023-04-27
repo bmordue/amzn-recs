@@ -15,59 +15,68 @@ describe('crawl API', () => {
   };
 
   describe('valid requests', () => {
-    it('should respond with 202 for valid POST request with depth provided', (cb) => {
-      needle.post(uri, { asin: 'xxxxxx', depth: 2 }, req_options, (err, result) => {
-        if (err) {
-          return cb(err);
-        }
-        try {
-          assert.equal(result.statusCode, 202, util.format('Unexpected HTTP response code for POST %s', uri));
-        } catch (e) {
-          console.log(`Response status code: ${result.statusCode}`);
-          console.log(result.body);
-          return cb(e);
-        }
-        cb();
-      });
-    });
-    it('should respond with 202 for valid POST request if depth is not provided', (cb) => {
-      needle.post(uri, { asin: 'xxxxxx' }, req_options, (err, result) => {
-        if (err) {
-          return cb(err);
-        }
-        try {
-          assert.equal(result.statusCode, 202, util.format('Unexpected HTTP response code for GET %s', uri));
-        } catch (e) {
-          console.log(`Response status code: ${result.statusCode}`);
-          console.log(result.body);
-          return cb(e);
-        }
-        cb();
-      });
-    });
-    it('should respond with 202 for valid POST request if unrecognised fields are included in request body', (cb) => {
-      const data = {
-        asin: 'xxxxxx',
-        unrecognised: 'unknown',
-        extra: {
-          dummy1: 'one',
-          dummy2: 2,
-        },
-      };
-      needle.post(uri, data, req_options, (err, result) => {
-        if (err) {
-          return cb(err);
-        }
-        try {
-          assert.equal(result.statusCode, 202, util.format('Unexpected HTTP response code for GET %s', uri));
-        } catch (e) {
-          console.log(`Response status code: ${result.statusCode}`);
-          console.log(result.body);
-          return cb(e);
-        }
-        cb();
-      });
-    });
+    it(
+      'should respond with 202 for valid POST request with depth provided',
+      (cb) => {
+        needle.post(uri, { asin: 'xxxxxx', depth: 2 }, req_options, (err, result) => {
+          if (err) {
+            return cb(err);
+          }
+          try {
+            assert.equal(result.statusCode, 202, util.format('Unexpected HTTP response code for POST %s', uri));
+          } catch (e) {
+            console.log(`Response status code: ${result.statusCode}`);
+            console.log(result.body);
+            return cb(e);
+          }
+          cb();
+        });
+      }
+    );
+    it(
+      'should respond with 202 for valid POST request if depth is not provided',
+      (cb) => {
+        needle.post(uri, { asin: 'xxxxxx' }, req_options, (err, result) => {
+          if (err) {
+            return cb(err);
+          }
+          try {
+            assert.equal(result.statusCode, 202, util.format('Unexpected HTTP response code for GET %s', uri));
+          } catch (e) {
+            console.log(`Response status code: ${result.statusCode}`);
+            console.log(result.body);
+            return cb(e);
+          }
+          cb();
+        });
+      }
+    );
+    it(
+      'should respond with 202 for valid POST request if unrecognised fields are included in request body',
+      (cb) => {
+        const data = {
+          asin: 'xxxxxx',
+          unrecognised: 'unknown',
+          extra: {
+            dummy1: 'one',
+            dummy2: 2,
+          },
+        };
+        needle.post(uri, data, req_options, (err, result) => {
+          if (err) {
+            return cb(err);
+          }
+          try {
+            assert.equal(result.statusCode, 202, util.format('Unexpected HTTP response code for GET %s', uri));
+          } catch (e) {
+            console.log(`Response status code: ${result.statusCode}`);
+            console.log(result.body);
+            return cb(e);
+          }
+          cb();
+        });
+      }
+    );
   });
 
   describe('bad requests', () => {
@@ -113,33 +122,39 @@ describe('crawl API', () => {
       });
     });
 
-    it('should respond with 400 if ASIN is missing and request body is empty', (cb) => {
-      needle.post(uri, {}, req_options, (err, result) => {
-        if (err) {
-          return cb(err);
-        }
-        try {
-          assert(result.statusCode == 400, util.format('Expected HTTP status 400 for GET %s; got %s', uri, result.statusCode));
-        } catch (e) {
-          return cb(e);
-        }
-        cb();
-      });
-    });
+    it(
+      'should respond with 400 if ASIN is missing and request body is empty',
+      (cb) => {
+        needle.post(uri, {}, req_options, (err, result) => {
+          if (err) {
+            return cb(err);
+          }
+          try {
+            assert(result.statusCode == 400, util.format('Expected HTTP status 400 for GET %s; got %s', uri, result.statusCode));
+          } catch (e) {
+            return cb(e);
+          }
+          cb();
+        });
+      }
+    );
 
-    it('should respond with 400 if ASIN is missing and request body is not empty', (cb) => {
-      needle.post(uri, { depth: 2 }, req_options, (err, result) => {
-        if (err) {
-          return cb(err);
-        }
-        try {
-          assert(result.statusCode == 400, util.format('Expected HTTP status 400 for GET %s; got %s', uri, result.statusCode));
-        } catch (e) {
-          return cb(e);
-        }
-        cb();
-      });
-    });
+    it(
+      'should respond with 400 if ASIN is missing and request body is not empty',
+      (cb) => {
+        needle.post(uri, { depth: 2 }, req_options, (err, result) => {
+          if (err) {
+            return cb(err);
+          }
+          try {
+            assert(result.statusCode == 400, util.format('Expected HTTP status 400 for GET %s; got %s', uri, result.statusCode));
+          } catch (e) {
+            return cb(e);
+          }
+          cb();
+        });
+      }
+    );
 
     it('should respond with 401 if token header is missing', (cb) => {
       const bad_options = {
@@ -195,25 +210,28 @@ describe('crawl API', () => {
         cb();
       });
     });
-    it('should respond with 400 if content type header is not application/json', (cb) => {
-      const bad_options = {
-        json: false,
-        headers: {
-          'Content-Type': 'text/plain',
-          'X-Api-Token': '111111',
-        },
-      };
-      needle.post(uri, JSON.stringify({ asin: 'xxxxxx', depth: 2 }), bad_options, (err, result) => {
-        if (err) {
-          return cb(err);
-        }
-        try {
-          assert.equal(result.statusCode, 400, util.format('Expected HTTP status 400 for GET %s', uri));
-        } catch (e) {
-          return cb(e);
-        }
-        cb();
-      });
-    });
+    it(
+      'should respond with 400 if content type header is not application/json',
+      (cb) => {
+        const bad_options = {
+          json: false,
+          headers: {
+            'Content-Type': 'text/plain',
+            'X-Api-Token': '111111',
+          },
+        };
+        needle.post(uri, JSON.stringify({ asin: 'xxxxxx', depth: 2 }), bad_options, (err, result) => {
+          if (err) {
+            return cb(err);
+          }
+          try {
+            assert.equal(result.statusCode, 400, util.format('Expected HTTP status 400 for GET %s', uri));
+          } catch (e) {
+            return cb(e);
+          }
+          cb();
+        });
+      }
+    );
   });
 });

@@ -1,10 +1,10 @@
 const should = require('should');
 const fake_prodadv = require('../../lib/fake_prodadv');
 
-describe('fake_prodadv', function () {
+describe('fake_prodadv', () => {
   this.timeout(10000);
 
-  before((done) => {
+  beforeAll((done) => {
     done();
   });
 
@@ -15,7 +15,7 @@ describe('fake_prodadv', function () {
       fake_prodadv(query, params, (err, result) => {
         if (err) { return done(err); }
         const authors = result.Items.Item.ItemAttributes.Author;
-        authors.should.be.eql(['Blake Crouch', 'Jack Kilborn', 'F. Paul Wilson', 'Jeff Strand']);
+        expect(authors).toEqual(['Blake Crouch', 'Jack Kilborn', 'F. Paul Wilson', 'Jeff Strand']);
         done();
       });
     });
@@ -25,7 +25,7 @@ describe('fake_prodadv', function () {
       const params = { ItemId: 'B00EEIGHDI' };
       fake_prodadv(query, params, (err, result) => {
         if (err) { return done(err); }
-        result.Items.Item.length.should.equal(94);
+        expect(result.Items.Item.length).toBe(94);
         done();
       });
     });

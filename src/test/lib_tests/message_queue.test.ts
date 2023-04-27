@@ -40,12 +40,12 @@ function verifyQueueSize(queue, expected_size, callback) {
 describe('message queue', () => {
   describe('success responses', () => {
     let queue;
-    before((done) => {
+    beforeAll((done) => {
       queue = new MessageQueue();
       queue.init(done);
     });
 
-    before(() => {
+    beforeAll(() => {
       if (process.env.SQLITE_TRACE) {
         queue.db.on('trace', (query) => {
           console.log(`SQLITE TRACE: ${query}`);
