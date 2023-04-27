@@ -5,7 +5,7 @@ describe("fake_aws", function () {
 
   it("createProdAdvClient", () => {
     const client = createProdAdvClient();
-    should.exist(client);
+    expect(client).not.toBeNull();
   });
 
   it("hmacSha256", () => {
