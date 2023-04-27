@@ -1,17 +1,19 @@
-import util = require("util");
+import util from "util";
 import { Record, Node } from "neo4j-driver";
-import test_utils = require("../test_utils");
+import * as test_utils from "../test_utils";
 import { DbConnector } from "../../lib/graphdb_connector";
 
 const LOG_ALL = false;
 
 describe("DbConnector", () => {
+  it("placeholder", () => {
+    expect(true);
+  });
+
   if (!process.env["RUN_UNSAFE_TESTS"]) {
     console.log("RUN_UNSAFE_TESTS is not set to true; exiting");
     return;
   }
-
-  this.timeout(10000);
 
   const dbConnector = new DbConnector();
 
@@ -112,7 +114,7 @@ describe("DbConnector", () => {
       if (err) {
         return done(err);
       }
-      should(result).be.null;
+      expect(result).toBeNull();
       done();
     });
   });
@@ -122,7 +124,7 @@ describe("DbConnector", () => {
       if (err) {
         return done(err);
       }
-      count.should.eql(1);
+      expect(count).toEqual(1);
       done();
     });
   });
