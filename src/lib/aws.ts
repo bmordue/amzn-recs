@@ -1,10 +1,10 @@
-import http = require("http");
-import https = require("https");
-import qs = require("querystring");
-import xml2js = require("xml2js");
-import _ = require("underscore");
-import metadata = require("./metadata");
-import crypto = require("crypto");
+import http from "http";
+import https from "https";
+import qs from "querystring";
+import xml2js from "xml2js";
+import _ from "underscore";
+import metadata from "./metadata";
+import crypto from "crypto";
 
 export function hmacSha256(key, toSign) {
   const hash = crypto.createHmac("sha256", key);

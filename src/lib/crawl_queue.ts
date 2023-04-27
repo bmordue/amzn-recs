@@ -1,11 +1,11 @@
-import async = require("async");
+import async from "async";
 import { createProdAdvClient } from "./aws";
 import { RateLimiter } from "limiter";
 import metrics from "./metrics";
-import util = require("util");
-import config = require("./config");
+import util from "util";
+import * as config from "./config";
 import { DbConnector } from "./graphdb_connector";
-import log = require("./log");
+import * as log from "./log";
 import { fetch } from "./price_connector";
 import { fakeProdAdv } from "./fake_prodadv";
 import { Item } from "./Item";

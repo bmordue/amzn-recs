@@ -1,8 +1,6 @@
 import { createProdAdvClient, hmacSha256 } from "../../lib/aws";
 
 describe("fake_aws", function () {
-  this.timeout(10000);
-
   it("createProdAdvClient", () => {
     const client = createProdAdvClient();
     expect(client).not.toBeNull();
