@@ -1,20 +1,20 @@
-var http = require('http');
+let http = require('http');
 
 module.exports = {
-  init: init,
-  readCredentials: readCredentials
+  init,
+  readCredentials
 }
 
 function init() {
   return function () {
     return {
-      call: function(options, callback) {
-        var version = options.version || 'latest';
-        var endpoint = options.endpoint || '';
-        var url = 'http://169.254.169.254/' + version + '/meta-data/' + endpoint;
+      call(options, callback) {
+        let version = options.version || 'latest';
+        let endpoint = options.endpoint || '';
+        let url = 'http://169.254.169.254/' + version + '/meta-data/' + endpoint;
 
         http.get(url, function(res) {
-          var string = '';
+          let string = '';
           res.setEncoding('utf8');
           res.on('data', function(chunk) {
             string += chunk;
@@ -37,9 +37,9 @@ function init() {
 
 // Try to get access id and secret key from ec2 metadata API
 function readCredentials(obj, cb) {
-  var lapse = obj.expires == null ? 0 : +new Date() - Date.parse(obj.expires);
+  let lapse = obj.expires == null ? 0 : +new Date() - Date.parse(obj.expires);
   if (obj.secretAccessKey == null || obj.accessKeyId == null || lapse > 0) {
-    var md = init();
+    let md = init();
     md().call({endpoint: 'iam/security-credentials/'}, function(err, res) {
       if (err) return cb(err);
       if (typeof res === 'undefined') return cb(new Error('metadata API response undefined'));
