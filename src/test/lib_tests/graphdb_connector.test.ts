@@ -204,7 +204,7 @@ describe("DbConnector", () => {
               try {
                 const record: Record = result[0];
                 const rel: Node = record[0];
-                should.exist(rel);
+                expect(rel).not.toBeNull();
               } catch (error) {
                 return done(error);
               }

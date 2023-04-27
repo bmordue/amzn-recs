@@ -190,7 +190,7 @@ function amznRequest(asin: string, callback: Function) {
     if (err) {
       return callback(err);
     }
-    statsd.increment(result.statusCode);
+    statsd.increment(result.statusCode.toString());
     if (result.statusCode == 503) {
       log.warn(
         {},
