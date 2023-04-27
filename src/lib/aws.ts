@@ -3,7 +3,7 @@ import https from "https";
 import qs from "querystring";
 import xml2js from "xml2js";
 import _ from "underscore";
-import metadata from "./metadata";
+import * as metadata from "./metadata";
 import crypto from "crypto";
 
 export function hmacSha256(key, toSign) {
