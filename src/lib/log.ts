@@ -1,5 +1,5 @@
-import StatsD = require('node-statsd');
-import config = require('./config');
+import { StatsD } from "node-statsd";
+import * as config from "./config";
 
 const VERBOSITY_VALUES = {
   ERROR: 10,
@@ -9,11 +9,11 @@ const VERBOSITY_VALUES = {
 };
 
 const statsd = new StatsD({
-  prefix: 'amzn-recs.logging.',
-  host: config.get('STATSD_HOST'),
+  prefix: "amzn-recs.logging.",
+  host: config.get("STATSD_HOST"),
 });
 
-const output_verbosity = config.get('AMZN_RECS_LOG_LEVEL');
+const output_verbosity = config.get("AMZN_RECS_LOG_LEVEL");
 
 const log_msg = function (level, obj, msg, verbosity) {
   if (verbosity > output_verbosity) {
@@ -22,14 +22,14 @@ const log_msg = function (level, obj, msg, verbosity) {
   let details = {
     value: null,
   };
-  if (typeof obj !== 'object') {
+  if (typeof obj !== "object") {
     details.value = obj;
   } else if (obj != null) {
     details = obj;
   }
 
   const logline = {
-    timestamp: (new Date()).toUTCString(),
+    timestamp: new Date().toUTCString(),
     level,
     message: msg,
     details,
@@ -38,12 +38,16 @@ const log_msg = function (level, obj, msg, verbosity) {
 };
 
 export function error(obj, msg) {
-  log_msg('ERROR', obj, msg, VERBOSITY_VALUES.ERROR);
-  statsd.increment('errors_logged');
+  log_msg("ERROR", obj, msg, VERBOSITY_VALUES.ERROR);
+  statsd.increment("errors_logged");
 }
 export function warn(obj, msg) {
-  log_msg(' WARN', obj, msg, VERBOSITY_VALUES.WARN);
-  statsd.increment('warnings_logged');
+  log_msg(" WARN", obj, msg, VERBOSITY_VALUES.WARN);
+  statsd.increment("warnings_logged");
 }
-export function info(obj, msg) { log_msg(' INFO', obj, msg, VERBOSITY_VALUES.INFO); }
-export function debug(obj, msg) { log_msg('DEBUG', obj, msg, VERBOSITY_VALUES.DEBUG); }
+export function info(obj, msg) {
+  log_msg(" INFO", obj, msg, VERBOSITY_VALUES.INFO);
+}
+export function debug(obj, msg) {
+  log_msg("DEBUG", obj, msg, VERBOSITY_VALUES.DEBUG);
+}
