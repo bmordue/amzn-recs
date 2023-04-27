@@ -1,7 +1,7 @@
 import async = require("async");
 import { createProdAdvClient } from "./aws";
 import { RateLimiter } from "limiter";
-import { StatsD } from "node-statsd";
+import metrics from "./metrics";
 import util = require("util");
 import config = require("./config");
 import { DbConnector } from "./graphdb_connector";
@@ -10,10 +10,7 @@ import { fetch } from "./price_connector";
 import { fakeProdAdv } from "./fake_prodadv";
 import { Item } from "./Item";
 
-const statsd = new StatsD({
-  prefix: "amzn-recs.crawl_queue.",
-  host: config.get("STATSD_HOST"),
-});
+const statsd = metrics;
 
 type CrawledResponse = {
   crawled: boolean;

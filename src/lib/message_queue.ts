@@ -1,12 +1,8 @@
-import { StatsD } from "node-statsd";
+import metrics from "./metrics";
 import util from "util";
 import * as log from "./log";
-import * as config from "./config";
 
-const statsd = new StatsD({
-  prefix: "amzn-recs.message_queue.",
-  host: config.get("STATSD_HOST"),
-});
+const statsd = metrics;
 
 export class MessageQueue {
   static STATUS_WAITING = "waiting";

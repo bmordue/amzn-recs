@@ -1,14 +1,11 @@
 import needle from "needle";
 import fs from "fs";
 import cheerio from "cheerio";
-import { StatsD } from "node-statsd";
+import metrics from "./metrics";
 import * as config from "./config";
 import * as log from "./log";
 
-const statsd = new StatsD({
-  prefix: "amzn_recs.fake_prodadv.",
-  host: config.get("STATSD_HOST"),
-});
+const statsd = metrics;
 
 let workOffline = process.env.OFFLINE?.toLowerCase() === "true";
 

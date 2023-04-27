@@ -1,13 +1,9 @@
 import async from "async";
 import * as neo4j from "neo4j-driver";
-import { StatsD } from "node-statsd";
-import * as config from "./config";
+import metrics from "./metrics";
 import * as log from "./log";
 
-const statsd = new StatsD({
-  prefix: "amzn-recs.graphdb_connector.",
-  host: config.get("STATSD_HOST"),
-});
+const statsd = metrics;
 
 function closeAndCallback(callback, session, err = null, result = null) {
   if (err) {
