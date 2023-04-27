@@ -1,4 +1,4 @@
-import { StatsD } from "node-statsd";
+import metrics from "./metrics";
 import * as config from "./config";
 
 const VERBOSITY_VALUES = {
@@ -8,10 +8,7 @@ const VERBOSITY_VALUES = {
   DEBUG: 40,
 };
 
-const statsd = new StatsD({
-  prefix: "amzn-recs.logging.",
-  host: config.get("STATSD_HOST"),
-});
+const statsd = metrics;
 
 const output_verbosity = config.get("AMZN_RECS_LOG_LEVEL");
 
