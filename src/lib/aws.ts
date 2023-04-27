@@ -7,7 +7,7 @@ import metadata = require('./metadata');
 import crypto = require("crypto")
 
 function hmacSha256(key, toSign) {
-  var hash = crypto.createHmac("sha256", key);
+  const hash = crypto.createHmac("sha256", key);
   return hash.update(toSign).digest("base64");
 }
 

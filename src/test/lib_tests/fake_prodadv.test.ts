@@ -1,4 +1,4 @@
-const should = require('should');
+import * as should from 'should';
 const fake_prodadv = require('../../lib/fake_prodadv');
 
 describe('fake_prodadv', function () {
