@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@microsoft/eslint-formatter-sarif": "^3.0.0",
-    "@types/node": "^18.16.18",
+    "@types/node": "^20.8.6",
     "async": "^3.2.4",
     "body-parser": "^1.20.2",
     "cheerio": "^1.0.0-rc.12",
