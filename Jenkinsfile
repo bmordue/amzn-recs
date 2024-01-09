@@ -15,7 +15,7 @@ node {
 
   stage ('Install') {
     docker.image("${image_name}:${tag}").inside("${volumes}") {
-      sh "npm install > npm_install.log"
+      sh "npm install --legacy-peer-deps > npm_install.log"
       sh "node src/scripts/add_to_api_whitelist.js ${test_token}"
     }
   }
