@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/bmordue/amzn-recs",
   "engines": {
-    "node": "^16 || ^18 || ^20"
+    "node": "^22 || ^24"
   },
   "dependencies": {
     "@microsoft/eslint-formatter-sarif": "^3.1.0",
