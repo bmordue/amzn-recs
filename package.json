@@ -30,7 +30,7 @@
     "hot-shots": "^11.1.1",
     "limiter": "^3.0.0",
     "needle": "^3.3.1",
-    "neo4j-driver": "^5.28.1",
+    "neo4j-driver": "^5.28.2",
     "router": "^2.2.0",
     "typescript": "^5.9.2",
     "underscore": "^1.13.7",
